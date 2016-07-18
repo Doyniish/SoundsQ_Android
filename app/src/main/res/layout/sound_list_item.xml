@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/sound_list_item_layout">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Noah Butler"
+        android:id="@+id/sound_artist_name"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="80dp"
+        android:textSize="12sp"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This is the title of the song"
+        android:id="@+id/sound_title"
+        android:textSize="10sp"
+        android:layout_below="@+id/sound_artist_name"
+        android:layout_alignLeft="@+id/sound_artist_name"
+        android:layout_alignStart="@+id/sound_artist_name"
+        android:textColor="#111111" />
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/sound_image"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="15dp" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="65dp"
+        android:id="@+id/soundplaying_listhighlighter"
+        android:contextClickable="false"
+        android:background="@drawable/list_outliner" />
+
+</RelativeLayout>
