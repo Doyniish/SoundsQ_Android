@@ -20,7 +20,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
     private static String LOG = "SOUND_PLAYER";
 
-    //private ProgressDialog progress;
+    //private ProgdressDialog progress;
     /**
      * the object responsible for playing the stream url given to it.
      */
@@ -33,79 +33,33 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     private Context context;
     private PowerManager.WakeLock mWakeLock;
 
+    public SoundPlayer(Context context) {
+        this.context = context;
+        mediaPlayer = new MediaPlayer();
+    }
+
     @Override
     protected Boolean doInBackground(String... params) {
         messenger = new Messenger();
         Boolean prepared;
         try {
-            /* set our data source for our media player to the current stream url sent */
             mediaPlayer.setDataSource(params[0]);
             Log.d(LOG, "stream_url: " + params[0]);
 
-            /* create our on completion listener which will signal different parts of the
-               application to start to play the next sound.
-             */
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mediaPlayer.stop();
-                    mediaPlayer.reset();
-                    SoundQueue.isPlayingSound(false);
-                    // signal the UI thread to play the next sound.
-                    if(SoundQueue.size() > (SoundQueue.getCurrentIndex() + 1)) {
-                        SoundQueue.nextSong();
-                        Log.d(LOG, "playing next sound: Current Index: " + SoundQueue.getCurrentIndex());
-                        SoundQueue.isPlayingSound(true);
-                        Log.d(LOG, "playing next sound: URL: " + SoundQueue.getCurrentSound());
-                        messenger.playSound(SoundQueue.getCurrentSound());
-                    }
-
-                }
-            });
-
-            /* create our on prepared listener which will signal
-               the media player to start playing from the given
-               stream url.
-             */
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-
-                    /* current stream should now be ready to play.
-                       start playing it.
-                     */
-                    mediaPlayer.start();
-                    SoundQueue.isPlayingSound(true);
-                    Log.d(LOG, "playing has started");
-
-                    /* signal the UI thread to update
-                       the queue list to display which
-                       sound is currently playing
-                     */
-                    messenger.updateViews();
-                }
-            });
-
-            /* prepare the current media player
-               with it's given stream url.
-             */
+            createMediaHandlers();
             mediaPlayer.prepare();
-
             /* set our state to prepared */
             prepared = true;
-        } catch (IllegalArgumentException e) {
 
+        } catch (IllegalArgumentException e) {
             Log.d("IllegarArgument", e.getMessage());
             prepared = false;
             e.printStackTrace();
         } catch (IOException e) {
-
             prepared = false;
             e.printStackTrace();
         }
 
-        /* return the state of prepared */
         return prepared;
     }
 
@@ -116,12 +70,6 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         mWakeLock.release();
         Log.d(LOG, "//" + result);
     }
-
-    public SoundPlayer(Context context) {
-        this.context = context;
-        mediaPlayer = new MediaPlayer();
-    }
-
     @Override
     protected void onPreExecute() {
 
@@ -131,5 +79,44 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         mWakeLock.acquire();
         Log.d(LOG, "media player is buffering");
 
+    }
+
+    private void createMediaHandlers() {
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                completePlay();
+                queueNext();
+            }
+        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                startPlay();
+            }
+        });
+    }
+
+    private void startPlay() {
+        SoundQueue.isPlayingSound(true);
+        mediaPlayer.start();
+        messenger.updateViews();
+    }
+
+    private void completePlay() {
+        SoundQueue.isPlayingSound(false);
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+    }
+
+    private void queueNext() {
+        // signal the UI thread to play the next sound.
+        if(SoundQueue.size() > (SoundQueue.getCurrentIndex() + 1)) {
+            SoundQueue.nextSong();
+            Log.d(LOG, "playing next sound: Current Index: " + SoundQueue.getCurrentIndex());
+            Log.d(LOG, "playing next sound: URL: " + SoundQueue.getCurrentSound());
+            messenger.playSound(SoundQueue.getCurrentSound());
+        }
     }
 }
