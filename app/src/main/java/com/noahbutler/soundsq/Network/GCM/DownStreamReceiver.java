@@ -47,7 +47,7 @@ public class DownStreamReceiver extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "...RECEIVED...");
         if(data.containsKey(keys[0])) {
-            receivedSoundList(data);
+            receivedSound(data);
         }else if(data.containsKey(keys[1])){
             receivedSoundStreamURL(data);
         }else if(data.containsKey(keys[2])) {
@@ -62,7 +62,7 @@ public class DownStreamReceiver extends GcmListenerService {
      *
      * @param data
      */
-    private void receivedSoundList(Bundle data) {
+    private void receivedSound(Bundle data) {
 
         String sound_sent = data.getString(keys[0]);
         SoundQueue.addSound(sound_sent);
