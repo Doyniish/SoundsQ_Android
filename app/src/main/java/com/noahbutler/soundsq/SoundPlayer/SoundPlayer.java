@@ -14,6 +14,15 @@ import java.io.IOException;
 
 /**
  * Created by NoahButler on 1/3/16.
+ *
+ * Sound Player is only created and controlled by
+ * the Sound Player controller.
+ *
+ * It will started/paused/played/stopped
+ * by the Sound Player Controller.
+ *
+ * It will request the next song to be played once
+ * the current sound has been completed
  */
 
 public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
@@ -111,5 +120,10 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     private void requestNextPlay() {
         // signal the UI thread to play the next sound.
         SoundPlayerController.soundPlayerFinished();
+    }
+
+    private void requestToController() {
+        Messenger messenger = new Messenger();
+        messenger.requestNextPlay();
     }
 }

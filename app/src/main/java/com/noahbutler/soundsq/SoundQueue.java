@@ -40,7 +40,7 @@ public class SoundQueue {
         SoundPlayerController.requestSoundData(streamUrl);
         //run our checks to see if we need to play this sound right now
         if (firstSongCheck() || soundPlayingCheck()) {
-            SoundPlayerController.playNextSong();
+            SoundPlayerController.playCurrentSound();
         }
     }
 
@@ -68,16 +68,16 @@ public class SoundQueue {
         currentSound = 0;
     }
 
+    public static void setIndex(int index) {
+        currentSound = index;
+    }
+
     public static int getCurrentIndex() {
         return currentSound;
     }
 
     public static String getCurrentSound() {
         return queue.get(currentSound);
-    }
-
-    public static String getLatestSound() {
-        return queue.get(queue.size() - 1);
     }
 
     public static void isPlayingSound(boolean is) {

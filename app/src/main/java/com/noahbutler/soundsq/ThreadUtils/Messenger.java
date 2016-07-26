@@ -73,10 +73,10 @@ public class Messenger {
      *
      * Associated with keys[2]
      */
-    public void playSound(String url) {
+    public void requestNextPlay() {
         init();
         //send url from queue list
-        bundle.putString(keys[2], url);
+        bundle.putString(keys[2], "next_sound_please");
         message.setData(bundle);
         Constants.handler.sendMessage(message);
     }

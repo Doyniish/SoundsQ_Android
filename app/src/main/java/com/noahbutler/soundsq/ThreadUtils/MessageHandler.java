@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Network.Sender;
+import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundQueue;
 
 /**
@@ -28,7 +29,7 @@ public class MessageHandler extends Handler {
 
         }else if(msg.getData().containsKey(Messenger.keys[2])) { // next song needs to be played
             //url sent to signal_playSound(String url)
-            signal_playSound(msg.getData().getString(Messenger.keys[2]));
+            signal_requestToController(msg.getData().getString(Messenger.keys[2]));
         }
     }
 
@@ -80,13 +81,8 @@ public class MessageHandler extends Handler {
     /**
      * Associated with Messenger.keys[2]
      * This is signaled by a SoundPlayer object when a sound is finished playing
-     *
-     * It first checks to see if we have any sounds to play, and if we do, it creates a Sender
-     * object to then request the stream url from our server. The sender then takes care of
-     * creating a new SoundPlayer to play that stream url.
      */
-    private void signal_playSound(String url) {
-        Sender sender = new Sender();
-        sender.execute(Sender.GET_STREAM_URL, SoundQueue.ID, url);
+    private void signal_requestToController(String url) {
+        SoundPlayerController.playNextSound();
     }
 }

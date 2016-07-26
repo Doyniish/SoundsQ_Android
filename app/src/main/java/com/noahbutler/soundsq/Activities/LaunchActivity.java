@@ -21,6 +21,7 @@ import com.noahbutler.soundsq.Fragments.QueueFragment;
 import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
+import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundQueue;
 import com.noahbutler.soundsq.ThreadUtils.MessageHandler;
 import com.noahbutler.soundsq.ThreadUtils.Messenger;
@@ -36,6 +37,7 @@ public class LaunchActivity extends Activity {
         setContentView(R.layout.activity_launch);
 
         /* Sound Player Controller Creator */
+        SoundPlayerController.setContext(getBaseContext());
 
         /* check to see if we need to display queue that is running */
         if(savedInstanceState != null && savedInstanceState.containsKey("show_queue")) {
