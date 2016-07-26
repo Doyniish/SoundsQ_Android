@@ -1,5 +1,7 @@
 package com.noahbutler.soundsq;
 
+import com.noahbutler.soundsq.SoundPlayer.SoundPlayer;
+import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 import java.util.ArrayList;
@@ -24,20 +26,30 @@ public class SoundQueue {
      */
     private static boolean QUEUED_SOUNDS;
 
-    private static Messenger messenger = new Messenger();
-    public static void addSound(String url) {
-        queue.add(url);
-        //check to see if we need to play this sound
-        if (queue.size() == 1) { // first sound added
-            messenger.playSound(getCurrentSound());
-        }else if(!isPlayingSound()) {//we are not playing any songs
-            nextSong();
-            messenger.playSound(getCurrentSound());
-        }
+    public static void addSound(String streamUrl) {
+        queue.add(streamUrl);
+        sendToSoundPlayerController(streamUrl);
     }
 
     public static void createQueue() {
         queue = new ArrayList<>();
+    }
+
+    private static void sendToSoundPlayerController(String streamUrl) {
+        //Tell the SoundPlayerController to request the rest of the sound's data
+        SoundPlayerController.requestSoundData(streamUrl);
+        //run our checks to see if we need to play this sound right now
+        if (firstSongCheck() || soundPlayingCheck()) {
+            SoundPlayerController.playNextSong();
+        }
+    }
+
+    private static boolean firstSongCheck() {
+        return (queue.size() == 1);
+    }
+
+    private static boolean soundPlayingCheck() {
+        return !isPlayingSound(); //should not play if this is true
     }
 
     public static int size() {

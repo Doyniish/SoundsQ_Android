@@ -188,12 +188,6 @@ public class DownStreamReceiver extends GcmListenerService {
         return decoded;
     }
 
-    private void retrieveSoundPackage() {
-        Log.d("SOUND PACKAGE", "retrieving sound package");
-        Sender sender = new Sender();
-        sender.execute(Sender.GET_SOUND_INFO_PACKAGE, SoundQueue.ID, SoundQueue.getLatestSound());
-    }
-
     private void sendNotification(String message) {
         Intent intent = new Intent(this, LaunchActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
