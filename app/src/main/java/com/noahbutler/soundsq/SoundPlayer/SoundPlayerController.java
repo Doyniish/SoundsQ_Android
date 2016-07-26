@@ -14,22 +14,35 @@ public class SoundPlayerController {
     private static SoundPlayer soundPlayer;
     private static Context context;
 
-    public static void setContext(Context context) {
-        this.context = context;
+    public static void setContext(Context c) {
+        context = c;
     }
 
-    public static void playNextSong() {
+
+    /*  */
+    public static void playNextSound() {
         SoundQueue.nextSong();
         soundPlayer = new SoundPlayer(context);
         soundPlayer.execute(SoundQueue.getCurrentSound());
     }
 
-    public static void playPreviousSong() {
+    public static void playCurrentSound() {
+        soundPlayer = new SoundPlayer(context);
+        soundPlayer.execute(SoundQueue.getCurrentSound());
+    }
+
+    public static void playPreviousSound() {
         SoundQueue.prevSong();
         soundPlayer = new SoundPlayer(context);
         soundPlayer.execute(SoundQueue.getCurrentSound());
     }
 
+    /* SoundPlayer Requests */
+    public static void soundPlayerFinished() {
+        playNextSound();
+    }
+
+    /* Request to Server Methods */
     public static void requestSoundData(String streamUrl) {
          retrieveSoundPackage(streamUrl);
     }

@@ -63,13 +63,9 @@ public class DownStreamReceiver extends GcmListenerService {
      * @param data
      */
     private void receivedSound(Bundle data) {
-
         String sound_sent = data.getString(keys[0]);
         SoundQueue.addSound(sound_sent);
-        retrieveSoundPackage();
-
-        //sendNotification("A new song has been added to your queue!");
-        Log.d(TAG, "finished receiving sound....");
+        Log.d(TAG, "finished receiving sound...");
     }
 
     /**

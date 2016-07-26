@@ -87,7 +87,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 completePlay();
-                queueNext();
+                requestNextPlay();
             }
         });
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -99,24 +99,17 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     }
 
     private void startPlay() {
-        SoundQueue.isPlayingSound(true);
         mediaPlayer.start();
         messenger.updateViews();
     }
 
     private void completePlay() {
-        SoundQueue.isPlayingSound(false);
         mediaPlayer.stop();
         mediaPlayer.reset();
     }
 
-    private void queueNext() {
+    private void requestNextPlay() {
         // signal the UI thread to play the next sound.
-        if(SoundQueue.size() > (SoundQueue.getCurrentIndex() + 1)) {
-            SoundQueue.nextSong();
-            Log.d(LOG, "playing next sound: Current Index: " + SoundQueue.getCurrentIndex());
-            Log.d(LOG, "playing next sound: URL: " + SoundQueue.getCurrentSound());
-            messenger.playSound(SoundQueue.getCurrentSound());
-        }
+        SoundPlayerController.soundPlayerFinished();
     }
 }

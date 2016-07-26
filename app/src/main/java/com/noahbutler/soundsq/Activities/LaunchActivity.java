@@ -35,6 +35,8 @@ public class LaunchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
+        /* Sound Player Controller Creator */
+
         /* check to see if we need to display queue that is running */
         if(savedInstanceState != null && savedInstanceState.containsKey("show_queue")) {
             if(savedInstanceState.getBoolean("show_queue")) { // app needs to go directly to the queue that is playing
