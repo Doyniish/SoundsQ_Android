@@ -53,7 +53,7 @@ public class SoundQueue {
     }
 
     public static int size() {
-        return queue.size();
+        return queue.size() - 1;
     }
 
     public static void nextSong() {

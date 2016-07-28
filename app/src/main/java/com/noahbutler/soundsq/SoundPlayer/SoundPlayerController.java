@@ -23,6 +23,7 @@ public class SoundPlayerController {
     public static void playNextSound() {
         SoundQueue.nextSong();
         //TODO: Make sure there is an actual sound to play
+        if (SoundQueue.getCurrentIndex() == SoundQueue.size())
         soundPlayer = new SoundPlayer(context);
         soundPlayer.execute(SoundQueue.getCurrentSound());
     }
