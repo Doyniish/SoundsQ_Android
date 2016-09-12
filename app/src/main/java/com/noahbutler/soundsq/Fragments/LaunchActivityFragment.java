@@ -1,26 +1,16 @@
 package com.noahbutler.soundsq.Fragments;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.QueueIDGenerator;
 import com.noahbutler.soundsq.R;
-import com.noahbutler.soundsq.SoundQueue;
-
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * A placeholder fragment containing a simple view.

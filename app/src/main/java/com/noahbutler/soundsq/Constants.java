@@ -1,13 +1,9 @@
 package com.noahbutler.soundsq;
 
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Message;
 import android.widget.ListView;
 
 import com.noahbutler.soundsq.Fragments.QueueListAdapter;
-import com.noahbutler.soundsq.Network.Sender;
-import com.noahbutler.soundsq.SoundPlayer.SoundPlayer;
+import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.ThreadUtils.MessageHandler;
 import com.noahbutler.soundsq.ThreadUtils.Messenger;
 

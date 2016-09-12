@@ -5,8 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,18 +14,14 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
 import com.noahbutler.soundsq.R;
-import com.noahbutler.soundsq.SoundPackage;
+import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayer;
-import com.noahbutler.soundsq.SoundQueue;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by NoahButler on 9/18/15.
@@ -38,7 +32,7 @@ public class DownStreamReceiver extends GcmListenerService {
 
     private static final String TAG = "DownStreamReceiver";
     private static final String[] keys = {
-            "sound_url",
+            "stream_url",
             "sound_stream_url",
             "info_package"
     };
@@ -64,6 +58,36 @@ public class DownStreamReceiver extends GcmListenerService {
      */
     private void receivedSound(Bundle data) {
         String sound_sent = data.getString(keys[0]);
+        Log.d(TAG,data.toString());
+
+        /* (1) retrieve the raw strings from the data sent from the server */
+        String raw_sound_package = data.getString(keys[2]);
+        String raw_user_package  = data.getString("user_package");
+
+        /* (2) create our SoundPackageDownloader object responsible for downloading the image
+           of the sound.
+         */
+        SoundPackageDownloader soundPackageDownloader = new SoundPackageDownloader(getBaseContext());
+
+        /* (3) decode the package */
+        String[] decodedPackage = decodePackage(raw_sound_package, raw_user_package);
+
+        /* (4) create our filename from our sound url */
+        String filename = decodedPackage[1].substring(decodedPackage[1].lastIndexOf("/")+1);
+
+        /* (5) download the file */
+        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage[0], filename);
+
+        /* (6) create a new sound package to hold the data */
+        SoundPackage soundPackage = new SoundPackage();
+        soundPackage.sound_url = decodedPackage[1];
+        soundPackage.artistName = decodedPackage[2];
+        soundPackage.soundName = decodedPackage[3];
+
+        /* (7) add the SoundPackage object to the list */
+        Constants.QUEUE_SOUND_PACKAGES.add(soundPackage);
+        Log.d("SOUND PACKAGE", "Sound package added");
+
         SoundQueue.addSound(sound_sent);
         Log.d(TAG, "finished receiving sound...");
     }
@@ -124,33 +148,7 @@ public class DownStreamReceiver extends GcmListenerService {
      */
     private void receivedSoundPackage(Bundle data) {
 
-        /* (1) retrieve the raw strings from the data sent from the server */
-        String raw_sound_package = data.getString(keys[2]);
-        String raw_user_package  = data.getString("user_package");
 
-        /* (2) create our SoundPackageDownloader object responsible for downloading the image
-           of the sound.
-         */
-        SoundPackageDownloader soundPackageDownloader = new SoundPackageDownloader(getBaseContext());
-
-        /* (3) decode the package */
-        String[] decodedPackage = decodePackage(raw_sound_package, raw_user_package);
-
-        /* (4) create our filename from our sound url */
-        String filename = decodedPackage[1].substring(decodedPackage[1].lastIndexOf("/")+1);
-
-        /* (5) download the file */
-        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage[0], filename);
-
-        /* (6) create a new sound package to hold the data */
-        SoundPackage soundPackage = new SoundPackage();
-        soundPackage.sound_url = decodedPackage[1];
-        soundPackage.artistName = decodedPackage[2];
-        soundPackage.soundName = decodedPackage[3];
-
-        /* (7) add the SoundPackage object to the list */
-        Constants.QUEUE_SOUND_PACKAGES.add(soundPackage);
-        Log.d("SOUND PACKAGE", "Sound package added");
     }
 
     /**

@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -19,12 +17,10 @@ import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.LaunchActivityFragment;
 import com.noahbutler.soundsq.Fragments.QueueFragment;
 import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
-import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
-import com.noahbutler.soundsq.SoundQueue;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 import com.noahbutler.soundsq.ThreadUtils.MessageHandler;
-import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 
 public class LaunchActivity extends Activity {
@@ -58,6 +54,16 @@ public class LaunchActivity extends Activity {
             }
         };
 
+        register();
+        SoundQueue.createQueue();
+
+        /* hand of to Launch Activity Fragment */
+        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new LaunchActivityFragment()).commit();
+        /* Test queue fragment */
+        //getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueFragment()).commit();
+    }
+
+    private void register() {
         /* Start IntentService to register this application with GCM. */
         if (checkPlayServices()) {
             Log.e("LaunchActivity", "starting reg intent");
@@ -65,9 +71,6 @@ public class LaunchActivity extends Activity {
             startService(intent);
             Log.e("LaunchActivity", "handing off");
         }
-
-        /* hand of to Launch Activity Fragment */
-        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new LaunchActivityFragment()).commit();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.noahbutler.soundsq;
+package com.noahbutler.soundsq.SoundPlayer;
 
 import android.content.Context;
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.noahbutler.soundsq.Network.Sender;
-import com.noahbutler.soundsq.SoundQueue;
 
 /**
  * Created by Noah on 7/25/2016.

@@ -12,12 +12,10 @@ import android.widget.TextView;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.R;
-import com.noahbutler.soundsq.SoundQueue;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by NoahButler on 12/27/15.
@@ -56,7 +54,7 @@ public class QueueListAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.sound_list_item, null);
 
             /* grab views from the original view */
-            viewHolder.soundImage  = (ImageView)convertView.findViewById(R.id.sound_image);
+            viewHolder.soundImage  = (ImageView) convertView.findViewById(R.id.album_art);
             viewHolder.soundTitle       = (TextView)convertView.findViewById(R.id.sound_title);
             viewHolder.soundArtistName  = (TextView)convertView.findViewById(R.id.sound_artist_name);
             viewHolder.soundPlayingHighlighter = (ImageView)convertView.findViewById(R.id.soundplaying_listhighlighter);

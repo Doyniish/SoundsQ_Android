@@ -5,9 +5,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
-import com.noahbutler.soundsq.SoundQueue;
 
 /**
  * Created by NoahButler on 1/6/16.

@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.SoundQueue;
 import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 import java.io.IOException;
@@ -83,6 +81,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     protected void onPreExecute() {
 
         super.onPreExecute();
+        //make sure we keep playing when the screen is off
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         mWakeLock.acquire();
@@ -90,6 +89,10 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
     }
 
+    /**
+     * This method is used to create our
+     * handlers for the Media Player
+     */
     private void createMediaHandlers() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -120,10 +123,5 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     private void requestNextPlay() {
         // signal the UI thread to play the next sound.
         SoundPlayerController.soundPlayerFinished();
-    }
-
-    private void requestToController() {
-        Messenger messenger = new Messenger();
-        messenger.requestNextPlay();
     }
 }

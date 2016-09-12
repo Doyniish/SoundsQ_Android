@@ -56,12 +56,12 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 return sendGCMToken(strings);
             case CHECK_QUEUE:
                 return checkQueue(strings);
-            case GET_STREAM_URL:
-                return getStreamURL(strings);
+//            case GET_STREAM_URL:
+//                return getStreamURL(strings);
             case GET_QUEUE:
                 return getQueue(strings);
-            case GET_SOUND_INFO_PACKAGE:
-                return getSoundInfoPackage(strings);
+//            case GET_SOUND_INFO_PACKAGE:
+//                return getSoundInfoPackage(strings);
             default:
                 Log.e("ERROR", "NOT A METHOD IN STRINGS[0]");
                 return false;
@@ -130,19 +130,19 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
-    private boolean getStreamURL(String...strings) {
-        String[] keys = new String[2];
-        String[] values = new String[2];
-
-        keys[0] = queue_id_key;
-        keys[1] = singleSound_key;
-
-        values[0] = strings[1];
-        values[1] = strings[2];
-
-        NetworkGate networkGate = new NetworkGate(GET_STREAM_URL_URL);
-        return networkGate.post(keys, values);
-    }
+//    private boolean getStreamURL(String...strings) {
+//        String[] keys = new String[2];
+//        String[] values = new String[2];
+//
+//        keys[0] = queue_id_key;
+//        keys[1] = singleSound_key;
+//
+//        values[0] = strings[1];
+//        values[1] = strings[2];
+//
+//        NetworkGate networkGate = new NetworkGate(GET_STREAM_URL_URL);
+//        return networkGate.post(keys, values);
+//    }
 
     private boolean getSoundInfoPackage(String...strings) {
         String[] keys = new String[2];
