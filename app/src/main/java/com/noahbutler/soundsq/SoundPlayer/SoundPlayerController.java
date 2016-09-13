@@ -54,15 +54,4 @@ public class SoundPlayerController {
         SoundQueue.isPlayingSound(false);
         playNextSound();
     }
-
-    /* Request to Server Methods */
-    public static void requestSoundData(String streamUrl) {
-         retrieveSoundPackage(streamUrl);
-    }
-
-    private static void retrieveSoundPackage(String streamUrl) {
-        Log.d("SOUND PACKAGE", "retrieving sound package");
-        Sender sender = new Sender();
-        sender.execute(Sender.GET_SOUND_INFO_PACKAGE, SoundQueue.ID, streamUrl);
-    }
 }

@@ -25,7 +25,7 @@ public class QueueFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View masterView = inflater.inflate(R.layout.fragment_queue2, container, false);
+        View masterView = inflater.inflate(R.layout.fragment_queue, container, false);
 
 //        /* setup show queue id button */
 //        showQueueID = (ImageButton)masterView.findViewById(R.id.show_queue_id);

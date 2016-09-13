@@ -23,6 +23,8 @@ import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 /**
  * Created by NoahButler on 9/18/15.
  */
@@ -31,22 +33,12 @@ public class DownStreamReceiver extends GcmListenerService {
     public static SoundPlayer soundPlayer;
 
     private static final String TAG = "DownStreamReceiver";
-    private static final String[] keys = {
-            "stream_url",
-            "sound_stream_url",
-            "info_package"
-    };
-
+    private static final String SP_KEY = "sound_package";
+    private static final String A_KEY = "artist";
     @Override
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "...RECEIVED...");
-        if(data.containsKey(keys[0])) {
-            receivedSound(data);
-        }else if(data.containsKey(keys[1])){
-            receivedSoundStreamURL(data);
-        }else if(data.containsKey(keys[2])) {
-            receivedSoundPackage(data);
-        }
+        receivedSound(data);
     }
 
     /**
@@ -57,98 +49,33 @@ public class DownStreamReceiver extends GcmListenerService {
      * @param data
      */
     private void receivedSound(Bundle data) {
-        String sound_sent = data.getString(keys[0]);
         Log.d(TAG,data.toString());
 
         /* (1) retrieve the raw strings from the data sent from the server */
-        String raw_sound_package = data.getString(keys[2]);
-        String raw_user_package  = data.getString("user_package");
-
-        /* (2) create our SoundPackageDownloader object responsible for downloading the image
-           of the sound.
-         */
+        String raw_sound_package = data.getString(SP_KEY);
+        String raw_artist        = data.getString(A_KEY);
         SoundPackageDownloader soundPackageDownloader = new SoundPackageDownloader(getBaseContext());
 
-        /* (3) decode the package */
-        String[] decodedPackage = decodePackage(raw_sound_package, raw_user_package);
+        HashMap<String, String> decodedPackage = decodePackage(raw_sound_package, raw_artist);
 
         /* (4) create our filename from our sound url */
-        String filename = decodedPackage[1].substring(decodedPackage[1].lastIndexOf("/")+1);
+        String filename = decodedPackage.get("sound_url").substring(decodedPackage.get("sound_url").lastIndexOf("/")+1);
 
         /* (5) download the file */
-        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage[0], filename);
+        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage.get("album_art"), filename);
 
         /* (6) create a new sound package to hold the data */
         SoundPackage soundPackage = new SoundPackage();
-        soundPackage.sound_url = decodedPackage[1];
-        soundPackage.artistName = decodedPackage[2];
-        soundPackage.soundName = decodedPackage[3];
+        soundPackage.sound_url = decodedPackage.get("sound_url");
+        soundPackage.artistName = decodedPackage.get("username");
+        soundPackage.soundName = decodedPackage.get("title");
 
         /* (7) add the SoundPackage object to the list */
-        Constants.QUEUE_SOUND_PACKAGES.add(soundPackage);
+        SoundQueue.addSoundPackage(soundPackage);
         Log.d("SOUND PACKAGE", "Sound package added");
 
-        SoundQueue.addSound(sound_sent);
+        SoundQueue.addSound(decodedPackage.get("stream_url"));
         Log.d(TAG, "finished receiving sound...");
-    }
-
-    /**
-     * This method is called when our application receives a downstream
-     * message from our server in regards to a stream url request from
-     * this device.
-     *
-     * (1) The server sends the stream url under the key of keys[1]
-     * (sound_stream_url)
-     *
-     * (2) We then create a new SoundPlayer object to handle
-     * the playing of this sound stream url.
-     *
-     * (3) The SoundPlayer object is then fed the stream url
-     * and handles playing that sound.
-     *
-     * @param data
-     */
-    private void receivedSoundStreamURL(Bundle data) {
-        /* (1) grab the stream url from the data package */
-        String sound_stream_url = data.getString(keys[1]);
-        /* (2) create the SoundPlayer object */
-        soundPlayer = new SoundPlayer(getBaseContext());
-        /* (3) feed the stream url to the SoundPlayer */
-        soundPlayer.execute(sound_stream_url);
-    }
-
-    /**
-     * This method is called when our application receives a downstream
-     * message from our server in regards to a Sound Package request from
-     * this device.
-     *
-     * (1) The server sends two strings under the keys: keys[2] (info_package)
-     * and user_package
-     *
-     * (2) We then create a SoundPackageDownloader object which will be
-     * responsible for downloading the image of the sound
-     *
-     * (3) We then send the two strings through our package decoder
-     * method which is defined before this method.
-     *
-     * (4) We then get our filename name from the decoded string array
-     * that will be used to store the image on the device
-     *
-     * (5) After that, we signal our SoundPackageDownloader object to
-     * start the download process of the image url specified in our
-     * array of decoded strings.
-     *
-     * (6) We then create our SoundPackage object and assign the different
-     * fields to the correct values we have decoded.
-     *
-     * (7) Lastly, we add that soundPackage to the list of SoundPackages
-     * currently apart of the current queue.
-     *
-     * @param data
-     */
-    private void receivedSoundPackage(Bundle data) {
-
-
     }
 
     /**
@@ -162,18 +89,20 @@ public class DownStreamReceiver extends GcmListenerService {
      * decoded[3]: sound title
      *
      * @param packageString
-     * @param userPackageString
+     * @param artistPackageString
      * @return decoded (String[])
      */
-    private String[] decodePackage(String packageString, String userPackageString) {
-        String[] decoded = new String[4];
+    private HashMap<String, String> decodePackage(String packageString, String artistPackageString) {
+        HashMap<String, String> decoded = new HashMap<>();
         try {
-            JSONObject jsonPackage = new JSONObject(packageString);
-            JSONObject jsonUserPackage = new JSONObject(userPackageString);
-            decoded[0] = jsonPackage.getString("album_art");
-            decoded[1] = jsonPackage.getString("sound_url");
-            decoded[2] = jsonUserPackage.getString("username");
-            decoded[3] = jsonPackage.getString("title");
+            JSONObject soundPackage = new JSONObject(packageString);
+            JSONObject userPackage = new JSONObject(artistPackageString);
+
+            decoded.put("album_art", soundPackage.getString("album_art"));
+            decoded.put("stream_url", soundPackage.getString("stream_url"));
+            decoded.put("sound_url", soundPackage.getString("sound_url"));
+            decoded.put("username", userPackage.getString("username"));
+            decoded.put("title", soundPackage.getString("title"));
 
         }catch(JSONException e) {
             Log.e("JSON_ERROR", e.getMessage());

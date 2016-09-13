@@ -15,6 +15,7 @@ public class SoundQueue {
     private static boolean HAS_QUEUE = false;
 
     private static ArrayList<String> queue;
+    private static ArrayList<SoundPackage> queue_packages;
     private static int currentSound;
 
     /**
@@ -31,13 +32,15 @@ public class SoundQueue {
         sendToSoundPlayerController(streamUrl);
     }
 
+    public static void addSoundPackage(SoundPackage soundPackage) {
+        queue_packages.add(soundPackage);
+    }
+
     public static void createQueue() {
         queue = new ArrayList<>();
     }
 
     private static void sendToSoundPlayerController(String streamUrl) {
-        //Tell the SoundPlayerController to request the rest of the sound's data
-        SoundPlayerController.requestSoundData(streamUrl);
         //run our checks to see if we need to play this sound right now
         if (firstSongCheck() || soundPlayingCheck()) {
             SoundPlayerController.playCurrentSound();
