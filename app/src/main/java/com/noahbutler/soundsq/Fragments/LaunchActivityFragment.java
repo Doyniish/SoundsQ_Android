@@ -24,27 +24,14 @@ public class LaunchActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View masterView = inflater.inflate(R.layout.fragment_launch_production, container, false);
+        View masterView = inflater.inflate(R.layout.fragment_launch_streamlined, container, false);
 
-        startNewQueueButton = (ImageButton)masterView.findViewById(R.id.start_new_queue);
+        SoundQueue.ID = QueueIDGenerator.generate();
+        SoundQueue.hasQueuedSounds(true);
 
-        startNewQueueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SoundQueue.ID = QueueIDGenerator.generate();
-                SoundQueue.hasQueuedSounds(true);
-
-                Sender sender = new Sender();
-                sender.execute(Sender.RUN_NEW_QID, SoundQueue.ID);
-                getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueFragment()).commit();
-
-            }
-        });
-
-        helpButton = (ImageButton)masterView.findViewById(R.id.help_button);
-
-        loadButton = (ImageButton)masterView.findViewById(R.id.load_button);
-
+        Sender sender = new Sender();
+        sender.execute(Sender.RUN_NEW_QID, SoundQueue.ID);
+        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueFragment()).commit();
 
         return masterView;
 

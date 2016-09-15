@@ -15,7 +15,7 @@ public class SoundQueue {
     private static boolean HAS_QUEUE = false;
 
     private static ArrayList<String> queue;
-    private static ArrayList<SoundPackage> queue_packages;
+    public static ArrayList<SoundPackage> queue_packages;
     private static int currentSound;
 
     /**
@@ -38,6 +38,7 @@ public class SoundQueue {
 
     public static void createQueue() {
         queue = new ArrayList<>();
+        queue_packages = new ArrayList<>();
     }
 
     private static void sendToSoundPlayerController(String streamUrl) {

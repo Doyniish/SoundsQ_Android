@@ -27,33 +27,33 @@ public class QueueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View masterView = inflater.inflate(R.layout.fragment_queue, container, false);
 
-//        /* setup show queue id button */
-//        showQueueID = (ImageButton)masterView.findViewById(R.id.show_queue_id);
-//        showQueueID.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(queueIDDisplay.getVisibility() == View.VISIBLE) {
-//                    queueIDDisplay.setVisibility(View.INVISIBLE);
-//                }else {
-//                    queueIDDisplay.setText(SoundQueue.ID);
-//                    queueIDDisplay.setVisibility(View.VISIBLE);
-//                    Log.e("QUEUE_ID", SoundQueue.ID);
-//                }
-//
-//            }
-//        });
-//
-//        /* setup queue id display area */
-//        queueIDDisplay = (TextView)masterView.findViewById(R.id.queue_id_display);
-//        queueIDDisplay.setVisibility(View.INVISIBLE);
-//
-//        /* setup song list */
-//        Constants.queueListView = (ListView)masterView.findViewById(R.id.queueView);
-//        SoundQueue.createQueue();
-//
-//        /* create our queue list */
-//        Constants.queueListAdapter = new QueueListAdapter((LaunchActivity) this.getActivity());
-//        Constants.queueListView.setAdapter(Constants.queueListAdapter);
+        /* setup show queue id button */
+        showQueueID = (ImageButton)masterView.findViewById(R.id.show_queue_id);
+        showQueueID.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(queueIDDisplay.getVisibility() == View.VISIBLE) {
+                    queueIDDisplay.setVisibility(View.INVISIBLE);
+                }else {
+                    queueIDDisplay.setText(SoundQueue.ID);
+                    queueIDDisplay.setVisibility(View.VISIBLE);
+                    Log.e("QUEUE_ID", SoundQueue.ID);
+                }
+
+            }
+        });
+
+        /* setup queue id display area */
+        queueIDDisplay = (TextView)masterView.findViewById(R.id.queue_id_display);
+        queueIDDisplay.setVisibility(View.INVISIBLE);
+
+        /* setup song list */
+        Constants.queueListView = (ListView)masterView.findViewById(R.id.queueView);
+        SoundQueue.createQueue();
+
+        /* create our queue list */
+        Constants.queueListAdapter = new QueueListAdapter((LaunchActivity) this.getActivity());
+        Constants.queueListView.setAdapter(Constants.queueListAdapter);
 
         return masterView;
     }

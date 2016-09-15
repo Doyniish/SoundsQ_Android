@@ -89,20 +89,20 @@ public class QueueListAdapter extends BaseAdapter {
     private void applySoundPackage(ViewHolder viewHolder, int position) {
 
         /* first we want to make sure the list is not empty */
-        if(Constants.QUEUE_SOUND_PACKAGES.size() != 0) {
+        if(SoundQueue.queue_packages.size() != 0) {
 
             /* apply data to the views TODO: fix to not get packages by positions but by url, will make no mistakes then */
-            if(Constants.QUEUE_SOUND_PACKAGES.get(position).soundName != null) {
-                viewHolder.soundTitle.setText(Constants.QUEUE_SOUND_PACKAGES.get(position).soundName);
+            if(SoundQueue.queue_packages.get(position).soundName != null) {
+                viewHolder.soundTitle.setText(SoundQueue.queue_packages.get(position).soundName);
             }else{
                 viewHolder.soundTitle.setText("Loading...");
             }
 
             /* when ready, apply sound art */
-            if(Constants.QUEUE_SOUND_PACKAGES.get(position).soundImage != null) {
+            if(SoundQueue.queue_packages.get(position).soundImage != null) {
                 InputStream in = null;
                 try {
-                    in = activity.openFileInput(Constants.QUEUE_SOUND_PACKAGES.get(position).soundImage);
+                    in = activity.openFileInput(SoundQueue.queue_packages.get(position).soundImage);
                 }catch (FileNotFoundException e) {
                     Log.d("NO IMAGE", e.getMessage());
                 }
@@ -110,13 +110,13 @@ public class QueueListAdapter extends BaseAdapter {
             }
 
             /* apply artist name to field */
-            if(Constants.QUEUE_SOUND_PACKAGES.get(position).artistName != null) {
-                viewHolder.soundArtistName.setText(Constants.QUEUE_SOUND_PACKAGES.get(position).artistName);
+            if(SoundQueue.queue_packages.get(position).artistName != null) {
+                viewHolder.soundArtistName.setText(SoundQueue.queue_packages.get(position).artistName);
             }else{ //name still loading
                 viewHolder.soundArtistName.setText("Loading...");
             }
 
-            if(Constants.QUEUE_SOUND_PACKAGES.get(position).isPlaying) {
+            if(SoundQueue.queue_packages.get(position).isPlaying) {
                 viewHolder.soundPlayingHighlighter.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.soundPlayingHighlighter.setVisibility(View.INVISIBLE);

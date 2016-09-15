@@ -27,11 +27,6 @@ public class Constants {
      */
     public static String token = null;
     /**
-     * List of SoundPackage objects each associated with a soundcloud.com url in
-     * QUEUE_LIST. The objects hold the name, artist, and image file location of each sound.
-     */
-    public static ArrayList<SoundPackage> QUEUE_SOUND_PACKAGES = new ArrayList<>();
-    /**
      * List view that displays the queue.
      */
     public static ListView queueListView;

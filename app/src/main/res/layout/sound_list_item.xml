@@ -10,10 +10,10 @@
         android:id="@+id/sound_artist_name"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="80dp"
-        android:textSize="12sp"
+        android:layout_marginLeft="150dp"
+        android:textSize="18sp"
         android:textColor="#000000"
         android:textStyle="bold" />
 
@@ -22,25 +22,26 @@
         android:layout_height="wrap_content"
         android:text="This is the title of the song"
         android:id="@+id/sound_title"
-        android:textSize="10sp"
+        android:textSize="13sp"
         android:layout_below="@+id/sound_artist_name"
         android:layout_alignLeft="@+id/sound_artist_name"
         android:layout_alignStart="@+id/sound_artist_name"
-        android:textColor="#111111" />
+        android:textColor="#111111"
+        android:layout_marginTop="5dp" />
 
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:id="@+id/sound_image"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="false"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="3dp"
-        android:layout_marginLeft="15dp" />
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp" />
 
     <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="65dp"
+        android:layout_height="130dp"
         android:id="@+id/soundplaying_listhighlighter"
         android:contextClickable="false"
         android:background="@drawable/list_outliner" />

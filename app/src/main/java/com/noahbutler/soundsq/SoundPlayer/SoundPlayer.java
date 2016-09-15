@@ -124,4 +124,17 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         // signal the UI thread to play the next sound.
         SoundPlayerController.soundPlayerFinished();
     }
+
+    public void stopPlaying() {
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+    }
+
+    public void pause() {
+        mediaPlayer.pause();
+    }
+
+    public void resume() {
+        mediaPlayer.start();
+    }
 }

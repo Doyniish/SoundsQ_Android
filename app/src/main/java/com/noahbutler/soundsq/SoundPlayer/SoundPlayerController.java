@@ -21,16 +21,21 @@ public class SoundPlayerController {
     /*  */
     public static void playNextSound() {
         SoundQueue.nextSong();
-        //TODO: Make sure there is an actual sound to play
-        if (SoundQueue.getCurrentIndex() == SoundQueue.size())
-        soundPlayer = new SoundPlayer(context);
-        soundPlayer.execute(SoundQueue.getCurrentSound());
+        if (SoundQueue.getCurrentIndex() < SoundQueue.size()) {
+            soundPlayer = new SoundPlayer(context);
+            soundPlayer.execute(SoundQueue.getCurrentSound());
+        }
     }
 
     public static void playCurrentSound() {
         SoundQueue.isPlayingSound(true);
         soundPlayer = new SoundPlayer(context);
         soundPlayer.execute(SoundQueue.getCurrentSound());
+    }
+
+    public static void pauseCurrentSound() {
+        SoundQueue.isPlayingSound(false);
+        soundPlayer.pause();
     }
 
     public static void playPreviousSound() {
@@ -41,8 +46,7 @@ public class SoundPlayerController {
     }
 
     public static void playSelectedSound(int index) {
-        //TODO: create signal to stop the sound first
-        soundPlayer = null;
+        soundPlayer.stopPlaying();
         SoundQueue.setIndex(index);
         soundPlayer = new SoundPlayer(context);
         SoundQueue.isPlayingSound(true);
