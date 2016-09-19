@@ -12,7 +12,9 @@ import java.util.ArrayList;
 public class SoundQueue {
 
     public static String ID = null;
+    public static String NAME = null;
     private static boolean HAS_QUEUE = false;
+    public static boolean PLAY = false;
 
     private static ArrayList<String> queue;
     public static ArrayList<SoundPackage> queue_packages;
@@ -43,7 +45,7 @@ public class SoundQueue {
 
     private static void sendToSoundPlayerController(String streamUrl) {
         //run our checks to see if we need to play this sound right now
-        if (firstSongCheck() || soundPlayingCheck()) {
+        if ((firstSongCheck() || soundPlayingCheck()) && PLAY) {
             SoundPlayerController.playCurrentSound();
         }
     }

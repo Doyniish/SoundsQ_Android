@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * Created by NoahButler on 1/6/16.
@@ -65,10 +66,10 @@ public class MessageHandler extends Handler {
         String rawMsg = msg.getData().getString(Messenger.keys[1]);
         Log.e("HANDLER", "raw message: " + rawMsg);
             /* grab the correct sound package */
-        for(int i = 0; i < Constants.QUEUE_SOUND_PACKAGES.size(); i++) {
-            if(Constants.QUEUE_SOUND_PACKAGES.get(i).sound_url.contains(rawMsg.substring(0, rawMsg.lastIndexOf(".")))) {
+        for(int i = 0; i < SoundQueue.queue_packages.size(); i++) {
+            if(SoundQueue.queue_packages.get(i).sound_url.contains(rawMsg.substring(0, rawMsg.lastIndexOf(".")))) {
                     /* update the sound package's sound image file to the downloaded one */
-                Constants.QUEUE_SOUND_PACKAGES.get(i).sendFileLocation(rawMsg);
+                SoundQueue.queue_packages.get(i).sendFileLocation(rawMsg);
             }
         }
             /* update our views to now display the sound image */

@@ -67,9 +67,13 @@ public class LaunchActivity extends Activity {
         inQueue = checkInQueue(getBaseContext().getFilesDir());
         if(inQueue.contentEquals("error")) {
         } else if(inQueue.contentEquals("")) {
+            //queue is originates from this phone, play it
+            SoundQueue.PLAY = true;
             SoundQueue.createQueue();
         } else {
             //TODO: display that we are loading the queue
+            //queue is just being viewed from this phone, just display it.
+            SoundQueue.PLAY = false;
             Sender sender = new Sender();
             sender.execute(Sender.REQUEST_QUEUE, inQueue);
         }
