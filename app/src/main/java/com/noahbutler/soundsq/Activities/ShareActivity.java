@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 
@@ -148,7 +149,7 @@ public class ShareActivity extends Activity {
                         if (sender.execute(Sender.SEND_SOUND, enterQueueID.getText().toString(), sound_link).get()) {
                             Toast.makeText(getBaseContext(), "Sound has been sent!", Toast.LENGTH_LONG).show();
                             //add queue id to cache file for later use.
-                            addQueueIDToCacheFile(enterQueueID.getText().toString());
+                            IO.writeQueueID(getBaseContext().getFilesDir(), enterQueueID.getText().toString());
                             finish();
                         }else{
                             enterQueueID.clearComposingText();
@@ -164,18 +165,4 @@ public class ShareActivity extends Activity {
         });
 
     }
-
-    private void addQueueIDToCacheFile(String queue_id) {
-        File file = new File(getBaseContext().getFilesDir(), Constants.CACHE_FILE);
-        BufferedWriter bufferedWriter;
-        try {
-            bufferedWriter = new BufferedWriter(new FileWriter(file));
-            bufferedWriter.write(queue_id);
-            bufferedWriter.flush();
-            bufferedWriter.close();
-        }catch(IOException e) {
-            Log.d("WRITING_ERROR", e.getMessage());
-        }
-    }
-
 }

@@ -25,19 +25,13 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
 
     public static final String RUN_NEW_QID = "run_new_qid";
     public static final String SEND_SOUND = "send_sound";
-    public static final String SEND_GCM_TOKEN = "send_gcm_token";
     public static final String CHECK_QUEUE = "check_queue";
-    public static final String GET_STREAM_URL = "get_stream_url";
-    public static final String GET_QUEUE = "get_queue";
-    public static final String GET_SOUND_INFO_PACKAGE = "get_sound_info_package";
+    public static final String REQUEST_QUEUE = "request_queue";
     //104.236.237.151
     private static final String SEND_NEW_QID_URL = "http://104.236.237.151/new/queue/";
     private static final String SEND_SOUND_URL   = "http://104.236.237.151/sound/send/";
-    private static final String SEND_GCM_TOKEN_URL = "http://104.236.237.151/token/send/";
     private static final String CHECK_QUEUE_URL = "http://104.236.237.151/queue/exists/";
-    private static final String GET_STREAM_URL_URL = "http://104.236.237.151/stream/url/";
-    private static final String GET_QUEUE_URL = "http://104.236.237.151/get/queue/";
-    private static final String GET_SOUND_INFO_PACKAGE_URL = "http://104.236.237.151/get/sound/package/";
+    private static final String REQUEST_QUEUE_URL = "http://104.236.237.151/request/queue/";
 
     private String queue_id_key = "queue_id";
     private String singleSound_key = "sound_url";
@@ -52,16 +46,10 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 return sendNewQID(strings);
             case SEND_SOUND:
                 return sendSound(strings);
-            case SEND_GCM_TOKEN:
-                return sendGCMToken(strings);
             case CHECK_QUEUE:
                 return checkQueue(strings);
-//            case GET_STREAM_URL:
-//                return getStreamURL(strings);
-            case GET_QUEUE:
-                return getQueue(strings);
-//            case GET_SOUND_INFO_PACKAGE:
-//                return getSoundInfoPackage(strings);
+            case REQUEST_QUEUE:
+                return requestQueue(strings);
             default:
                 Log.e("ERROR", "NOT A METHOD IN STRINGS[0]");
                 return false;
@@ -84,6 +72,22 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
+    private boolean requestQueue(String...strings) {
+        String[] keys = new String[2];
+
+        keys[0] = queue_id_key;
+        keys[1] = user_token_key;
+
+        String[] values = new String[2];
+
+        values[0] = strings[1];
+        values[1] = Constants.token;
+
+        Log.d("Request Queue", "requesting queue...");
+        NetworkGate networkGate = new NetworkGate(REQUEST_QUEUE_URL);
+        return networkGate.post(keys, values);
+    }
+
     private boolean sendSound(String...strings) {
 
         String[] keys = new String[strings.length - 1];
@@ -102,19 +106,6 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
-    private boolean sendGCMToken(String...strings) {
-        String[] keys = new String[strings.length - 1];
-        String[] values = new String[strings.length - 1];
-
-        keys[0] = "token";
-
-        values[0] = strings[1];
-
-        NetworkGate networkGate = new NetworkGate(SEND_GCM_TOKEN_URL);
-        return networkGate.post(keys, values);
-
-    }
-
     /**
      * Method used to check if saved queue is still an active queue
      * @param strings
@@ -127,45 +118,6 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         values[0] = strings[1];
 
         NetworkGate networkGate = new NetworkGate(CHECK_QUEUE_URL);
-        return networkGate.post(keys, values);
-    }
-
-//    private boolean getStreamURL(String...strings) {
-//        String[] keys = new String[2];
-//        String[] values = new String[2];
-//
-//        keys[0] = queue_id_key;
-//        keys[1] = singleSound_key;
-//
-//        values[0] = strings[1];
-//        values[1] = strings[2];
-//
-//        NetworkGate networkGate = new NetworkGate(GET_STREAM_URL_URL);
-//        return networkGate.post(keys, values);
-//    }
-
-    private boolean getSoundInfoPackage(String...strings) {
-        String[] keys = new String[2];
-        String[] values = new String[2];
-
-        keys[0] = queue_id_key;
-        keys[1] = singleSound_key;
-
-        values[0] = strings[1];
-        values[1] = strings[2];
-
-        NetworkGate networkGate = new NetworkGate(GET_SOUND_INFO_PACKAGE_URL);
-        return networkGate.post(keys, values);
-    }
-
-    private boolean getQueue(String...strings) {
-        String[] keys = new String[1];
-        String[] values = new String[1];
-
-        keys[0] = queue_id_key;
-        values[0] = strings[1];
-
-        NetworkGate networkGate = new NetworkGate(GET_QUEUE_URL);
         return networkGate.post(keys, values);
     }
 

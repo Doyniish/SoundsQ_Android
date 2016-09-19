@@ -3,6 +3,7 @@ package com.noahbutler.soundsq.SoundPlayer;
 import android.content.Context;
 
 import java.io.File;
+import java.util.HashMap;
 
 
 /**
@@ -64,6 +65,15 @@ public class SoundPackage {
      */
     public void sendFileLocation(String fileLocation) {
         soundImage = fileLocation;
+    }
+
+    public static SoundPackage createSoundPackage(HashMap<String, String> data) {
+        SoundPackage soundPackage = new SoundPackage();
+        soundPackage.sound_url = data.get("sound_url");
+        soundPackage.artistName = data.get("username");
+        soundPackage.soundName = data.get("title");
+
+        return soundPackage;
     }
 
 }

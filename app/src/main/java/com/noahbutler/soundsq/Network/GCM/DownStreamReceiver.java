@@ -35,10 +35,15 @@ public class DownStreamReceiver extends GcmListenerService {
     private static final String TAG = "DownStreamReceiver";
     private static final String SP_KEY = "sound_package";
     private static final String A_KEY = "artist";
+    private static final String Q_KEY = "queue";
     @Override
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "...RECEIVED...");
-        receivedSound(data);
+        if(data.keySet().contains(SP_KEY)) {
+            receivedSound(data);
+        }else if(data.keySet().contains(Q_KEY)) {
+            receivedQueue(data);
+        }
     }
 
     /**
@@ -65,17 +70,16 @@ public class DownStreamReceiver extends GcmListenerService {
         soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage.get("album_art"), filename);
 
         /* (6) create a new sound package to hold the data */
-        SoundPackage soundPackage = new SoundPackage();
-        soundPackage.sound_url = decodedPackage.get("sound_url");
-        soundPackage.artistName = decodedPackage.get("username");
-        soundPackage.soundName = decodedPackage.get("title");
+        SoundPackage soundPackage = SoundPackage.createSoundPackage(decodedPackage);
 
         /* (7) add the SoundPackage object to the list */
         SoundQueue.addSoundPackage(soundPackage);
-        Log.d("SOUND PACKAGE", "Sound package added");
 
         SoundQueue.addSound(decodedPackage.get("stream_url"));
-        Log.d(TAG, "finished receiving sound...");
+    }
+
+    private void receivedQueue(Bundle data) {
+        
     }
 
     /**

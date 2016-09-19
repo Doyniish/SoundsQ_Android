@@ -16,17 +16,24 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.LaunchActivityFragment;
 import com.noahbutler.soundsq.Fragments.QueueFragment;
+import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
+import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 import com.noahbutler.soundsq.ThreadUtils.MessageHandler;
+
+import java.io.File;
 
 
 public class LaunchActivity extends Activity {
 
     BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private String inQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +62,18 @@ public class LaunchActivity extends Activity {
         };
 
         register();
-        SoundQueue.createQueue();
+
+        //check if user has already sent songs to a queue. If so, load that queue
+        inQueue = checkInQueue(getBaseContext().getFilesDir());
+        if(inQueue.contentEquals("error")) {
+        } else if(inQueue.contentEquals("")) {
+            SoundQueue.createQueue();
+        } else {
+            //TODO: display that we are loading the queue
+            Sender sender = new Sender();
+            sender.execute(Sender.REQUEST_QUEUE, inQueue);
+        }
+
 
         /* hand of to Launch Activity Fragment */
         getFragmentManager().beginTransaction().replace(R.id.main_content_area, new LaunchActivityFragment()).commit();
@@ -130,5 +148,9 @@ public class LaunchActivity extends Activity {
             return false;
         }
         return true;
+    }
+
+    private String checkInQueue(File directory) {
+        return IO.readQueueID(directory);
     }
 }
