@@ -25,7 +25,12 @@ public class Messenger {
     public static String[] keys = {
             "update",
             "sound_image_location",
-            "play_sound"
+            "loading_success"
+    };
+
+    public static String[] notExists = {
+            "share",
+            "request"
     };
 
     /**
@@ -66,19 +71,18 @@ public class Messenger {
         Constants.handler.sendMessage(message);
     }
 
-    /**
-     * Gateway method,
-     * Allows async tasks to affect objects belonging to the
-     * UI thread. Look at MessageHandler for more details
-     *
-     * Associated with keys[2]
-     */
-    public void requestNextPlay() {
+    public void loadingSuccess() {
         init();
-        //send url from queue list
-        bundle.putString(keys[2], "next_sound_please");
+        bundle.putString(keys[2], "loading_success");
         message.setData(bundle);
         Constants.handler.sendMessage(message);
     }
 
+    public void queueNotExists(String type) {
+        init();
+        bundle.putString(type, "does not exist");
+        message.setData(bundle);
+        Constants.handler.sendMessage(message);
+
+    }
 }

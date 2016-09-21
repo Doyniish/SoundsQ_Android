@@ -1,15 +1,21 @@
 package com.noahbutler.soundsq.Activities;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.Fragments.AutoSendDialogFragment;
 import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
@@ -27,6 +33,10 @@ import java.util.concurrent.ExecutionException;
  */
 public class ShareActivity extends Activity {
 
+    EditText enterQueueID;
+    String soundLink;
+    String readQueueID;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +48,8 @@ public class ShareActivity extends Activity {
         String action = intent.getAction();
         String type = intent.getType();
 
+
+
         if(Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 handleSendSound(intent); // Handle text being sent
@@ -47,122 +59,88 @@ public class ShareActivity extends Activity {
 
     private void handleSendSound(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+
         if (sharedText != null) {
-            String sound_link = sharedText.substring(sharedText.lastIndexOf("http"));
-            /* remove https and replace with http */
-            sound_link = sound_link.substring(5);
-            sound_link = "http" + sound_link;
-            showAddQueueUI(sound_link);
+            soundLink = sharedText.substring(sharedText.lastIndexOf("http"));
+            cleanLink();
 
-            /**
-            Log.d("SOUND", "link: " + sound_link);
+            /* Display QR Code Scanner and Queue ID TextInput */
+            displayAddQueueID();
 
-             check for existing queue id
-            String cached_queue_id = null;
+            //check for existing queue id
+            readQueueID = checkQueueFile();
 
-            cached_queue_id = checkQueueLink();
-            /* check for errors or if it actually exists
-            if(cached_queue_id != null) {
-
-                /* if the queue has been deleted by the queue owner
-                if(cached_queue_id.contentEquals(Constants.DELETED_QUEUE)) {
-                    Toast.makeText(getBaseContext(), "Sorry, but your saved queue has been deleted...", Toast.LENGTH_LONG).show();
-                    showAddQueueUI(sound_link);
-
-                }else{ // we have the go ahead to send the sound to the queue cached by the user.
-
-                    /* create our sender and send it to the server
-                    Sender sender = new Sender();
-                    sender.execute(Sender.SEND_SOUND, cached_queue_id, sound_link);
-
-                }
-
+            /* check for errors or if it actually exists */
+            if(readQueueID != null) {
+                displayAutoSend();
             }else{ //no cached queue id
                 Toast.makeText(getBaseContext(), "Join a SoundQ session!", Toast.LENGTH_LONG).show();
-                showAddQueueUI(sound_link);
             }
-
-            */
         }
     }
 
-    /**
-     * This method is designed to check for the file that saves the current queue id that the user
-     * is linked to, checks if it is still a queue and if both check off, then the song is send to
-     * the queue id that this method returns
-     * @return
-     */
-    private String checkQueueLink() {
+    private void cleanLink() {
+        /* remove https and replace with http */
+        soundLink = soundLink.substring(5);
+        soundLink = "http" + soundLink;
+    }
+
+    private String checkQueueFile() {
         /* check for queue id saved on phone */
-
-        StringBuilder stringBuilder = new StringBuilder();
-        /* open cache file */
-        File file = new File(getBaseContext().getFilesDir(), Constants.CACHE_FILE);
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(file));
-            String raw;
-            while((raw = bufferedReader.readLine()) != null) {
-                stringBuilder.append(raw);
-                Log.d("FILE", raw);
-            }
-            bufferedReader.close();
-        }catch(IOException e){
-            Log.d("FILE_READ_ERROR", e.getMessage());
-        }
-
+        String readQueueID = IO.readQueueID(getBaseContext().getFilesDir());
         /* look to see if anything in the file was read in */
-        Log.e("R", stringBuilder.toString());
-        if(stringBuilder.toString().contentEquals("")) {
-            return null;
-        }else{//check the saved queue id on the database
-            Sender sender = new Sender();
-            try {
-                if(sender.execute(Sender.CHECK_QUEUE, stringBuilder.toString()).get()) {//queue is active, send song to that list
-                    return stringBuilder.toString();
-                }else{ // queue is inactive/not in the database
-                    return Constants.DELETED_QUEUE;
-                }
-            }catch(InterruptedException | ExecutionException e) {
-                Log.d("ERROR", e.getMessage());
-            }
-
-            return stringBuilder.toString();
+        Log.e("R", readQueueID);
+        if(!readQueueID.contentEquals("")) {
+            return readQueueID;
         }
+        return null;
     }
 
-    private void showAddQueueUI(final String sound_link) {
-        Button joinQueue;
-        final EditText enterQueueID;
+    private void displayAutoSend() {
+        AutoSendDialogFragment autoSendDialogFragment = new AutoSendDialogFragment();
 
-        setContentView(R.layout.activity_share);
+        //don't forget to set params
+        autoSendDialogFragment.readQueueID = readQueueID;
+        autoSendDialogFragment.soundLink = soundLink;
 
-        joinQueue = (Button)findViewById(R.id.join_queue_button);
+        autoSendDialogFragment.show(getFragmentManager(), "");
+    }
+
+    private void displayAddQueueID() {
+        //TODO: display QR Code Scanner
+
         enterQueueID = (EditText)findViewById(R.id.enter_queue_id_join);
-
-        joinQueue.setOnClickListener(new View.OnClickListener() {
+        enterQueueID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Sender sender = new Sender();
-                if(!enterQueueID.getText().toString().equals("")) {
-                    try {
-                        if (sender.execute(Sender.SEND_SOUND, enterQueueID.getText().toString(), sound_link).get()) {
-                            Toast.makeText(getBaseContext(), "Sound has been sent!", Toast.LENGTH_LONG).show();
-                            //add queue id to cache file for later use.
-                            IO.writeQueueID(getBaseContext().getFilesDir(), enterQueueID.getText().toString());
-                            finish();
-                        }else{
-                            enterQueueID.clearComposingText();
-                            Toast.makeText(getBaseContext(), "Doesn't look like the enter ID exists, try again please!", Toast.LENGTH_LONG).show();
-                        }
-                    }catch(InterruptedException | ExecutionException e) {
-                        Log.d("ERROR", e.getMessage());
-                    }
-                }else{
-
-                }
+                AutoSendChecker autoSendChecker = new AutoSendChecker();
+                autoSendChecker.start();
             }
         });
+    }
 
+    public static void failedShare() {
+        //TODO: display failed share alert
+    }
+
+    class AutoSendChecker extends Thread {
+
+        @Override
+        public void run() {
+            super.run();
+
+            //wait for the user to enter in a valid id
+            while(enterQueueID.getText().length() < Constants.QUEUE_ID_LENGTH) {}
+
+            //auto send
+            Sender.createExecute(Sender.SEND_SOUND, enterQueueID.getText().toString(), soundLink);
+            Toast.makeText(getBaseContext(), "Sound has been sent!", Toast.LENGTH_LONG).show();
+
+            //add queue id to cache file for later use.
+            IO.writeQueueID(getBaseContext().getFilesDir(), enterQueueID.getText().toString());
+
+            //return to SoundCloud
+            finish();
+        }
     }
 }

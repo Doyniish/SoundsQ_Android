@@ -1,5 +1,7 @@
 package com.noahbutler.soundsq.SoundPlayer;
 
+import com.noahbutler.soundsq.Network.Sender;
+import com.noahbutler.soundsq.QueueIDGenerator;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayer;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.ThreadUtils.Messenger;
@@ -41,6 +43,10 @@ public class SoundQueue {
     public static void createQueue() {
         queue = new ArrayList<>();
         queue_packages = new ArrayList<>();
+
+        genQueueID();
+
+        Sender.createExecute(Sender.RUN_NEW_QID, SoundQueue.ID);
     }
 
     private static void sendToSoundPlayerController(String streamUrl) {
@@ -102,4 +108,11 @@ public class SoundQueue {
         return QUEUED_SOUNDS;
     }
 
+    public static void genQueueID() {
+        SoundQueue.ID = QueueIDGenerator.generate();
+    }
+
+    public static void close() {
+        Sender.createExecute(Sender.CLOSE_QUEUE, ID);
+    }
 }

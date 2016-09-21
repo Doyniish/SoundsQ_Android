@@ -22,10 +22,10 @@ public class SoundPackage {
      */
     public String soundImage;
     /**
-     * Name of the sound. Set when our server response with
+     * Title of the sound. Set when our server response with
      * the sound data from sound cloud's api
      */
-    public String soundName;
+    public String title;
     /**
      * Name of the artist. Set when our server response with
      * the sound data from sound cloud's api
@@ -71,7 +71,7 @@ public class SoundPackage {
         SoundPackage soundPackage = new SoundPackage();
         soundPackage.sound_url = data.get("sound_url");
         soundPackage.artistName = data.get("username");
-        soundPackage.soundName = data.get("title");
+        soundPackage.title = data.get("title");
 
         return soundPackage;
     }

@@ -4,7 +4,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.noahbutler.soundsq.Activities.ShareActivity;
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.Fragments.QueueBallFragment;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
@@ -26,9 +28,15 @@ public class MessageHandler extends Handler {
         }else if(msg.getData().containsKey(Messenger.keys[1])) { // sound art has finished downloading
             signal_soundPackageDownloaded(msg);
 
-        }else if(msg.getData().containsKey(Messenger.keys[2])) { // next song needs to be played
-            //url sent to signal_playSound(String url)
-            signal_requestToController(msg.getData().getString(Messenger.keys[2]));
+        }else if(msg.getData().containsKey(Messenger.keys[3])) {
+            signal_LoadingSuccess();
+
+        }else if(msg.getData().containsKey(Messenger.notExists[0])) {
+            signal_ShareFail();
+
+        }else if(msg.getData().containsKey(Messenger.notExists[1])) {
+            signal_requestFail();
+
         }
     }
 
@@ -77,11 +85,15 @@ public class MessageHandler extends Handler {
         Constants.queueListAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * Associated with Messenger.keys[2]
-     * This is signaled by a SoundPlayer object when a sound is finished playing
-     */
-    private void signal_requestToController(String url) {
-        SoundPlayerController.playNextSound();
+    private void signal_LoadingSuccess() {
+        QueueBallFragment.loadingSuccess();
+    }
+
+    private void signal_ShareFail() {
+        ShareActivity.failedShare();
+    }
+
+    private void signal_requestFail() {
+        QueueBallFragment.failedRequest();
     }
 }

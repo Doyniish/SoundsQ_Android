@@ -18,9 +18,9 @@ public class Constants {
      */
     public static final String CACHE_FILE = "soundQ_queue_id_cache";
     /**
-     * Key string used to signal the cached id is no longer in use.
+     * Amount of characters in a QUEUE ID
      */
-    public static final String DELETED_QUEUE = "queue_deleted";
+    public static final int QUEUE_ID_LENGTH = 5;
     /**
      * Token of the current phone, given by GCM (Google Cloud Messaging). Used to send
      * down stream messages from our server to the correct phone.

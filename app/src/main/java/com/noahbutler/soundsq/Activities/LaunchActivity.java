@@ -10,29 +10,22 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Fragments.LaunchActivityFragment;
-import com.noahbutler.soundsq.Fragments.QueueFragment;
-import com.noahbutler.soundsq.IO.IO;
+import com.noahbutler.soundsq.Fragments.QueueBallFragment;
 import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
-import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 import com.noahbutler.soundsq.ThreadUtils.MessageHandler;
 
-import java.io.File;
-
-
 public class LaunchActivity extends Activity {
 
     BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-    private String inQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +33,7 @@ public class LaunchActivity extends Activity {
         setContentView(R.layout.activity_launch);
 
         /* Sound Player Controller Creator */
-        SoundPlayerController.setContext(getBaseContext());
-
-        /* check to see if we need to display queue that is running */
-        if(savedInstanceState != null && savedInstanceState.containsKey("show_queue")) {
-            if(savedInstanceState.getBoolean("show_queue")) { // app needs to go directly to the queue that is playing
-                getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueFragment()).commit();
-            }
-        }
+        SoundPlayerController.createController(getBaseContext());
 
         /* create our thread handler */
         Constants.handler = new MessageHandler();
@@ -63,26 +49,8 @@ public class LaunchActivity extends Activity {
 
         register();
 
-        //check if user has already sent songs to a queue. If so, load that queue
-        inQueue = checkInQueue(getBaseContext().getFilesDir());
-        if(inQueue.contentEquals("error")) {
-        } else if(inQueue.contentEquals("")) {
-            //queue is originates from this phone, play it
-            SoundQueue.PLAY = true;
-            SoundQueue.createQueue();
-        } else {
-            //TODO: display that we are loading the queue
-            //queue is just being viewed from this phone, just display it.
-            SoundQueue.PLAY = false;
-            Sender sender = new Sender();
-            sender.execute(Sender.REQUEST_QUEUE, inQueue);
-        }
-
-
-        /* hand of to Launch Activity Fragment */
-        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new LaunchActivityFragment()).commit();
-        /* Test queue fragment */
-        //getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueFragment()).commit();
+        /* hand of to Queue Ball Fragment */
+        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueBallFragment()).commit();
     }
 
     private void register() {
@@ -146,15 +114,12 @@ public class LaunchActivity extends Activity {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
             } else {
+                Toast.makeText(getBaseContext(), "Play Services required...closing now", Toast.LENGTH_LONG);
                 Log.i("LaunchActivity", "This device is not supported.");
                 finish();
             }
             return false;
         }
         return true;
-    }
-
-    private String checkInQueue(File directory) {
-        return IO.readQueueID(directory);
     }
 }

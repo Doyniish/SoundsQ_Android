@@ -25,6 +25,8 @@ public class QueueListAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private LaunchActivity activity;
 
+    private static String
+
     public QueueListAdapter(LaunchActivity activity) {
         this.activity = activity;
         layoutInflater = activity.getLayoutInflater();
@@ -57,8 +59,6 @@ public class QueueListAdapter extends BaseAdapter {
             viewHolder.soundImage  = (ImageView) convertView.findViewById(R.id.album_art);
             viewHolder.soundTitle       = (TextView)convertView.findViewById(R.id.sound_title);
             viewHolder.soundArtistName  = (TextView)convertView.findViewById(R.id.sound_artist_name);
-            viewHolder.soundPlayingHighlighter = (ImageView)convertView.findViewById(R.id.soundplaying_listhighlighter);
-
 
             /* apply to original view */
             convertView.setTag(viewHolder);
@@ -78,12 +78,11 @@ public class QueueListAdapter extends BaseAdapter {
         TextView soundTitle;
         TextView soundArtistName;
         ImageView soundImage;
-        ImageView soundPlayingHighlighter;
 
     }
 
     /**
-     * This method applies the certain SoundPackage from QUEUE_SOUND_PACKAGES
+     * This method applies the certain SoundPackage
      * to the correct view on the list.
      */
     private void applySoundPackage(ViewHolder viewHolder, int position) {
@@ -91,39 +90,35 @@ public class QueueListAdapter extends BaseAdapter {
         /* first we want to make sure the list is not empty */
         if(SoundQueue.queue_packages.size() != 0) {
 
-            /* apply data to the views TODO: fix to not get packages by positions but by url, will make no mistakes then */
-            if(SoundQueue.queue_packages.get(position).soundName != null) {
-                viewHolder.soundTitle.setText(SoundQueue.queue_packages.get(position).soundName);
+            /* apply title */
+            if(SoundQueue.queue_packages.get(position).title != null) {
+                viewHolder.soundTitle.setText(SoundQueue.queue_packages.get(position).title);
             }else{
-                viewHolder.soundTitle.setText("Loading...");
+                viewHolder.soundTitle.setText("Loading Title...");
             }
 
-            /* when ready, apply sound art */
+            /* apply sound art */
             if(SoundQueue.queue_packages.get(position).soundImage != null) {
                 InputStream in = null;
                 try {
                     in = activity.openFileInput(SoundQueue.queue_packages.get(position).soundImage);
+                    viewHolder.soundImage.setImageBitmap(BitmapFactory.decodeStream(in));
                 }catch (FileNotFoundException e) {
                     Log.d("NO IMAGE", e.getMessage());
                 }
-                viewHolder.soundImage.setImageBitmap(BitmapFactory.decodeStream(in));
+
             }
 
-            /* apply artist name to field */
+            /* apply artist */
             if(SoundQueue.queue_packages.get(position).artistName != null) {
                 viewHolder.soundArtistName.setText(SoundQueue.queue_packages.get(position).artistName);
             }else{ //name still loading
-                viewHolder.soundArtistName.setText("Loading...");
+                viewHolder.soundArtistName.setText("Loading Artist...");
             }
 
-            if(SoundQueue.queue_packages.get(position).isPlaying) {
-                viewHolder.soundPlayingHighlighter.setVisibility(View.VISIBLE);
-            }else{
-                viewHolder.soundPlayingHighlighter.setVisibility(View.INVISIBLE);
-            }
         }else{ // list is empty, just put in static text for now.
-            viewHolder.soundTitle.setText("Loading...");
-            viewHolder.soundArtistName.setText("Loading...");
+            viewHolder.soundTitle.setText("Loading Title...");
+            viewHolder.soundArtistName.setText("Loading Artist...");
         }
 
     }

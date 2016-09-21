@@ -1,10 +1,14 @@
 package com.noahbutler.soundsq.Network;
 
 import android.app.DownloadManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
+import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 /**
  * Created by NoahButler on 9/6/15.
@@ -27,16 +32,28 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     public static final String SEND_SOUND = "send_sound";
     public static final String CHECK_QUEUE = "check_queue";
     public static final String REQUEST_QUEUE = "request_queue";
+    public static final String CLOSE_QUEUE = "close_queue";
     //104.236.237.151
     private static final String SEND_NEW_QID_URL = "http://104.236.237.151/new/queue/";
     private static final String SEND_SOUND_URL   = "http://104.236.237.151/sound/send/";
     private static final String CHECK_QUEUE_URL = "http://104.236.237.151/queue/exists/";
     private static final String REQUEST_QUEUE_URL = "http://104.236.237.151/request/queue/";
+    private static final String CLOSE_QUEUE_URL = "http://104.236.237.151/close/queue/";
 
     private String queue_id_key = "queue_id";
     private String singleSound_key = "sound_url";
     private String user_token_key = "user_token";
 
+    private static Context context;
+
+    public static void setContext(Context c) {
+        context = c;
+    }
+
+    public static void createExecute(String...strings) {
+        Sender sender = new Sender();
+        sender.execute(strings);
+    }
 
     @Override
     protected Boolean doInBackground(String...strings) {
@@ -50,6 +67,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 return checkQueue(strings);
             case REQUEST_QUEUE:
                 return requestQueue(strings);
+            case CLOSE_QUEUE:
+                return closeQueue(strings);
             default:
                 Log.e("ERROR", "NOT A METHOD IN STRINGS[0]");
                 return false;
@@ -69,6 +88,17 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         //Send the information to the server
         Log.d("SEND NEW QID", SEND_NEW_QID_URL);
         NetworkGate networkGate = new NetworkGate(SEND_NEW_QID_URL);
+        return networkGate.post(keys, values);
+    }
+
+    private boolean closeQueue(String...strings) {
+        String[] keys = new String[1];
+        String[] values = new String[1];
+
+        keys[0] = queue_id_key;
+        values[0] = SoundQueue.ID;
+
+        NetworkGate networkGate = new NetworkGate(CLOSE_QUEUE_URL);
         return networkGate.post(keys, values);
     }
 
@@ -134,9 +164,16 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         URL url;
         HttpURLConnection urlConnection;
         String sendingToURL;
+        HashMap<Integer, String> errorDisplayMap;
 
         public NetworkGate(String sendingToURL) {
             this.sendingToURL = sendingToURL;
+            createErrorDisplayMap();
+        }
+
+        private void createErrorDisplayMap() {
+            errorDisplayMap.put(404, "A queue with that ID was not found...");
+            errorDisplayMap.put(206, "The entered ID was not a valid one...");
         }
 
         public boolean post(String[] keys, String[] values) {
@@ -180,12 +217,30 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 Log.d("RESPONSE MESSAGE", responseMsg);
 
                 /* check the response for error */
-                if(responseCode == 500) {
-                    return false;
-                }else{
-                    return true;
+                if(errorDisplayMap.keySet().contains(responseCode)) {
+                    Toast.makeText(context, errorDisplayMap.get(responseCode), Toast.LENGTH_LONG).show();
                 }
 
+                Messenger messenger = new Messenger();
+                switch(responseCode) {
+                    case 302:
+                        SoundQueue.createQueue();
+                        break;
+                    case 201:
+                        messenger.loadingSuccess();
+                        break;
+                    case 205:
+                        //TODO: queue deleted successfully
+                        //TODO: delete queue
+                        break;
+                    case 204:
+                        //TODO: queue id doesn't exist | SoundCloud Share
+                        messenger.queueNotExists(Messenger.notExists[0]);
+                        break;
+                    case 404:
+                        //TODO: queue id doesn't exist | Request Queue
+                        messenger.queueNotExists(Messenger.notExists[1]);
+                }
             }catch(IOException e) {
                 Log.e("ERROR","something fucked up in the post method of the NetworkGate class");
                 Log.e("ERROR", e.toString());

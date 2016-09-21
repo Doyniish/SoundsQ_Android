@@ -13,15 +13,19 @@ public class SoundPlayerController {
     private static SoundPlayer soundPlayer;
     private static Context context;
 
-    public static void setContext(Context c) {
+    private static void setContext(Context c) {
         context = c;
     }
 
+    public static void createController(Context c) {
+        setContext(c);
+    }
 
     /*  */
     public static void playNextSound() {
         SoundQueue.nextSong();
         if (SoundQueue.getCurrentIndex() < SoundQueue.size()) {
+            SoundQueue.isPlayingSound(true);
             soundPlayer = new SoundPlayer(context);
             soundPlayer.execute(SoundQueue.getCurrentSound());
         }
