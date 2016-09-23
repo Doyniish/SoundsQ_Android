@@ -173,8 +173,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     }
 
     private boolean senderGPS(String...strings) {
-        String[] keys = new String[2];
-        String[] values = new String[2];
+        String[] keys = new String[3];
+        String[] values = new String[3];
 
         keys[0] = "to";
         keys[1] = lat_key;
@@ -189,8 +189,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     }
 
     private boolean queueGPS(String...strings) {
-        String[] keys = new String[2];
-        String[] values = new String[2];
+        String[] keys = new String[3];
+        String[] values = new String[3];
 
         keys[0] = queue_id_key;
         keys[1] = lat_key;

@@ -1,13 +1,16 @@
 package com.noahbutler.soundsq.GPS;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,19 +23,22 @@ import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 /**
  * Created by gildaroth on 9/21/16.
  */
-public class GPSReceiver extends FragmentActivity implements
+public class GPSReceiver implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
+    private Activity activity;
 
+    private static final int PERMISSION_ACCESS_COARSE_LOCATION = 1;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private boolean isSharing;
     public static final String TAG = GPSReceiver.class.getSimpleName();
 
-    public void initialize(boolean isSharing) {
-        googleApiClient = new GoogleApiClient.Builder(this)
+    public void initialize(Activity activity, boolean isSharing) {
+        Log.d(TAG, "Initializing GPS");
+        googleApiClient = new GoogleApiClient.Builder(activity)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -43,7 +49,14 @@ public class GPSReceiver extends FragmentActivity implements
                 .setInterval(120 * 1000)
                 .setFastestInterval(60 * 1000);
 
+        this.activity = activity;
         this.isSharing = isSharing;
+
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION },
+                    PERMISSION_ACCESS_COARSE_LOCATION);
+        }
     }
 
     @Override
@@ -53,22 +66,28 @@ public class GPSReceiver extends FragmentActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
-        if (location == null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
+            if (location == null) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+            } else {
+                handleNewLocation(location);
             }
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-        }else{
-            handleNewLocation(location);
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_ACCESS_COARSE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // All good!
+                } else {
+                    Toast.makeText(activity, "Need your location!", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
         }
     }
 
@@ -82,7 +101,7 @@ public class GPSReceiver extends FragmentActivity implements
         if (connectionResult.hasResolution()) {
             try {
                 // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                connectionResult.startResolutionForResult(activity, CONNECTION_FAILURE_RESOLUTION_REQUEST);
             } catch (IntentSender.SendIntentException e) {
                 e.printStackTrace();
             }
@@ -91,15 +110,11 @@ public class GPSReceiver extends FragmentActivity implements
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    public void onResume() {
         googleApiClient.connect();
     }
 
-    @Override
     public void onPause() {
-        super.onPause();
         if(googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
             googleApiClient.disconnect();

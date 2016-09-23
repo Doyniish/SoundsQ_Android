@@ -29,8 +29,6 @@ public class LaunchActivity extends Activity {
     BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private GPSReceiver gpsReceiver;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +52,7 @@ public class LaunchActivity extends Activity {
         if (checkPlayServices()) {
             Log.e("LaunchActivity", "starting reg intent");
             Constants.token = FirebaseInstanceId.getInstance().getToken();
-            Log.e("LaunchActivity", "handing off");
+            Log.e("LaunchActivity", "TOKEN: " + Constants.token);
         }
     }
 

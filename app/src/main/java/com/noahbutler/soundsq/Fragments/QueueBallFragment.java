@@ -58,12 +58,12 @@ public class QueueBallFragment extends Fragment {
             Log.d("ERROR READING", "error reading file to check for queue id/LaunchActivity");
             //file read didn't work, just start new queue for now
 
-        } else if(inQueue.contentEquals("")) {
+        } else if(inQueue.contentEquals("nofile")) {
             //queue originates from this phone, play it
 
             /* Initiate GPS functionality */
             gpsReceiver = new GPSReceiver();
-            gpsReceiver.initialize(false); //initialized from playing phone
+            gpsReceiver.initialize(getActivity(), false); //initialized from playing phone
 
             SoundQueue.PLAY = true;
             SoundQueue.createQueue();
@@ -80,6 +80,24 @@ public class QueueBallFragment extends Fragment {
         }
 
         return masterView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        gpsReceiver.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        gpsReceiver.onPause();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        gpsReceiver.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /**

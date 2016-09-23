@@ -54,7 +54,7 @@ public class IO {
             bufferedReader.close();
         }catch(IOException e){
             Log.d("FILE_READ_ERROR", e.getMessage());
-            return "error";
+            return "nofile";
         }
 
         /* look to see if anything in the file was read in */

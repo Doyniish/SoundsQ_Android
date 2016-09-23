@@ -66,7 +66,7 @@ public class ShareActivity extends Activity {
 
         /* Send GPS to find local Queues */
         GPSReceiver gpsReceiver = new GPSReceiver();
-        gpsReceiver.initialize(true); //send GPS to find local queues
+        gpsReceiver.initialize(this, true); //send GPS to find local queues
         /* local queues sent to DownStreamReceiver from server */
     }
 
