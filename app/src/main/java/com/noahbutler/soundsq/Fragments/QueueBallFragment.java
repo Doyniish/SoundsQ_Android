@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
@@ -55,7 +56,12 @@ public class QueueBallFragment extends Fragment {
             //file read didn't work, just start new queue for now
 
         } else if(inQueue.contentEquals("")) {
-            //queue is originates from this phone, play it
+            //queue originates from this phone, play it
+
+            /* Initiate GPS functionality */
+            gpsReceiver = new GPSReceiver();
+            gpsReceiver.initialize(false); //initialized from playing phone
+
             SoundQueue.PLAY = true;
             SoundQueue.createQueue();
             //TODO: Display after we know the creation was successful

@@ -13,7 +13,9 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
+import com.noahbutler.soundsq.Activities.ShareActivity;
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.Fragments.LocalQueuesFragment;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
 import com.noahbutler.soundsq.QRCode.QRCodeDecompiler;
 import com.noahbutler.soundsq.R;
@@ -24,7 +26,10 @@ import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by NoahButler on 9/18/15.
@@ -36,6 +41,8 @@ public class DownStreamReceiver extends GcmListenerService {
     private static final String A_KEY = "artist";
     private static final String S_KEY = "size";
     private static final String QR_KEY = "qr_code";
+    private static final String L_KEY = "local_queue";
+
     @Override
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "...RECEIVED...");
@@ -45,6 +52,8 @@ public class DownStreamReceiver extends GcmListenerService {
             receivedQueue(data);
         }else if(data.keySet().contains(QR_KEY)) {
             receivedQRCode(data);
+        }else if(data.keySet().contains(L_KEY)) {
+            receivedLocalQueues(data);
         }
     }
 
@@ -83,6 +92,24 @@ public class DownStreamReceiver extends GcmListenerService {
 
         }
 
+    }
+
+    private void receivedLocalQueues(Bundle data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data.getString(L_KEY));
+            Iterator<String> keys = jsonObject.keys();
+
+            //create list of key strings
+            while(keys.hasNext()) {
+                LocalQueuesFragment.localQueueList.put(keys.next(), jsonObject.getString(keys.next()));
+            }
+
+            //notify ShareActivity that it can display the list.
+            ShareActivity.showList();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void receivedQRCode(Bundle data) {

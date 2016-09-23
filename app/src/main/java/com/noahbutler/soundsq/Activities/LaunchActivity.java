@@ -16,6 +16,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.QueueBallFragment;
+import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
@@ -26,6 +27,8 @@ public class LaunchActivity extends Activity {
 
     BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private GPSReceiver gpsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +56,7 @@ public class LaunchActivity extends Activity {
         getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueBallFragment()).commit();
     }
 
-    private void register() {
+    public void register() {
         /* Start IntentService to register this application with GCM. */
         if (checkPlayServices()) {
             Log.e("LaunchActivity", "starting reg intent");

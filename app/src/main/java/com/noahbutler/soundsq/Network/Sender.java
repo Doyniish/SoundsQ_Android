@@ -33,16 +33,22 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     public static final String CHECK_QUEUE = "check_queue";
     public static final String REQUEST_QUEUE = "request_queue";
     public static final String CLOSE_QUEUE = "close_queue";
+    public static final String SENDER_GPS = "sender_gps";
+    public static final String QUEUE_GPS = "queue_gps";
     //104.236.237.151
     private static final String SEND_NEW_QID_URL = "http://104.236.237.151/new/queue/";
     private static final String SEND_SOUND_URL   = "http://104.236.237.151/sound/send/";
     private static final String CHECK_QUEUE_URL = "http://104.236.237.151/queue/exists/";
     private static final String REQUEST_QUEUE_URL = "http://104.236.237.151/request/queue/";
     private static final String CLOSE_QUEUE_URL = "http://104.236.237.151/close/queue/";
+    private static final String SENDER_GPS_URL = "http://104.236.237.151/gps/sender/";
+    private static final String QUEUE_GPS_URL = "http://104.236.237.151/gps/queue/";
 
     private String queue_id_key = "queue_id";
     private String singleSound_key = "sound_url";
     private String user_token_key = "user_token";
+    private String lat_key = "lat_coord";
+    private String long_key = "long_coord";
 
     private static Context context;
 
@@ -69,6 +75,10 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 return requestQueue(strings);
             case CLOSE_QUEUE:
                 return closeQueue(strings);
+            case SENDER_GPS:
+                return senderGPS(strings);
+            case QUEUE_GPS:
+                return senderGPS(strings);
             default:
                 Log.e("ERROR", "NOT A METHOD IN STRINGS[0]");
                 return false;
@@ -118,6 +128,16 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
+    private boolean checkQueue(String...strings) {
+        String[] keys = new String[1];
+        String[] values = new String[1];
+        keys[0] = queue_id_key;
+        values[0] = strings[1];
+
+        NetworkGate networkGate = new NetworkGate(CHECK_QUEUE_URL);
+        return networkGate.post(keys, values);
+    }
+
     private boolean sendSound(String...strings) {
 
         String[] keys = new String[strings.length - 1];
@@ -136,18 +156,35 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
-    /**
-     * Method used to check if saved queue is still an active queue
-     * @param strings
-     * @return
-     */
-    private boolean checkQueue(String...strings) {
-        String[] keys = new String[1];
-        String[] values = new String[1];
-        keys[0] = queue_id_key;
-        values[0] = strings[1];
+    private boolean senderGPS(String...strings) {
+        String[] keys = new String[2];
+        String[] values = new String[2];
 
-        NetworkGate networkGate = new NetworkGate(CHECK_QUEUE_URL);
+        keys[0] = "to";
+        keys[1] = lat_key;
+        keys[2] = long_key;
+
+        values[0] = Constants.token;
+        values[1] = strings[1];
+        values[2] = strings[2];
+
+        NetworkGate networkGate = new NetworkGate(SENDER_GPS_URL);
+        return networkGate.post(keys, values);
+    }
+
+    private boolean queueGPS(String...strings) {
+        String[] keys = new String[2];
+        String[] values = new String[2];
+
+        keys[0] = queue_id_key;
+        keys[1] = lat_key;
+        keys[2] = long_key;
+
+        values[0] = SoundQueue.ID;
+        values[1] = strings[2];
+        values[2] = strings[3];
+
+        NetworkGate networkGate = new NetworkGate(QUEUE_GPS_URL);
         return networkGate.post(keys, values);
     }
 

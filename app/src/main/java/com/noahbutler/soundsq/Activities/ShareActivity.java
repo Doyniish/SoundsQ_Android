@@ -1,32 +1,25 @@
 package com.noahbutler.soundsq.Activities;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Fragments.AutoSendDialogFragment;
+import com.noahbutler.soundsq.Fragments.LocalQueuesFragment;
+import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
+import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by NoahButler on 12/27/15.
@@ -34,27 +27,74 @@ import java.util.concurrent.ExecutionException;
 public class ShareActivity extends Activity {
 
     EditText enterQueueID;
-    String soundLink;
+    static String soundLink;
     String readQueueID;
+    static FragmentManager fragmentManager;
+
+    BroadcastReceiver mRegistrationBroadcastReceiver;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
+        /* get our GCM token */
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                Log.e("LaunchActivity", "Received Broadcast");
+            }
+        };
+
+        register();
 
         // Get intent, action and MIME type
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
 
-
+        //used to display local queues list from DownStreamReceiver
+        fragmentManager = getFragmentManager();
 
         if(Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 handleSendSound(intent); // Handle text being sent
             }
         }
+
+        /* Send GPS to find local Queues */
+        GPSReceiver gpsReceiver = new GPSReceiver();
+        gpsReceiver.initialize(true); //send GPS to find local queues
+        /* local queues sent to DownStreamReceiver from server */
+    }
+
+    public void register() {
+        /* Start IntentService to register this application with GCM. */
+        if (checkPlayServices()) {
+            Log.e("LaunchActivity", "starting reg intent");
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            Log.e("LaunchActivity", "handing off");
+        }
+    }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Toast.makeText(getBaseContext(), "Play Services required...closing now", Toast.LENGTH_LONG);
+                Log.i("LaunchActivity", "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     private void handleSendSound(Intent intent) {
@@ -65,18 +105,24 @@ public class ShareActivity extends Activity {
             cleanLink();
 
             /* Display QR Code Scanner and Queue ID TextInput */
-            displayAddQueueID();
+            //displayAddQueueID();
 
             //check for existing queue id
-            readQueueID = checkQueueFile();
+            //readQueueID = checkQueueFile();
 
             /* check for errors or if it actually exists */
-            if(readQueueID != null) {
-                displayAutoSend();
-            }else{ //no cached queue id
-                Toast.makeText(getBaseContext(), "Join a SoundQ session!", Toast.LENGTH_LONG).show();
-            }
+            //if(readQueueID != null) {
+            //    displayAutoSend();
+            //}else { //no cached queue id
+            //    Toast.makeText(getBaseContext(), "Join a SoundQ session!", Toast.LENGTH_LONG).show();
+            //}
         }
+    }
+
+    public static void showList() {
+        LocalQueuesFragment localQueuesFragment = new LocalQueuesFragment();
+        localQueuesFragment.soundLink = soundLink;
+        localQueuesFragment.show(fragmentManager, "");
     }
 
     private void cleanLink() {
@@ -94,16 +140,6 @@ public class ShareActivity extends Activity {
             return readQueueID;
         }
         return null;
-    }
-
-    private void displayAutoSend() {
-        AutoSendDialogFragment autoSendDialogFragment = new AutoSendDialogFragment();
-
-        //don't forget to set params
-        autoSendDialogFragment.readQueueID = readQueueID;
-        autoSendDialogFragment.soundLink = soundLink;
-
-        autoSendDialogFragment.show(getFragmentManager(), "");
     }
 
     private void displayAddQueueID() {
