@@ -45,11 +45,12 @@ public class QueueBallFragment extends Fragment {
     private String inQueue;
 
     private GPSReceiver gpsReceiver;
-
+    private static final String TAG = "QUEUE BALL FRAG";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         masterView = inflater.inflate(R.layout.fragment_queueball, container, false);
+        Log.d(TAG, "Starting Fragment...");
         //TODO: animation queue ball to loading sign
 
         inQueue = checkInQueue(getActivity().getBaseContext().getFilesDir());

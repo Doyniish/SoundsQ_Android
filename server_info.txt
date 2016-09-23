@@ -1,3 +1,0 @@
-== Digital Ocean ==
-ssh root@104.236.237.151
-pass: N!221133ncb

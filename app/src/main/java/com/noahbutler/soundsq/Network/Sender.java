@@ -28,6 +28,7 @@ import java.util.HashMap;
  */
 public class Sender extends AsyncTask<String, Integer, Boolean> {
 
+    public static final String SEND_TOKEN = "send_token";
     public static final String RUN_NEW_QID = "run_new_qid";
     public static final String SEND_SOUND = "send_sound";
     public static final String CHECK_QUEUE = "check_queue";
@@ -36,6 +37,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     public static final String SENDER_GPS = "sender_gps";
     public static final String QUEUE_GPS = "queue_gps";
     //104.236.237.151
+    private static final String SEND_TOKEN_URL = "http://104.236.237.151/send/token/";
     private static final String SEND_NEW_QID_URL = "http://104.236.237.151/new/queue/";
     private static final String SEND_SOUND_URL   = "http://104.236.237.151/sound/send/";
     private static final String CHECK_QUEUE_URL = "http://104.236.237.151/queue/exists/";
@@ -65,6 +67,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     protected Boolean doInBackground(String...strings) {
 
         switch(strings[0]) {
+            case SEND_TOKEN:
+                return sendToken(strings);
             case RUN_NEW_QID:
                 return sendNewQID(strings);
             case SEND_SOUND:
@@ -85,6 +89,20 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         }
     }
 
+    private boolean sendToken(String...strings) {
+        String[] keys = new String[2];
+
+        keys[0] = queue_id_key;
+        keys[1] = user_token_key;
+
+        String[] values = new String[2];
+        values[0] = SoundQueue.ID; //queue id for the new queue
+        values[1] = Constants.token; //the current phone android FCM token
+
+        NetworkGate networkGate = new NetworkGate(SEND_TOKEN_URL);
+        return networkGate.post(keys, values);
+    }
+
     private boolean sendNewQID(String...strings) {
         String[] keys = new String[2];
 
@@ -93,10 +111,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
 
         String[] values = new String[2];
         values[0] = strings[1]; //queue id for the new queue
-        values[1] = Constants.token; //the current phones android GCM token
+        values[1] = Constants.token; //the current phones android FCM token
 
-        //Send the information to the server
-        Log.d("SEND NEW QID", SEND_NEW_QID_URL);
         NetworkGate networkGate = new NetworkGate(SEND_NEW_QID_URL);
         return networkGate.post(keys, values);
     }
@@ -209,6 +225,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         }
 
         private void createErrorDisplayMap() {
+            errorDisplayMap = new HashMap<>();
             errorDisplayMap.put(404, "A queue with that ID was not found...");
             errorDisplayMap.put(206, "The entered ID was not a valid one...");
         }

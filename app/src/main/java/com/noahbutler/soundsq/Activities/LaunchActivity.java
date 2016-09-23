@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.QueueBallFragment;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
@@ -41,15 +42,7 @@ public class LaunchActivity extends Activity {
         /* create our thread handler */
         Constants.handler = new MessageHandler();
 
-        /* get our GCM token */
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-                Log.e("LaunchActivity", "Received Broadcast");
-            }
-        };
-
+        /* FCM Token */
         register();
 
         /* hand of to Queue Ball Fragment */
@@ -60,8 +53,7 @@ public class LaunchActivity extends Activity {
         /* Start IntentService to register this application with GCM. */
         if (checkPlayServices()) {
             Log.e("LaunchActivity", "starting reg intent");
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
+            Constants.token = FirebaseInstanceId.getInstance().getToken();
             Log.e("LaunchActivity", "handing off");
         }
     }
