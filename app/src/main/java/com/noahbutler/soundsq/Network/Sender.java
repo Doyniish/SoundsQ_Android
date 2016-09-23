@@ -278,6 +278,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                         //TODO: queue id doesn't exist | Request Queue
                         messenger.queueNotExists(Messenger.notExists[1]);
                 }
+
+                return true;
             }catch(IOException e) {
                 Log.e("ERROR","something fucked up in the post method of the NetworkGate class");
                 Log.e("ERROR", e.toString());

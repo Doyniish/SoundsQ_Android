@@ -25,8 +25,6 @@ public class QueueListAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private LaunchActivity activity;
 
-    private static String
-
     public QueueListAdapter(LaunchActivity activity) {
         this.activity = activity;
         layoutInflater = activity.getLayoutInflater();

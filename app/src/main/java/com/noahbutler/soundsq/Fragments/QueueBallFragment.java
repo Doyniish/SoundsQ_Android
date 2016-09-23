@@ -44,6 +44,8 @@ public class QueueBallFragment extends Fragment {
 
     private String inQueue;
 
+    private GPSReceiver gpsReceiver;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
