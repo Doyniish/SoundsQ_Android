@@ -52,8 +52,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             receivedSound(data);
         }else if(data.keySet().contains(S_KEY)) {
             receivedQueue(data);
-        }else if(data.keySet().contains(QR_KEY)) {
-            receivedQRCode(data);
         }else if(data.keySet().contains(L_KEY)) {
             receivedLocalQueues(data);
         }
@@ -112,10 +110,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private void receivedQRCode(Map<String, String> data) {
-        QRCodeDecompiler.RAW_QR_CODE = data.get(QR_KEY);
     }
 
     private HashMap<String, String> decodePackage(String packageString, String artistPackageString) {

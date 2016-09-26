@@ -54,7 +54,7 @@ public class QueueListAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.sound_list_item, null);
 
             /* grab views from the original view */
-            viewHolder.soundImage  = (ImageView) convertView.findViewById(R.id.album_art);
+            viewHolder.soundImage  = (ImageView) convertView.findViewById(R.id.sound_image);
             viewHolder.soundTitle       = (TextView)convertView.findViewById(R.id.sound_title);
             viewHolder.soundArtistName  = (TextView)convertView.findViewById(R.id.sound_artist_name);
 

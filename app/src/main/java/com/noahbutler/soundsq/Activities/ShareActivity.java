@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.LocalQueuesFragment;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
@@ -21,6 +22,9 @@ import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by NoahButler on 12/27/15.
  */
@@ -28,10 +32,7 @@ public class ShareActivity extends Activity {
 
     EditText enterQueueID;
     static String soundLink;
-    String readQueueID;
     static FragmentManager fragmentManager;
-
-    BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
@@ -39,15 +40,7 @@ public class ShareActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-        /* get our GCM token */
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-                Log.e("LaunchActivity", "Received Broadcast");
-            }
-        };
-
+        /* get our FCM token */
         register();
 
         // Get intent, action and MIME type
@@ -70,13 +63,12 @@ public class ShareActivity extends Activity {
         /* local queues sent to DownStreamReceiver from server */
     }
 
-    public void register() {
+    private void register() {
         /* Start IntentService to register this application with GCM. */
         if (checkPlayServices()) {
             Log.e("LaunchActivity", "starting reg intent");
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-            Log.e("LaunchActivity", "handing off");
+            Constants.token = FirebaseInstanceId.getInstance().getToken();
+            Log.e("LaunchActivity", "TOKEN: " + Constants.token);
         }
     }
 
@@ -131,52 +123,23 @@ public class ShareActivity extends Activity {
         soundLink = "http" + soundLink;
     }
 
-    private String checkQueueFile() {
+    private JSONObject checkQueueFile() {
         /* check for queue id saved on phone */
-        String readQueueID = IO.readQueueID(getBaseContext().getFilesDir());
+        JSONObject readQueueID = IO.readQueueID(getBaseContext().getFilesDir());
         /* look to see if anything in the file was read in */
-        Log.e("R", readQueueID);
-        if(!readQueueID.contentEquals("")) {
+
+        if(!readQueueID.has(IO.Q_Key)) {
+            try {
+                Log.d("R", readQueueID.getString(IO.Q_Key));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             return readQueueID;
         }
         return null;
     }
 
-    private void displayAddQueueID() {
-        //TODO: display QR Code Scanner
-
-        enterQueueID = (EditText)findViewById(R.id.enter_queue_id_join);
-        enterQueueID.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AutoSendChecker autoSendChecker = new AutoSendChecker();
-                autoSendChecker.start();
-            }
-        });
-    }
-
     public static void failedShare() {
         //TODO: display failed share alert
-    }
-
-    class AutoSendChecker extends Thread {
-
-        @Override
-        public void run() {
-            super.run();
-
-            //wait for the user to enter in a valid id
-            while(enterQueueID.getText().length() < Constants.QUEUE_ID_LENGTH) {}
-
-            //auto send
-            Sender.createExecute(Sender.SEND_SOUND, enterQueueID.getText().toString(), soundLink);
-            Toast.makeText(getBaseContext(), "Sound has been sent!", Toast.LENGTH_LONG).show();
-
-            //add queue id to cache file for later use.
-            IO.writeQueueID(getBaseContext().getFilesDir(), enterQueueID.getText().toString());
-
-            //return to SoundCloud
-            finish();
-        }
     }
 }

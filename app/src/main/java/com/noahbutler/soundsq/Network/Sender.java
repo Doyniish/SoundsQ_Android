@@ -34,8 +34,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     public static final String CHECK_QUEUE = "check_queue";
     public static final String REQUEST_QUEUE = "request_queue";
     public static final String CLOSE_QUEUE = "close_queue";
-    public static final String SENDER_GPS = "sender_gps";
-    public static final String QUEUE_GPS = "queue_gps";
+    public static final String SENDER_GPS = "sender_gps";//looking for queues gps
+    public static final String QUEUE_GPS = "queue_gps"; //queue owner gps
     //104.236.237.151
     private static final String SEND_TOKEN_URL = "http://104.236.237.151/send/token/";
     private static final String SEND_NEW_QID_URL = "http://104.236.237.151/new/queue/";
@@ -82,7 +82,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
             case SENDER_GPS:
                 return senderGPS(strings);
             case QUEUE_GPS:
-                return senderGPS(strings);
+                return queueGPS(strings);
             default:
                 Log.e("ERROR", "NOT A METHOD IN STRINGS[0]");
                 return false;
@@ -281,6 +281,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                         SoundQueue.createQueue();
                         break;
                     case 201:
+                        //TODO: queue created successfully
+                    case 200:
                         messenger.loadingSuccess();
                         break;
                     case 205:

@@ -47,7 +47,7 @@ public class LaunchActivity extends Activity {
         getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueBallFragment()).commit();
     }
 
-    public void register() {
+    private void register() {
         /* Start IntentService to register this application with GCM. */
         if (checkPlayServices()) {
             Log.e("LaunchActivity", "starting reg intent");

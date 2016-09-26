@@ -28,7 +28,7 @@ public class MessageHandler extends Handler {
         }else if(msg.getData().containsKey(Messenger.keys[1])) { // sound art has finished downloading
             signal_soundPackageDownloaded(msg);
 
-        }else if(msg.getData().containsKey(Messenger.keys[3])) {
+        }else if(msg.getData().containsKey(Messenger.keys[2])) {
             signal_LoadingSuccess();
 
         }else if(msg.getData().containsKey(Messenger.notExists[0])) {

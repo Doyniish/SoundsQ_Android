@@ -72,6 +72,7 @@ public class GPSReceiver implements
 
             if (location == null) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+                handleNewLocation(location);
             } else {
                 handleNewLocation(location);
             }
@@ -127,8 +128,10 @@ public class GPSReceiver implements
         String lon = String.valueOf(location.getLongitude());
 
         if(isSharing) {
+            Log.d(TAG, "Looking for local queues...");
             Sender.createExecute(Sender.SENDER_GPS, lat, lon);
         }else {
+            Log.d(TAG, "Sending queue\'s gps");
             Sender.createExecute(Sender.QUEUE_GPS, lat, lon);
         }
 

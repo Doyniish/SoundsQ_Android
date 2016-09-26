@@ -1,8 +1,12 @@
 package com.noahbutler.soundsq.IO;
 
+import android.util.JsonReader;
 import android.util.Log;
 
 import com.noahbutler.soundsq.Constants;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,8 +20,23 @@ import java.io.IOException;
  */
 public class IO {
 
-    public static void writeQueueID(File directory, String queueID) {
-        write(directory, Constants.CACHE_FILE, queueID);
+    public static final String Q_Key = "queue_id";
+    public static final String B_Key = "is_owner";
+    public static final String N_Key = "no_file";
+
+    public static void writeQueueID(File directory, String queueID, boolean isOwner) {
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+
+            jsonObject.put(Q_Key, queueID);
+            jsonObject.put(B_Key, isOwner);
+            write(directory, Constants.CACHE_FILE, jsonObject.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void write(File directory, String fileName, String data) {
@@ -34,13 +53,13 @@ public class IO {
 
     }
 
-    public static String readQueueID(File directory) {
+    public static JSONObject readQueueID(File directory) {
         return read(directory, Constants.CACHE_FILE);
     }
 
-    private static String read(File directory, String fileName) {
+    private static JSONObject read(File directory, String fileName) {
         StringBuilder stringBuilder = new StringBuilder();
-
+        JSONObject response;
         File file = new File(directory, fileName);
         BufferedReader bufferedReader = null;
 
@@ -53,18 +72,25 @@ public class IO {
             }
             bufferedReader.close();
         }catch(IOException e){
+
             Log.d("FILE_READ_ERROR", e.getMessage());
-            return "nofile";
+            response = new JSONObject();
+
+            try {
+                response.put(N_Key, "");
+                return response;
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+        }
+        /* construct our JSON object */
+        try {
+            response = new JSONObject(stringBuilder.toString());
+            return response;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        /* look to see if anything in the file was read in */
-        Log.e("R", stringBuilder.toString());
-        if(stringBuilder.toString().contentEquals("")) {
-            return null;
-        }else {
-            return stringBuilder.toString();
-        }
-
+        return null;
     }
-
 }

@@ -1,16 +1,20 @@
 package com.noahbutler.soundsq.Fragments;
 
 import android.app.Fragment;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Space;
 import android.widget.TextView;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
@@ -22,6 +26,9 @@ import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 
 /**
@@ -30,20 +37,15 @@ import java.io.File;
 public class QueueBallFragment extends Fragment {
     ImageView queueBallImage;
 
-    ImageButton queueBallSelectTop,
+    Button queueBallSelectTop,
             queueBallSelectBottom,
             queueBallSelectLeft,
             queueBallSelectRight,
             queueBallLogic;
 
-    LinearLayout queueIDDisplayLayout;
-    ImageView qrCodeImageView;
-    TextView queueIDDisplay;
-
     View masterView;
 
-    private String inQueue;
-
+    private JSONObject checkFile;
     private GPSReceiver gpsReceiver;
     private static final String TAG = "QUEUE BALL FRAG";
 
@@ -53,30 +55,10 @@ public class QueueBallFragment extends Fragment {
         Log.d(TAG, "Starting Fragment...");
         //TODO: animation queue ball to loading sign
 
-        inQueue = checkInQueue(getActivity().getBaseContext().getFilesDir());
-        if(inQueue.contentEquals("error")) {
-            Log.d("ERROR READING", "error reading file to check for queue id/LaunchActivity");
-            //file read didn't work, just start new queue for now
-
-        } else if(inQueue.contentEquals("nofile")) {
-            //queue originates from this phone, play it
-
-            /* Initiate GPS functionality */
-            gpsReceiver = new GPSReceiver();
-            gpsReceiver.initialize(getActivity(), false); //initialized from playing phone
-
-            SoundQueue.PLAY = true;
-            SoundQueue.createQueue();
-            //TODO: Display after we know the creation was successful
-            setupQueueBallOverlay();
-            setupQueueView();
-
-        } else {
-            //queue is just being viewed from this phone, just display it.
-            SoundQueue.PLAY = false;
-            setupQueueView();
-            Sender.createExecute(Sender.REQUEST_QUEUE, inQueue);
-
+        try {
+            initialize_soundsQ();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         return masterView;
@@ -101,6 +83,58 @@ public class QueueBallFragment extends Fragment {
     }
 
     /**
+     * Setup for app
+     */
+
+    private void initialize_soundsQ() throws JSONException {
+        checkFile = checkInQueue(getActivity().getBaseContext().getFilesDir());
+
+        if(checkFile.has(IO.N_Key)) {
+            //nothing has been saved yet, start a new queue.
+
+            /* Initiate Location functionality */
+            initializeLocation();
+
+            /* Start the app in Owner View. */
+            createOwnerView();
+
+        } else if(checkFile.has(IO.Q_Key)){
+            //queue was saved from a previous session or user is viewing this queue
+            if(checkFile.getBoolean(IO.B_Key)) {
+                //user is the owner of this queue
+                //TODO: we need to save all data about the queue I believe.
+            }else {
+                //queue is just being viewed from this phone, just display it.
+                createSpectatorView();
+            }
+        }
+    }
+
+    private void createSpectatorView() throws JSONException {
+        SoundQueue.PLAY = false; //Don't try to play songs
+        setupQueueView();
+        Sender.createExecute(Sender.REQUEST_QUEUE, checkFile.getString(IO.Q_Key));
+        //TODO: Display that we are loading the queue
+    }
+
+    private void createOwnerView() {
+        SoundQueue.PLAY = true; //Play songs
+        SoundQueue.createQueue();
+        //TODO: Display after we know the creation was successful
+        setupQueueBallOverlay();
+        setupQueueView();
+    }
+
+    private void initializeLocation() {
+        gpsReceiver = new GPSReceiver();
+        gpsReceiver.initialize(getActivity(), false); //initialized from playing phone
+    }
+
+    private JSONObject checkInQueue(File directory) {
+        return IO.readQueueID(directory);
+    }
+
+    /**
      * Queue was loaded successfully
      */
     public static void loadingSuccess() {
@@ -119,77 +153,64 @@ public class QueueBallFragment extends Fragment {
         //create image
         queueBallImage = (ImageView)masterView.findViewById(R.id.queue_ball_image);
         //setup ball button
-        queueBallLogic = (ImageButton)masterView.findViewById(R.id.queue_ball_logic_button);
+        queueBallLogic = (Button)masterView.findViewById(R.id.queue_ball_logic_button);
         //setup show queue id button
-        queueBallSelectBottom = (ImageButton)masterView.findViewById(R.id.queue_ball_select_bottom);
+        queueBallSelectBottom = (Button)masterView.findViewById(R.id.queue_ball_select_bottom);
         //setup previous button
-        queueBallSelectLeft = (ImageButton)masterView.findViewById(R.id.queue_ball_select_left);
+        queueBallSelectLeft = (Button)masterView.findViewById(R.id.queue_ball_select_left);
         //setup next button
-        queueBallSelectRight = (ImageButton)masterView.findViewById(R.id.queue_ball_select_right);
+        queueBallSelectRight = (Button)masterView.findViewById(R.id.queue_ball_select_right);
         //setup close queue button
-        queueBallSelectTop = (ImageButton)masterView.findViewById(R.id.queue_ball_select_top);
+        queueBallSelectTop = (Button)masterView.findViewById(R.id.queue_ball_select_top);
+
+        setButtonsTransparent();
 
         /* Create Listeners */
-
-        queueBallLogic.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showQueueBallOptions();
-                hideQueueBallOptions();
-                return false;
-            }
-        });
 
         queueBallLogic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: show tutorial button
+                Log.d(TAG, "Clicked Queue Ball...");
+                showQueueBallOptions();
             }
         });
 
         queueBallSelectBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayQueueID();
+                hideQueueBallOptions();
             }
         });
 
         queueBallSelectLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SoundPlayerController.playPreviousSound();
+                hideQueueBallOptions();
             }
         });
 
         queueBallSelectRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SoundPlayerController.playNextSound();
+                hideQueueBallOptions();
             }
         });
 
         queueBallSelectTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SoundQueue.close();
+                hideQueueBallOptions();
             }
         });
 
-        /* Setup Queue QR code and ID display */
+    }
 
-        //setup layout
-        queueIDDisplayLayout = (LinearLayout)masterView.findViewById(R.id.queue_id_display_layout);
-        //queueIDDisplayLayout.setPadding(0, 300, 0, 0);
-        //queueIDDisplayLayout.setAnimation();
-
-        //setup ID display
-        queueIDDisplay = (TextView) masterView.findViewById(R.id.queue_id_display);
-        queueIDDisplay.setVisibility(View.INVISIBLE);
-
-        //setup QR code display
-        qrCodeImageView = (ImageView) masterView.findViewById(R.id.qr_code_view);
-        //TODO: add image of qr code
-
+    private void setButtonsTransparent() {
+        queueBallLogic.setBackgroundColor(Color.TRANSPARENT);
+        queueBallSelectBottom.setBackgroundColor(Color.TRANSPARENT);
+        queueBallSelectLeft.setBackgroundColor(Color.TRANSPARENT);
+        queueBallSelectRight.setBackgroundColor(Color.TRANSPARENT);
+        queueBallSelectTop.setBackgroundColor(Color.TRANSPARENT);
     }
 
     private void setupQueueView() {
@@ -201,33 +222,14 @@ public class QueueBallFragment extends Fragment {
         Constants.queueListView.setAdapter(Constants.queueListAdapter);
     }
 
-    private void displayQueueID() {
-        //TODO: animate queue id layout to move up from bottom of screen
-        if(queueIDDisplay.getVisibility() == View.VISIBLE) {
-            queueIDDisplay.setVisibility(View.INVISIBLE);
-        }else {
-            queueIDDisplay.setText(SoundQueue.ID);
-            queueIDDisplay.setVisibility(View.VISIBLE);
-            Log.e("QUEUE_ID", SoundQueue.ID);
-        }
-    }
-
-    private String checkInQueue(File directory) {
-        return IO.readQueueID(directory);
-    }
-
     private void showQueueBallOptions() {
-        //TODO: Set image back to expanded
-        //queueBallImage.setImageDrawable();
-
-        //set options clickable
+        queueBallImage.setImageDrawable(getResources().getDrawable(R.drawable.queue_ball_options, null));
         setOptionsClickable(true);
     }
 
     private void hideQueueBallOptions() {
-        OptionsDisplayTimer optionsDisplayTimer = new OptionsDisplayTimer();
-        //wait 5 seconds and then removes options and makes them non-clickable
-        optionsDisplayTimer.start();
+        queueBallImage.setImageDrawable(getResources().getDrawable(R.drawable.queue_ball, null));
+        setOptionsClickable(false);
     }
 
     private void setOptionsClickable(boolean clickable) {
@@ -235,25 +237,5 @@ public class QueueBallFragment extends Fragment {
         queueBallSelectTop.setClickable(clickable);
         queueBallSelectLeft.setClickable(clickable);
         queueBallSelectRight.setClickable(clickable);
-    }
-
-    class OptionsDisplayTimer extends Thread {
-
-        @Override
-        public void run() {
-            super.run();
-            try {
-                wait(5000);
-
-                //TODO: Set image back to original state
-                //queueBallImage.setImageDrawable();
-
-                //set options to not be clickable
-                setOptionsClickable(false);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
