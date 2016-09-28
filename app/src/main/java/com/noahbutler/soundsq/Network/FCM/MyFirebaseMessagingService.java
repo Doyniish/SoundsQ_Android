@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -15,9 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Activities.ShareActivity;
-import com.noahbutler.soundsq.Fragments.LocalQueuesFragment;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
-import com.noahbutler.soundsq.QRCode.QRCodeDecompiler;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
@@ -97,15 +94,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void receivedLocalQueues(Map<String, String> data) {
         try {
             JSONObject jsonObject = new JSONObject(data.get(L_KEY));
+            HashMap<String, String> localQueueList = new HashMap<>();
             Iterator<String> keys = jsonObject.keys();
 
             //create list of key strings
             while(keys.hasNext()) {
-                LocalQueuesFragment.localQueueList.put(keys.next(), jsonObject.getString(keys.next()));
+                localQueueList.put(keys.next(), jsonObject.getString(keys.next()));
             }
-
+            Log.d(TAG, "Local Queue list is being sent to Share Activity");
             //notify ShareActivity that it can display the list.
-            ShareActivity.showList();
+            ShareActivity.showList(localQueueList);
 
         } catch (JSONException e) {
             e.printStackTrace();

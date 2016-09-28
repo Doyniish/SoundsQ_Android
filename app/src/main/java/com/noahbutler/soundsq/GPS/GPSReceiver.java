@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,7 +17,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.noahbutler.soundsq.Network.Sender;
-import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * Created by gildaroth on 9/21/16.
@@ -72,7 +70,6 @@ public class GPSReceiver implements
 
             if (location == null) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-                handleNewLocation(location);
             } else {
                 handleNewLocation(location);
             }

@@ -197,8 +197,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         keys[2] = long_key;
 
         values[0] = SoundQueue.ID;
-        values[1] = strings[2];
-        values[2] = strings[3];
+        values[1] = strings[1];
+        values[2] = strings[2];
 
         NetworkGate networkGate = new NetworkGate(QUEUE_GPS_URL);
         return networkGate.post(keys, values);

@@ -1,44 +1,44 @@
 package com.noahbutler.soundsq.Activities;
 
-import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Fragments.LocalQueuesFragment;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
-import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
-import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 /**
  * Created by NoahButler on 12/27/15.
  */
-public class ShareActivity extends Activity {
+public class ShareActivity extends ListActivity {
 
-    EditText enterQueueID;
     static String soundLink;
     static FragmentManager fragmentManager;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static ShareActivity shareActivity;
+
+    private static final String TAG = "Share_Activity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
+
+        shareActivity = this;
 
         /* get our FCM token */
         register();
@@ -111,10 +111,10 @@ public class ShareActivity extends Activity {
         }
     }
 
-    public static void showList() {
-        LocalQueuesFragment localQueuesFragment = new LocalQueuesFragment();
-        localQueuesFragment.soundLink = soundLink;
-        localQueuesFragment.show(fragmentManager, "");
+    public static void showList(HashMap<String, String> list) {
+        String[] localQueues = (String[])list.keySet().toArray();
+        shareActivity.setListAdapter(new ArrayAdapter(shareActivity, android.R.layout.simple_list_item_1, localQueues));
+        Log.d(TAG, "List should be displaying");
     }
 
     private void cleanLink() {

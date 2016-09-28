@@ -205,6 +205,10 @@ public class QueueBallFragment extends Fragment {
 
     }
 
+    private void hideQueueBall() {
+        queueBallImage.setVisibility(View.INVISIBLE);
+    }
+
     private void setButtonsTransparent() {
         queueBallLogic.setBackgroundColor(Color.TRANSPARENT);
         queueBallSelectBottom.setBackgroundColor(Color.TRANSPARENT);

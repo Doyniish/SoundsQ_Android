@@ -17,8 +17,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.QueueBallFragment;
-import com.noahbutler.soundsq.GPS.GPSReceiver;
-import com.noahbutler.soundsq.Network.GCM.RegistrationIntentService;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
