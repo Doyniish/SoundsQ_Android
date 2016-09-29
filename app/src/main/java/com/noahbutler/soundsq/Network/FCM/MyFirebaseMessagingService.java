@@ -102,8 +102,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 localQueueList.put(keys.next(), jsonObject.getString(keys.next()));
             }
             Log.d(TAG, "Local Queue list is being sent to Share Activity");
-            //notify ShareActivity that it can display the list.
-            ShareActivity.showList(localQueueList);
+            //TODO: notify ShareActivity that it can display the list.
 
         } catch (JSONException e) {
             e.printStackTrace();
