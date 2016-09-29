@@ -13,7 +13,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
-import com.noahbutler.soundsq.Activities.ShareActivity;
+import com.noahbutler.soundsq.Activities.Share.ShareActivity;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;

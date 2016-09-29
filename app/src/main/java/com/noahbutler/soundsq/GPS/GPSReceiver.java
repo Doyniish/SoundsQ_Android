@@ -21,9 +21,9 @@ import com.noahbutler.soundsq.Network.Sender;
 /**
  * Created by gildaroth on 9/21/16.
  */
-public class GPSReceiver implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class GPSReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    public static final String TAG = "GPS REC";
 
     public static LocationRequest locationRequest;
     private GoogleApiClient googleApiClient;
@@ -31,8 +31,9 @@ public class GPSReceiver implements
 
     private static final int PERMISSION_ACCESS_COARSE_LOCATION = 1;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-    private boolean isSharing;
-    public static final String TAG = GPSReceiver.class.getSimpleName();
+
+    private boolean isSharing; //sending gps to find queues
+    private boolean sentOnce; // only need to send once if looking for queues
 
     public void initialize(Activity activity, boolean isSharing) {
         Log.d(TAG, "Initializing GPS");
@@ -49,6 +50,7 @@ public class GPSReceiver implements
 
         this.activity = activity;
         this.isSharing = isSharing;
+        this.sentOnce = false;
 
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -84,7 +86,6 @@ public class GPSReceiver implements
                 } else {
                     Toast.makeText(activity, "Need your location!", Toast.LENGTH_SHORT).show();
                 }
-
                 break;
         }
     }
@@ -108,6 +109,12 @@ public class GPSReceiver implements
         }
     }
 
+    public void onStart() {
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
+    }
+
     public void onResume() {
         googleApiClient.connect();
     }
@@ -119,6 +126,10 @@ public class GPSReceiver implements
         }
     }
 
+    public void onStop() {
+        googleApiClient.disconnect();
+    }
+
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
         String lat = String.valueOf(location.getLatitude());
@@ -126,7 +137,10 @@ public class GPSReceiver implements
 
         if(isSharing) {
             Log.d(TAG, "Looking for local queues...");
-            Sender.createExecute(Sender.SENDER_GPS, lat, lon);
+            if(!sentOnce) {
+                Sender.createExecute(Sender.SENDER_GPS, lat, lon);
+                sentOnce = true;
+            }
         }else {
             Log.d(TAG, "Sending queue\'s gps");
             Sender.createExecute(Sender.QUEUE_GPS, lat, lon);

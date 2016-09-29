@@ -2,8 +2,6 @@ package com.noahbutler.soundsq.Activities;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -16,11 +14,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Fragments.QueueBallFragment;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.MainFragment;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
-import com.noahbutler.soundsq.ThreadUtils.MessageHandler;
 
 public class LaunchActivity extends Activity {
 
@@ -35,14 +32,11 @@ public class LaunchActivity extends Activity {
         /* Sound Player Controller Creator */
         SoundPlayerController.createController(getBaseContext());
 
-        /* create our thread handler */
-        Constants.handler = new MessageHandler();
-
         /* FCM Token */
         register();
 
         /* hand of to Queue Ball Fragment */
-        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new QueueBallFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.main_content_area, new MainFragment()).commit();
     }
 
     private void register() {

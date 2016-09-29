@@ -1,5 +1,8 @@
 package com.noahbutler.soundsq.SoundPlayer;
 
+import android.app.Activity;
+
+import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.QueueIDGenerator;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayer;
@@ -15,7 +18,6 @@ public class SoundQueue {
 
     public static String ID = null;
     public static String NAME = null;
-    private static boolean HAS_QUEUE = false;
     public static boolean PLAY = false;
 
     private static ArrayList<String> queue;
@@ -41,11 +43,14 @@ public class SoundQueue {
     }
 
     public static void createQueue() {
+        /* instantiate SoundsQ Data */
         queue = new ArrayList<>();
         queue_packages = new ArrayList<>();
 
+        /* Create a Random ID */
         genQueueID();
 
+        /* Send to Server */
         Sender.createExecute(Sender.RUN_NEW_QID, SoundQueue.ID);
     }
 
@@ -90,6 +95,10 @@ public class SoundQueue {
 
     public static String getCurrentSound() {
         return queue.get(currentSound);
+    }
+
+    public static SoundPackage getCurrentSoundPackage() {
+        return queue_packages.get(currentSound);
     }
 
     public static void isPlayingSound(boolean is) {

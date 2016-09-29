@@ -1,5 +1,6 @@
 package com.noahbutler.soundsq.Network;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -52,11 +53,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private String lat_key = "lat_coord";
     private String long_key = "long_coord";
 
-    private static Context context;
-
-    public static void setContext(Context c) {
-        context = c;
-    }
+    private Activity activty;
 
     public static void createExecute(String...strings) {
         Sender sender = new Sender();
@@ -212,96 +209,80 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
      * will always make a new instance of this class
      *
      */
-    class NetworkGate {
+    private class NetworkGate {
 
         URL url;
         HttpURLConnection urlConnection;
         String sendingToURL;
-        HashMap<Integer, String> errorDisplayMap;
 
-        public NetworkGate(String sendingToURL) {
+        StringBuilder stringBuilder;
+
+        NetworkGate(String sendingToURL) {
             this.sendingToURL = sendingToURL;
-            createErrorDisplayMap();
+            this.stringBuilder = new StringBuilder();
         }
 
-        private void createErrorDisplayMap() {
-            errorDisplayMap = new HashMap<>();
-            errorDisplayMap.put(404, "A queue with that ID was not found...");
-            errorDisplayMap.put(206, "The entered ID was not a valid one...");
+        private void createURLConnection() throws IOException {
+            url = new URL(sendingToURL);
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.setDoOutput(true);
+            urlConnection.setChunkedStreamingMode(0);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Connection", "Keep-Alive");
+            urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        }
+
+        private void createDataPackage(String[] keys, String[] values) {
+            for(int i = 0; i < keys.length; i++) {
+
+                stringBuilder.append(keys[i]);
+                stringBuilder.append("=");
+                stringBuilder.append(values[i]);
+
+                if(i == keys.length - 1) { //last ending is different
+                }else{
+                    stringBuilder.append(";");
+                }
+            }
+        }
+
+        private void sendData() throws IOException {
+            //create the output stream for the post data
+            BufferedOutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+            out.write(stringBuilder.toString().getBytes());
+            out.flush();
+            Log.d("DATA SENT", stringBuilder.toString());
+        }
+
+        private void respond() throws IOException {
+            String responseMsg = urlConnection.getResponseMessage();
+            int responseCode = urlConnection.getResponseCode();
+
+            Log.d("RESPONSE CODE", "" + responseCode);
+            Log.d("RESPONSE MESSAGE", responseMsg);
+
+                /* respond to Server */
+            Response.startResponse(responseCode);
+        }
+
+        private void error(IOException e) {
+            Log.e("ERROR","something fucked up in the post method of the NetworkGate class");
+            Log.e("ERROR", e.toString());
         }
 
         public boolean post(String[] keys, String[] values) {
 
             try {
 
-                StringBuilder stringBuilder = new StringBuilder();
-
-                url = new URL(sendingToURL);
-                urlConnection = (HttpURLConnection) url.openConnection();
-
-                urlConnection.setDoOutput(true);
-                urlConnection.setChunkedStreamingMode(0);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Connection", "Keep-Alive");
-                urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-                for(int i = 0; i < keys.length; i++) {
-
-                    stringBuilder.append(keys[i]);
-                    stringBuilder.append("=");
-                    stringBuilder.append(values[i]);
-
-                    if(i == keys.length - 1) { //last ending is different
-                    }else{
-                        stringBuilder.append(";");
-                    }
-                }
-
-                Log.d("DATA SENT", stringBuilder.toString());
-
-                //create the output stream for the post data
-                BufferedOutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-                out.write(stringBuilder.toString().getBytes());
-                out.flush();
-
-                String responseMsg = urlConnection.getResponseMessage();
-                int responseCode = urlConnection.getResponseCode();
-
-                Log.d("RESPONSE CODE", "" + responseCode);
-                Log.d("RESPONSE MESSAGE", responseMsg);
-
-                /* check the response for error */
-                if(errorDisplayMap.keySet().contains(responseCode)) {
-                    Toast.makeText(context, errorDisplayMap.get(responseCode), Toast.LENGTH_LONG).show();
-                }
-
-                Messenger messenger = new Messenger();
-                switch(responseCode) {
-                    case 302:
-                        SoundQueue.createQueue();
-                        break;
-                    case 201:
-                        //TODO: queue created successfully
-                    case 200:
-                        messenger.loadingSuccess();
-                        break;
-                    case 205:
-                        //TODO: queue deleted successfully
-                        //TODO: delete queue
-                        break;
-                    case 204:
-                        //TODO: queue id doesn't exist | SoundCloud Share
-                        messenger.queueNotExists(Messenger.notExists[0]);
-                        break;
-                    case 404:
-                        //TODO: queue id doesn't exist | Request Queue
-                        messenger.queueNotExists(Messenger.notExists[1]);
-                }
+                createURLConnection();
+                createDataPackage(keys, values);
+                sendData();
+                respond();
 
                 return true;
             }catch(IOException e) {
-                Log.e("ERROR","something fucked up in the post method of the NetworkGate class");
-                Log.e("ERROR", e.toString());
+                error(e);
                 return false;
             }
         }

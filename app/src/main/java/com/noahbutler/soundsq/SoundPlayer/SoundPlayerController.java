@@ -42,6 +42,11 @@ public class SoundPlayerController {
         soundPlayer.pause();
     }
 
+    public static void resumeCurrentSound() {
+        SoundQueue.isPlayingSound(true);
+        soundPlayer.resume();
+    }
+
     public static void playPreviousSound() {
         SoundQueue.prevSong();
         soundPlayer = new SoundPlayer(context);

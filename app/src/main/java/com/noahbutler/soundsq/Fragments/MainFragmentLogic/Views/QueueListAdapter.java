@@ -1,4 +1,4 @@
-package com.noahbutler.soundsq.Fragments;
+package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -92,7 +92,7 @@ public class QueueListAdapter extends BaseAdapter {
             if(SoundQueue.queue_packages.get(position).title != null) {
                 viewHolder.soundTitle.setText(SoundQueue.queue_packages.get(position).title);
             }else{
-                viewHolder.soundTitle.setText("Loading Title...");
+                viewHolder.soundTitle.setText(R.string.loading_title);
             }
 
             /* apply sound art */
@@ -111,12 +111,12 @@ public class QueueListAdapter extends BaseAdapter {
             if(SoundQueue.queue_packages.get(position).artistName != null) {
                 viewHolder.soundArtistName.setText(SoundQueue.queue_packages.get(position).artistName);
             }else{ //name still loading
-                viewHolder.soundArtistName.setText("Loading Artist...");
+                viewHolder.soundArtistName.setText(R.string.loading_artist);
             }
 
         }else{ // list is empty, just put in static text for now.
-            viewHolder.soundTitle.setText("Loading Title...");
-            viewHolder.soundArtistName.setText("Loading Artist...");
+            viewHolder.soundTitle.setText(R.string.loading_title);
+            viewHolder.soundArtistName.setText(R.string.loading_artist);
         }
 
     }

@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#0B0B0B">
+    android:layout_height="match_parent">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
@@ -29,7 +28,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/queue_ball"
+            app:srcCompat="@drawable/queue_ball"
             android:id="@+id/queue_ball_image"
             android:adjustViewBounds="false"
             android:cropToPadding="false"
@@ -49,7 +48,7 @@
         <Space
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".05" />
+            android:layout_weight=".03" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -109,8 +108,43 @@
         <Space
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".12" />
+            android:layout_weight=".15" />
 
     </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/description_layout">
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:layout_marginBottom="100dp"
+            android:id="@+id/description" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pause_play_button_layout">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/pause"
+            android:id="@+id/pause_play_image"
+            android:layout_gravity="bottom|right" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pause_play_button"
+            android:layout_gravity="bottom|right" />
+    </FrameLayout>
 
 </RelativeLayout>

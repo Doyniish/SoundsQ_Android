@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.ShareActivity"
+            android:name=".Activities.Share.ShareActivity"
             android:theme="@android:style/Theme.Dialog">
 
             <intent-filter>

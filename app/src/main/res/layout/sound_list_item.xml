@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:id="@+id/sound_list_item_layout">
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:id="@+id/sound_list_item_layout"
+    android:background="#202020">
 
     <TextView
         android:layout_width="wrap_content"
@@ -14,7 +15,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginLeft="150dp"
         android:textSize="18sp"
-        android:textColor="#000000"
+        android:textColor="#4d4d4d"
         android:textStyle="bold" />
 
     <TextView
@@ -26,7 +27,7 @@
         android:layout_below="@+id/sound_artist_name"
         android:layout_alignLeft="@+id/sound_artist_name"
         android:layout_alignStart="@+id/sound_artist_name"
-        android:textColor="#111111"
+        android:textColor="#4d4d4d"
         android:layout_marginTop="5dp" />
 
     <ImageView
@@ -37,6 +38,7 @@
         android:layout_alignParentRight="false"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp" />
+        android:layout_marginLeft="20dp"
+        android:paddingBottom="15dp"/>
 
 </RelativeLayout>
