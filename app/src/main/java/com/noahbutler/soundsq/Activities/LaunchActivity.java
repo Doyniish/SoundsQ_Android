@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,10 @@ import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 public class LaunchActivity extends Activity {
+
+    /*************/
+    /* DEBUG TAG */
+    private static final String TAG = "Launch";
 
     BroadcastReceiver mRegistrationBroadcastReceiver;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -37,14 +42,15 @@ public class LaunchActivity extends Activity {
 
         /* hand of to Queue Ball Fragment */
         getFragmentManager().beginTransaction().replace(R.id.main_content_area, new MainFragment()).commit();
+
     }
 
     private void register() {
         /* Start IntentService to register this application with GCM. */
         if (checkPlayServices()) {
-            Log.e("LaunchActivity", "starting reg intent");
+            Log.e(TAG, "Firebase Instance...");
             Constants.token = FirebaseInstanceId.getInstance().getToken();
-            Log.e("LaunchActivity", "TOKEN: " + Constants.token);
+            Log.e(TAG, "FCM TOKEN: " + Constants.token);
         }
     }
 

@@ -25,6 +25,11 @@ import java.io.File;
 
 public class StateController {
 
+    /*************/
+    /* DEBUG TAG */
+    private static final String TAG = "StateControl";
+
+
     /*********************************************/
     /* used to determine which state to start in */
     private static final int FRESH_START = 0;

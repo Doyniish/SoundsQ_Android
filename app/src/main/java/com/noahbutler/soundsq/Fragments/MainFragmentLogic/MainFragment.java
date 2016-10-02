@@ -2,6 +2,7 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +17,23 @@ import org.json.JSONException;
  */
 public class MainFragment extends Fragment {
 
+    /*************/
+    /* DEBUG TAG */
     private static final String TAG = "QUEUE BALL FRAG";
 
-    View masterView;
 
+    /*******************/
+    /* Local Variables */
+    View masterView;
     StateController stateController;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         masterView = inflater.inflate(R.layout.fragment_queueball, container, false);
         /* Takes over and controls all flow */
         stateController = new StateController(masterView, getActivity());
+
 
         return masterView;
     }

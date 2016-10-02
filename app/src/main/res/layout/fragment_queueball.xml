@@ -1,150 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/queue_view_layout">
+        android:layout_height="wrap_content"
+        app:titleTextColor="@android:color/white"
+        android:background="?android:attr/colorMultiSelectHighlight">
+    </android.support.v7.widget.Toolbar>
 
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/queueView"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-    </RelativeLayout>
-
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/queue_ball_image_layout">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/queue_ball"
-            android:id="@+id/queue_ball_image"
-            android:adjustViewBounds="false"
-            android:cropToPadding="false"
-            android:elevation="5dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="50dp" />
-    </FrameLayout>
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/queue_view_layout">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:foregroundTintMode="screen"
-        android:foregroundTint="#ca4e4e"
-        android:id="@+id/queue_ball_buttons_layout" >
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/queueView"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+        </RelativeLayout>
 
-        <Space
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".03" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/pause_play_button_layout">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/pause"
+                android:id="@+id/pause_play_image"
+                android:layout_gravity="bottom|right" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pause_play_button"
+                android:layout_gravity="bottom|right" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/description_layout">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:layout_marginBottom="100dp"
+                android:id="@+id/description" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/queue_ball_image_layout">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/queue_ball"
+                android:id="@+id/queue_ball_image"
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:elevation="5dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="50dp" />
+        </FrameLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/linearLayout"
-            android:layout_weight=".3" >
+            android:layout_height="match_parent"
+            android:foregroundTintMode="screen"
+            android:foregroundTint="#ca4e4e"
+            android:id="@+id/queue_ball_buttons_layout" >
+
+            <Space
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".03" />
 
             <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight=".3">
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:id="@+id/queue_ball_select_top"
-                    android:layout_weight="1" />
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/linearLayout"
+                android:layout_weight=".3" >
 
                 <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight=".3">
 
                     <Button
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:id="@+id/queue_ball_select_left"
-                        android:layout_weight=".1"
-                        android:elevation="0dp" />
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:id="@+id/queue_ball_select_top"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:id="@+id/queue_ball_select_left"
+                            android:layout_weight=".1"
+                            android:elevation="0dp" />
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:id="@+id/queue_ball_logic_button"
+                            android:layout_weight=".1"
+                            android:longClickable="true" />
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:id="@+id/queue_ball_select_right"
+                            android:layout_weight=".1" />
+                    </LinearLayout>
 
                     <Button
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:id="@+id/queue_ball_logic_button"
-                        android:layout_weight=".1"
-                        android:longClickable="true" />
-
-                    <Button
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:id="@+id/queue_ball_select_right"
-                        android:layout_weight=".1" />
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:id="@+id/queue_ball_select_bottom"
+                        android:layout_weight="1" />
                 </LinearLayout>
 
-                <Button
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:id="@+id/queue_ball_select_bottom"
-                    android:layout_weight="1" />
             </LinearLayout>
+
+            <Space
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".15" />
 
         </LinearLayout>
 
-        <Space
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".15" />
+    </RelativeLayout>
 
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/description_layout">
-
-        <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:layout_marginBottom="100dp"
-            android:id="@+id/description" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/pause_play_button_layout">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/pause"
-            android:id="@+id/pause_play_image"
-            android:layout_gravity="bottom|right" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pause_play_button"
-            android:layout_gravity="bottom|right" />
-    </FrameLayout>
-
-</RelativeLayout>
+</LinearLayout>
