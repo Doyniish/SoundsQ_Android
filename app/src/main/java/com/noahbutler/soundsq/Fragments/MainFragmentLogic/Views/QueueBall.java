@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
+import com.noahbutler.soundsq.IO.IO;
+import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
@@ -60,6 +63,11 @@ public class QueueBall {
     private Button queueBallSelectTop, queueBallSelectBottom, queueBallSelectLeft, queueBallSelectRight;
     private Button queueBallLogic;
     private ImageView queueBallImage;
+
+
+    /* Queue Ball Settings */
+    private static final int WIDTH = 100;
+    private static final int HEIGHT = 100;
 
     public QueueBall(View masterView, Activity activity) {
         this.masterView = masterView;
@@ -150,29 +158,26 @@ public class QueueBall {
 
     private void displayQueueBall() {
         setBallVisibility(true);
-        //TODO: replace with loaded in image
-        //queueBallImage.setImageDrawable(queueBallImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
         setBallClickable(true);
         setOptionsClickable(false);
     }
 
     private void displayQueueBallOptions() {
-        //TODO: replace with loaded image
-        //queueBallImage.setImageDrawable(queueBallOptionsImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball_options, WIDTH, HEIGHT, queueBallImage);
         setBallClickable(false);
         setOptionsClickable(true);
     }
 
     private void displayLoadingQueueBall() {
-        //TODO: display image as loading queue ball
-        //queueBallImage.setImageDrawable(queueBallLoadingImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball_info, WIDTH, HEIGHT, queueBallImage);
         setBallClickable(false);
         setOptionsClickable(false);
     }
 
     private void deleteQueue() {
-        //TODO: remove queue_id and boolean from local file.
-        //TODO: send message to server that queue needs to be deleted
+        SoundQueue.close();
+        IO.deleteQueueID(activity.getBaseContext().getFilesDir());
     }
 
     private void closeQueueBall() {

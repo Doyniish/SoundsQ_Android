@@ -3,9 +3,11 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 import android.app.Activity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
+import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 
@@ -33,14 +35,17 @@ public class QueueView {
     /* Views */
     private ListView queueListView;
     private QueueListAdapter queueListAdapter;
-    private ImageButton pausePlayButton;
+    private ImageView pausePlayButton;
 
     /*********/
     /* State */
-    private int pausePlayButtonState;
-
+    private int pausePlayButtonState = 1;
     private static final int PAUSED = 0;
     private static final int PLAYING = 1;
+
+    /* Image Size */
+    private static final int WIDTH = 100;
+    private static final int HEIGHT = 100;
 
     public QueueView(View masterView, Activity activity) {
         this.masterView = masterView;
@@ -50,7 +55,7 @@ public class QueueView {
     public void instantiate() {
 
         /* setup pause/play button */
-        pausePlayButton = (ImageButton) masterView.findViewById(R.id.pause_play_button);
+        pausePlayButton = (ImageView) masterView.findViewById(R.id.pause_play_button);
         pausePlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,13 +79,16 @@ public class QueueView {
         /* create our queue adapter */
         queueListAdapter = new QueueListAdapter((LaunchActivity) activity);
         queueListView.setAdapter(queueListAdapter);
+
+        //initially display pause
+        displayPauseButton();
     }
 
     private void displayPauseButton() {
-        //pausePlayButton.setImageDrawable(pauseImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.pause, WIDTH, HEIGHT, pausePlayButton);
     }
 
     private void displayPlayButton() {
-        //pausePlayButton.setImageDrawable(playImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.play, WIDTH, HEIGHT, pausePlayButton);
     }
 }

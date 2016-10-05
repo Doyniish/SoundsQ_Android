@@ -5,9 +5,6 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.ThreadUtils.Messenger;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -88,8 +85,8 @@ public class SoundPackageDownloader extends AsyncTask<String, String, Boolean> {
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
         mWakeLock.release();
-
-        Messenger messenger = new Messenger();
-        messenger.sendSoundImageLocation(fileLocation);
+        //TODO: send Image Location to SoundQueue
+        //Messenger messenger = new Messenger();
+        //messenger.sendSoundImageLocation(fileLocation);
     }
 }

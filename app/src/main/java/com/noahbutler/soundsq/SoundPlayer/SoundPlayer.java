@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 import java.io.IOException;
 
@@ -35,7 +34,6 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     /**
      * a messenger object used to signal that we have finished the current song.
      */
-    private Messenger messenger;
 
     private Context context;
     private PowerManager.WakeLock mWakeLock;
@@ -47,7 +45,6 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... params) {
-        messenger = new Messenger();
         Boolean prepared;
         try {
             mediaPlayer.setDataSource(params[0]);
@@ -112,7 +109,8 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
     private void startPlay() {
         mediaPlayer.start();
-        messenger.updateViews();
+        //TODO: update views
+        //messenger.updateViews();
     }
 
     private void completePlay() {

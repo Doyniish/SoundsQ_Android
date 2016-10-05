@@ -1,17 +1,22 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController;
 
+import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueNamePopup;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueView;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
+import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 import org.json.JSONException;
@@ -28,6 +33,13 @@ public class StateController {
     /*************/
     /* DEBUG TAG */
     private static final String TAG = "StateControl";
+
+
+    /*****************/
+    /* State of User */
+    public static int USER_STATE = 0;
+    public static final int SPECTATOR = 1;
+    public static final int OWNER = 2;
 
 
     /*********************************************/
@@ -84,7 +96,6 @@ public class StateController {
                     default:
                         break;
                 }
-
                 return true;
             }
         });
@@ -93,6 +104,42 @@ public class StateController {
         displayLoading();
         initializeSoundsQ();
     }
+
+    /** Setup for app **/
+
+    private void initializeSoundsQ() {
+
+        switch(checkFile(activity.getBaseContext().getFilesDir())) {
+            case FRESH_START:
+                USER_STATE = OWNER;
+                Log.e(TAG, "FRESH START");
+                initializeLocation();
+                createOwnerView(); //user needs a new queue
+                break;
+            case LOAD_OWNER:
+                USER_STATE = OWNER;
+                Log.e(TAG, "LOAD_OWNER");
+                initializeLocation();
+                //TODO: wait for queue to load from server
+                loadOwnerView();
+                break;
+            case LOAD_SPECTATOR:
+                IO.deleteQueueID(activity.getBaseContext().getFilesDir());
+                Log.e(TAG, "LOAD_SPECTATOR");
+                USER_STATE = SPECTATOR;
+                //TODO: wait for queue to load from server
+                loadSpectatorView();
+        }
+
+        /* Showing loading ball until we get a message from the server */
+    }
+
+    private void initializeLocation() {
+        gpsReceiver = new GPSReceiver();
+        gpsReceiver.initialize(activity, false); //initialized from playing phone
+    }
+
+    /** Create SoundsQ Views **/
 
     private void createQueueBall() {
         queueBall = new QueueBall(masterView, activity);
@@ -109,32 +156,12 @@ public class StateController {
         queueBall.setState(QueueBall.STATE_LOADING);
     }
 
-    /** Setup for app **/
-
-    private void initializeSoundsQ() {
-
-        switch(checkFile(activity.getBaseContext().getFilesDir())) {
-            case FRESH_START:
-                initializeLocation();
-                createOwnerView(); //user needs a new queue
-                break;
-            case LOAD_OWNER:
-                initializeLocation();
-                //TODO: wait for queue to load from server
-                loadOwnerView();
-                break;
-            case LOAD_SPECTATOR:
-                //TODO: wait for queue to load from server
-                loadSpectatorView();
-        }
-
-        /* Showing loading ball until we get a message from the server */
+    private void createOwnerView() {
+        SoundQueue.createQueue();
+        SoundQueue.PLAY = true; //Play songs
     }
 
-    private void initializeLocation() {
-        gpsReceiver = new GPSReceiver();
-        gpsReceiver.initialize(activity, false); //initialized from playing phone
-    }
+    /** Load Saved Queue From Server **/
 
     private void loadSpectatorView() {
         SoundQueue.PLAY = false; //Don't try to play songs
@@ -145,9 +172,27 @@ public class StateController {
         Sender.createExecute(Sender.REQUEST_QUEUE, SoundQueue.ID);
     }
 
-    private void createOwnerView() {
-        SoundQueue.createQueue();
-        SoundQueue.PLAY = true; //Play songs
+    /** Update Stream Methods **/
+
+    private void loadedSpectator() {
+        createQueueView();
+        queueBall.setState(QueueBall.STATE_INVISIBLE);
+    }
+
+    private void loadedOwner() {
+        createQueueView();
+        queueBall.setState(QueueBall.STATE_INVISIBLE);
+    }
+
+    private void freshStartCompleted() {
+        createQueueView();
+        queueBall.setState(QueueBall.STATE_INVISIBLE);
+        Toast.makeText(activity.getBaseContext(), "Queue started! Now give it a name!", Toast.LENGTH_LONG).show();
+    }
+
+    private void failedRequest() {
+        Toast.makeText(activity.getBaseContext(), "Joined queue no longer exists, Starting a fresh one...", Toast.LENGTH_LONG).show();
+        createOwnerView();
     }
 
     private int checkFile(File directory) {
@@ -178,51 +223,56 @@ public class StateController {
         }
     }
 
-    /** Update Stream Methods **/
-
-    public void loadedSpectator() {
-        createQueueView();
-        //TODO: display exit button on toolbar
-        queueBall.setState(QueueBall.STATE_INVISIBLE);
-    }
-
-    public void loadedOwner() {
-        createQueueView();
-        //TODO: display normal toolbar, with created name in queue name field
-        queueBall.setState(QueueBall.STATE_INVISIBLE);
-    }
-
-    public void freshStartCompleted() {
-        createQueueView();
-        //TODO: display normal toolbar, with "create name" in queue name field
-        queueBall.setState(QueueBall.STATE_INVISIBLE);
-
-    }
-
-    public void failedRequest() {
-        Toast.makeText(activity.getBaseContext(), "Joined queue no longer exists, Starting a fresh one...", Toast.LENGTH_LONG).show();
-        createOwnerView();
-    }
-
     /** GPS Methods **/
 
     public void onStart() {
-        gpsReceiver.onStart();
+        if(USER_STATE == OWNER) {
+            gpsReceiver.onStart();
+        }
     }
 
     public void onResume() {
-        gpsReceiver.onResume();
+        if(USER_STATE == OWNER) {
+            gpsReceiver.onResume();
+        }
     }
 
     public void onPause() {
-        gpsReceiver.onPause();
+        if(USER_STATE == OWNER) {
+            gpsReceiver.onPause();
+        }
     }
 
     public void onStop() {
-        gpsReceiver.onStop();
+        if(USER_STATE == OWNER) {
+            gpsReceiver.onStop();
+        }
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        gpsReceiver.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(USER_STATE == OWNER) {
+            gpsReceiver.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(USER_STATE == OWNER) {
+            gpsReceiver.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void onClickMenuItem(int id) {
+        switch(id) {
+            case R.id.home_item:
+                Log.e(TAG, "Home item selected");
+                queueBall.setState(QueueBall.STATE_QUEUE_BALL);
+                break;
+            case R.id.queue_name:
+                QueueNamePopup queueNamePopup = new QueueNamePopup();
+                queueNamePopup.show(activity.getFragmentManager(), null);
+            case R.id.exit_item:
+                //TODO: leave current queue
+                break;
+        }
     }
 }

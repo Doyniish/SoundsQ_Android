@@ -14,6 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Activities.Share.ShareActivity;
+import com.noahbutler.soundsq.Activities.Share.ShareActivityMessage;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
@@ -36,7 +37,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String SP_KEY = "sound_package";
     private static final String A_KEY = "artist";
     private static final String S_KEY = "size";
-    private static final String QR_KEY = "qr_code";
     private static final String L_KEY = "local_queue";
 
     Map<String, String> data;
@@ -45,6 +45,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         data = remoteMessage.getData();
         Log.d(TAG, "...RECEIVED...");
+        Log.d(TAG, "" + data.toString());
+        Log.d(TAG, "" + data.keySet());
+
         if(data.keySet().contains(SP_KEY)) {
             receivedSound(data);
         }else if(data.keySet().contains(S_KEY)) {
@@ -93,16 +96,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void receivedLocalQueues(Map<String, String> data) {
         try {
-            JSONObject jsonObject = new JSONObject(data.get(L_KEY));
-            HashMap<String, String> localQueueList = new HashMap<>();
-            Iterator<String> keys = jsonObject.keys();
+            JSONObject localQueuesJSON = new JSONObject(data.get(L_KEY));
+            ShareActivityMessage message = new ShareActivityMessage();
 
-            //create list of key strings
-            while(keys.hasNext()) {
-                localQueueList.put(keys.next(), jsonObject.getString(keys.next()));
-            }
-            Log.d(TAG, "Local Queue list is being sent to Share Activity");
-            //TODO: notify ShareActivity that it can display the list.
+            message.localQueuesLoaded(localQueuesJSON);
 
         } catch (JSONException e) {
             e.printStackTrace();

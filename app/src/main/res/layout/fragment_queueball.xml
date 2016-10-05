@@ -4,14 +4,14 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
+    <Toolbar
         android:id="@+id/toolbar"
         android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:titleTextColor="@android:color/white"
-        android:background="?android:attr/colorMultiSelectHighlight">
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="59dp"
+        android:titleTextColor="@android:color/white"
+        android:background="@drawable/top_bar_bg">
+    </Toolbar>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,7 +21,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/queue_view_layout">
+            android:id="@+id/queue_view_layout"
+            android:background="#303030">
 
             <ListView
                 android:layout_width="wrap_content"
@@ -38,17 +39,17 @@
             android:id="@+id/pause_play_button_layout">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 app:srcCompat="@drawable/pause"
-                android:id="@+id/pause_play_image"
-                android:layout_gravity="bottom|right" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/pause_play_button"
-                android:layout_gravity="bottom|right" />
+                android:layout_gravity="bottom|right"
+                android:clickable="true"
+                android:elevation="23dp"
+                android:scaleType="centerCrop"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp" />
+
         </FrameLayout>
 
         <FrameLayout
@@ -73,15 +74,16 @@
             android:id="@+id/queue_ball_image_layout">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 app:srcCompat="@drawable/queue_ball"
                 android:id="@+id/queue_ball_image"
                 android:adjustViewBounds="false"
                 android:cropToPadding="false"
-                android:elevation="5dp"
+                android:elevation="0dp"
                 android:layout_gravity="center"
-                android:layout_marginBottom="50dp" />
+                android:layout_marginBottom="70dp"
+                android:layout_height="300dp"
+                android:layout_width="300dp"
+                android:scaleType="centerCrop" />
         </FrameLayout>
 
         <LinearLayout
@@ -95,7 +97,7 @@
             <Space
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight=".03" />
+                android:layout_weight=".04" />
 
             <LinearLayout
                 android:orientation="horizontal"

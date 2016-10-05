@@ -1,6 +1,5 @@
 package com.noahbutler.soundsq.IO;
 
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.noahbutler.soundsq.Constants;
@@ -20,9 +19,13 @@ import java.io.IOException;
  */
 public class IO {
 
+
+    /********/
+    /* Keys */
     public static final String Q_Key = "queue_id";
     public static final String B_Key = "is_owner";
     public static final String N_Key = "no_file";
+
 
     public static void writeQueueID(File directory, String queueID, boolean isOwner) {
 
@@ -39,6 +42,19 @@ public class IO {
         }
     }
 
+    public static JSONObject readQueueID(File directory) {
+        return read(directory, Constants.CACHE_FILE);
+    }
+
+    public static boolean deleteQueueID(File directory) {
+        return delete(directory, Constants.CACHE_FILE);
+    }
+
+    private static boolean delete(File directory, String fileName) {
+        File file = new File(directory, fileName);
+        return file.delete();
+    }
+
     private static void write(File directory, String fileName, String data) {
         File file = new File(directory, fileName);
         BufferedWriter bufferedWriter;
@@ -51,10 +67,6 @@ public class IO {
             Log.d("WRITING_ERROR", e.getMessage());
         }
 
-    }
-
-    public static JSONObject readQueueID(File directory) {
-        return read(directory, Constants.CACHE_FILE);
     }
 
     private static JSONObject read(File directory, String fileName) {

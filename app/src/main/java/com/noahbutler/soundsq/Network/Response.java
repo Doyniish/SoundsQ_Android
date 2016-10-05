@@ -3,7 +3,6 @@ package com.noahbutler.soundsq.Network;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
-import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 /**
  * Created by gildaroth on 9/28/16.
@@ -51,19 +50,19 @@ public class Response {
                 break;
             case QUEUE_CREATED:
                 //TODO: queue created successfully,
-
+                message.freshStartCompleted();
                 break;
             case QUEUE_LOADED:
-                StateController.queueFound();
+                //StateController.queueFound();
                 break;
             case QUEUE_DELETED_SUCCESS:
-                StateController.queueDeletedSuccess();
+                //StateController.queueDeletedSuccess();
                 break;
             case SHARE_ACT_QUEUE_REMOVED:
-                messenger.queueNotExists(Messenger.notExists[0]);
+                //messenger.queueNotExists(Messenger.notExists[0]);
                 break;
             case LAUNCH_ACT_QUEUE_REMOVED:
-                StateController.queueRemoved();
+                //StateController.queueRemoved();
                 break;
             default:
                 break;

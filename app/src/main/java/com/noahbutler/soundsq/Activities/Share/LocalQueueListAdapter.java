@@ -27,7 +27,7 @@ public class LocalQueueListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return SoundQueue.size();
+        return queueNameList.length;
     }
 
     @Override

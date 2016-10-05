@@ -9,17 +9,22 @@ import android.os.Message;
 
 public class StateControllerMessage {
 
-    Bundle bundle;
-    Message message;
+    private Bundle bundle;
+    private Message message;
 
-    public void init() {
+    public StateControllerMessage() {
         bundle = new Bundle();
         message = new Message();
     }
 
     public void spectatorLoaded() {
-        init();
         bundle.putInt(StateController.UPDATE_KEY, StateController.SPEC_QUEUE_LOADED);
+        message.setData(bundle);
+        StateController.updateStream.sendMessage(message);
+    }
+
+    public void freshStartCompleted() {
+        bundle.putInt(StateController.UPDATE_KEY, StateController.QUEUE_CREATED);
         message.setData(bundle);
         StateController.updateStream.sendMessage(message);
     }

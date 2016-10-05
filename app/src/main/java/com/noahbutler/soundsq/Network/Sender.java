@@ -1,28 +1,16 @@
 package com.noahbutler.soundsq.Network;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
-import com.noahbutler.soundsq.ThreadUtils.Messenger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
 
 /**
  * Created by NoahButler on 9/6/15.
@@ -31,6 +19,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
 
     public static final String SEND_TOKEN = "send_token";
     public static final String RUN_NEW_QID = "run_new_qid";
+    public static final String SEND_NAME = "send_name";
     public static final String SEND_SOUND = "send_sound";
     public static final String CHECK_QUEUE = "check_queue";
     public static final String REQUEST_QUEUE = "request_queue";
@@ -40,20 +29,20 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     //104.236.237.151
     private static final String SEND_TOKEN_URL = "http://104.236.237.151/send/token/";
     private static final String SEND_NEW_QID_URL = "http://104.236.237.151/new/queue/";
-    private static final String SEND_SOUND_URL   = "http://104.236.237.151/sound/send/";
+    private static final String SEND_NAME_URL = "http://104.236.237.151/send/name/";
+    private static final String SEND_SOUND_URL   = "http://104.236.237.151/send/sound/";
     private static final String CHECK_QUEUE_URL = "http://104.236.237.151/queue/exists/";
     private static final String REQUEST_QUEUE_URL = "http://104.236.237.151/request/queue/";
     private static final String CLOSE_QUEUE_URL = "http://104.236.237.151/close/queue/";
     private static final String SENDER_GPS_URL = "http://104.236.237.151/gps/sender/";
     private static final String QUEUE_GPS_URL = "http://104.236.237.151/gps/queue/";
 
-    private String queue_id_key = "queue_id";
-    private String singleSound_key = "sound_url";
-    private String user_token_key = "user_token";
-    private String lat_key = "lat_coord";
-    private String long_key = "long_coord";
-
-    private Activity activty;
+    private static String Q_Key = "queue_id";
+    private static String N_Key = "queue_name";
+    private static String S_Key = "sound_url";
+    private static String T_Key = "user_token";
+    private static String Lat_Key = "lat_coord";
+    private static String Long_Key = "long_coord";
 
     public static void createExecute(String...strings) {
         Sender sender = new Sender();
@@ -68,6 +57,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 return sendToken(strings);
             case RUN_NEW_QID:
                 return sendNewQID(strings);
+            case SEND_NAME:
+                return sendName(strings);
             case SEND_SOUND:
                 return sendSound(strings);
             case CHECK_QUEUE:
@@ -89,8 +80,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private boolean sendToken(String...strings) {
         String[] keys = new String[2];
 
-        keys[0] = queue_id_key;
-        keys[1] = user_token_key;
+        keys[0] = Q_Key;
+        keys[1] = T_Key;
 
         String[] values = new String[2];
         values[0] = SoundQueue.ID; //queue id for the new queue
@@ -103,8 +94,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private boolean sendNewQID(String...strings) {
         String[] keys = new String[2];
 
-        keys[0] = queue_id_key;
-        keys[1] = user_token_key;
+        keys[0] = Q_Key;
+        keys[1] = T_Key;
 
         String[] values = new String[2];
         values[0] = strings[1]; //queue id for the new queue
@@ -114,11 +105,25 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
+    private boolean sendName(String...strings) {
+        String[] keys = new String[2];
+
+        keys[0] = Q_Key;
+        keys[1] = N_Key;
+
+        String[] values = new String[2];
+        values[0] = SoundQueue.ID;
+        values[1] = strings[1];
+
+        NetworkGate networkGate = new NetworkGate(SEND_NAME_URL);
+        return networkGate.post(keys, values);
+    }
+
     private boolean closeQueue(String...strings) {
         String[] keys = new String[1];
         String[] values = new String[1];
 
-        keys[0] = queue_id_key;
+        keys[0] = Q_Key;
         values[0] = SoundQueue.ID;
 
         NetworkGate networkGate = new NetworkGate(CLOSE_QUEUE_URL);
@@ -128,8 +133,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private boolean requestQueue(String...strings) {
         String[] keys = new String[2];
 
-        keys[0] = queue_id_key;
-        keys[1] = user_token_key;
+        keys[0] = Q_Key;
+        keys[1] = T_Key;
 
         String[] values = new String[2];
 
@@ -144,7 +149,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private boolean checkQueue(String...strings) {
         String[] keys = new String[1];
         String[] values = new String[1];
-        keys[0] = queue_id_key;
+        keys[0] = Q_Key;
         values[0] = strings[1];
 
         NetworkGate networkGate = new NetworkGate(CHECK_QUEUE_URL);
@@ -161,8 +166,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         //Sound the person is trying to send
         values[1] = strings[2];
 
-        keys[0] = queue_id_key;
-        keys[1] = singleSound_key;
+        keys[0] = Q_Key;
+        keys[1] = S_Key;
 
         //Send the information to the server
         NetworkGate networkGate = new NetworkGate(SEND_SOUND_URL);
@@ -174,8 +179,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         String[] values = new String[3];
 
         keys[0] = "to";
-        keys[1] = lat_key;
-        keys[2] = long_key;
+        keys[1] = Lat_Key;
+        keys[2] = Long_Key;
 
         values[0] = Constants.token;
         values[1] = strings[1];
@@ -189,9 +194,9 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         String[] keys = new String[3];
         String[] values = new String[3];
 
-        keys[0] = queue_id_key;
-        keys[1] = lat_key;
-        keys[2] = long_key;
+        keys[0] = Q_Key;
+        keys[1] = Lat_Key;
+        keys[2] = Long_Key;
 
         values[0] = SoundQueue.ID;
         values[1] = strings[1];

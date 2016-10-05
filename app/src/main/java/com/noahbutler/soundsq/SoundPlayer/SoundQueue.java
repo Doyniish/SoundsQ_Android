@@ -5,9 +5,6 @@ import android.app.Activity;
 import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.QueueIDGenerator;
-import com.noahbutler.soundsq.SoundPlayer.SoundPlayer;
-import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
-import com.noahbutler.soundsq.ThreadUtils.Messenger;
 
 import java.util.ArrayList;
 

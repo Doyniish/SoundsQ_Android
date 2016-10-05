@@ -6,4 +6,10 @@
     <string name="loading_title">Loading Title&#8230;</string>
     <string name="loading">Loading&#8230;</string>
 
+    <string name="queue_name">QUEUE NAME</string>
+
+    <string name="new_queue_name">enter new name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

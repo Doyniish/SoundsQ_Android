@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,11 +21,15 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
+import com.noahbutler.soundsq.Network.FCM.FCMInitiate;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 
 /**
@@ -60,6 +66,7 @@ public class ShareActivity extends Activity {
     private TextView loadingText;
     private ListView localQueueList;
     private LocalQueueListAdapter localQueueListAdapter;
+    private GPSReceiver gpsReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +77,8 @@ public class ShareActivity extends Activity {
         showLoading(true);
 
         /* get our FCM token */
-        register();
+        FCMInitiate fcmInitiate = new FCMInitiate(this);
+        fcmInitiate.register();
 
         // Get intent, action and MIME type
         Intent intent = getIntent();
@@ -97,35 +105,9 @@ public class ShareActivity extends Activity {
         });
 
         /* Send GPS to find local Queues */
-        GPSReceiver gpsReceiver = new GPSReceiver();
-        gpsReceiver.initialize(this, true); //send GPS to find local queues
+        gpsReceiver = new GPSReceiver();
+        gpsReceiver.initialize(this, true); //sends GPS to find local queues
         /* local queues sent to DownStreamReceiver from server */
-    }
-
-    private void register() {
-        /* Start IntentService to register this application with GCM. */
-        if (checkPlayServices()) {
-            Log.e("LaunchActivity", "starting reg intent");
-            Constants.token = FirebaseInstanceId.getInstance().getToken();
-            Log.e("LaunchActivity", "TOKEN: " + Constants.token);
-        }
-    }
-
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Toast.makeText(getBaseContext(), "Play Services required...closing now", Toast.LENGTH_LONG);
-                Log.i("LaunchActivity", "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     private void handleSendSound(Intent intent) {
@@ -151,12 +133,21 @@ public class ShareActivity extends Activity {
     private void showList(String list) {
         try {
             JSONObject jsonObject = new JSONObject(list);
-            //TODO: decode json
 
-            //Display our list
+            //convert to HashMap for easier data retrieval
+            Iterator<String> keys = jsonObject.keys();
+            HashMap<String, String> localQueues = new HashMap<>();
+
+            while(keys.hasNext()) {
+                String currentKey = keys.next();
+                localQueues.put(currentKey, jsonObject.getString(currentKey));
+
+            }
+
+            //loading is completed
             showLoading(false);
-            //TODO: make sure we are displaying queue names and not ids
-            String[] localQueues = (String[])list.keySet().toArray();
+
+            //display list of local queues
             constructLocalQueueList(localQueues);
 
         } catch (JSONException e) {
@@ -164,19 +155,57 @@ public class ShareActivity extends Activity {
         }
     }
 
-    private void constructLocalQueueList(final String[] localQueues) {
+    private void constructLocalQueueList(final HashMap<String, String> localQueues) {
+        final String[] localQueueData = localQueues.keySet().toArray(new String[localQueues.keySet().size()]);
+
         localQueueList = (ListView)findViewById(R.id.local_queue_list);
+        localQueueListAdapter = new LocalQueueListAdapter(this, localQueueData);
+        localQueueList.setAdapter(localQueueListAdapter);
+
         localQueueList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String queue_id = localQueues[position];
-                //Save queue_id that they are send so that they can view it in the app
-                IO.writeQueueID(getBaseContext().getFilesDir(), queue_id, false); //false: not owner
+                //Get queue selected by using the list of keys.
+                String queue_id = localQueues.get(localQueueData[position]);
+
+                //TODO: Save queue_id that they are send so that they can view it in the app
+                //IO.writeQueueID(getBaseContext().getFilesDir(), queue_id, false); //false: not owner
                 Sender.createExecute(Sender.SEND_SOUND, queue_id, soundLink);
+                ShareActivity.this.finish();
             }
         });
 
-        localQueueListAdapter = new LocalQueueListAdapter(this, localQueues);
-        localQueueList.setAdapter(localQueueListAdapter);
     }
+
+    /** GPS Methods **/
+
+    public void onStart() {
+        super.onStart();
+        gpsReceiver.onStart();
+    }
+
+    public void onResume() {
+        super.onResume();
+        gpsReceiver.onResume();
+    }
+
+    public void onPause() {
+        super.onPause();
+        gpsReceiver.onPause();
+    }
+
+    public void onStop() {
+        super.onStop();
+        gpsReceiver.onStop();
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        gpsReceiver.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        gpsReceiver.onActivityResult(requestCode, resultCode, data);
+    }
+
 }
