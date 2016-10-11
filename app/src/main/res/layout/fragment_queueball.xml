@@ -8,9 +8,9 @@
         android:id="@+id/toolbar"
         android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="59dp"
         android:titleTextColor="@android:color/white"
-        android:background="@drawable/top_bar_bg">
+        android:background="@drawable/top_bar_bg"
+        android:layout_height="50dp">
     </Toolbar>
 
     <RelativeLayout
@@ -64,7 +64,7 @@
                 android:layout_gravity="bottom|center_horizontal"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
-                android:layout_marginBottom="100dp"
+                android:layout_marginBottom="60dp"
                 android:id="@+id/description" />
         </FrameLayout>
 
@@ -94,11 +94,6 @@
             android:foregroundTint="#ca4e4e"
             android:id="@+id/queue_ball_buttons_layout" >
 
-            <Space
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".04" />
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -106,60 +101,82 @@
                 android:id="@+id/linearLayout"
                 android:layout_weight=".3" >
 
-                <LinearLayout
+                <FrameLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight=".3">
 
                     <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_width="125dp"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="142dp"
                         android:id="@+id/queue_ball_select_top"
-                        android:layout_weight="1" />
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="fill_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1">
-
-                        <Button
-                            android:layout_width="0dp"
-                            android:layout_height="fill_parent"
-                            android:id="@+id/queue_ball_select_left"
-                            android:layout_weight=".1"
-                            android:elevation="0dp" />
-
-                        <Button
-                            android:layout_width="0dp"
-                            android:layout_height="fill_parent"
-                            android:id="@+id/queue_ball_logic_button"
-                            android:layout_weight=".1"
-                            android:longClickable="true" />
-
-                        <Button
-                            android:layout_width="0dp"
-                            android:layout_height="fill_parent"
-                            android:id="@+id/queue_ball_select_right"
-                            android:layout_weight=".1" />
-                    </LinearLayout>
+                        android:layout_gravity="center_vertical|center_horizontal"/>
 
                     <Button
-                        android:layout_width="fill_parent"
-                        android:layout_height="0dp"
+                        android:layout_width="125dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="11dp"
                         android:id="@+id/queue_ball_select_bottom"
-                        android:layout_weight="1" />
-                </LinearLayout>
+                        android:layout_gravity="center_vertical|center_horizontal"/>
 
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="125dp"
+                        android:layout_marginBottom="65dp"
+                        android:layout_marginRight="80dp"
+                        android:id="@+id/queue_ball_select_left"
+                        android:layout_gravity="center_vertical|center_horizontal"/>
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="125dp"
+                        android:layout_marginBottom="65dp"
+                        android:layout_marginLeft="80dp"
+                        android:id="@+id/queue_ball_select_right"
+                        android:layout_gravity="center_vertical|center_horizontal"/>
+
+                    <Button
+                        android:longClickable="true"
+                        android:layout_width="125dp"
+                        android:layout_height="125dp"
+                        android:layout_marginBottom="65dp"
+                        android:id="@+id/queue_ball_logic_button"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        />
+
+
+                </FrameLayout>
             </LinearLayout>
-
-            <Space
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".15" />
-
         </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/check_delete_layout">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/check_delete_no"
+                android:layout_marginBottom="50dp"
+                android:layout_marginLeft="18dp"
+                android:fadingEdge="vertical"
+                android:fadingEdgeLength="5dp"
+                android:layout_gravity="center_vertical|center_horizontal" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/check_delete_yes"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginBottom="50dp"
+                android:layout_marginRight="18dp"
+                android:fadingEdge="vertical"
+                android:fadingEdgeLength="5dp" />
+
+        </FrameLayout>
 
     </RelativeLayout>
 

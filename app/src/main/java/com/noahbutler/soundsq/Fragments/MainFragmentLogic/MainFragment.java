@@ -42,8 +42,8 @@ public class MainFragment extends Fragment {
         return masterView;
     }
 
-    public void onClickMenuItem(int id) {
-        stateController.onClickMenuItem(id);
+    public void setMenuView(View menuView) {
+        stateController.setMenuView(menuView);
     }
 
     @Override

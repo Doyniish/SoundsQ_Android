@@ -32,12 +32,12 @@ public class QueueListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return SoundQueue.size();
+        return SoundQueue.queue_packages.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return SoundQueue.queue_packages.get(position);
     }
 
     @Override
@@ -47,6 +47,7 @@ public class QueueListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.e("ListAdapter", "Called");
         ViewHolder viewHolder = new ViewHolder();
 
         if(convertView == null) {
@@ -84,7 +85,7 @@ public class QueueListAdapter extends BaseAdapter {
      * to the correct view on the list.
      */
     private void applySoundPackage(ViewHolder viewHolder, int position) {
-
+        Log.e("ListAdapter", "here");
         /* first we want to make sure the list is not empty */
         if(SoundQueue.queue_packages.size() != 0) {
 

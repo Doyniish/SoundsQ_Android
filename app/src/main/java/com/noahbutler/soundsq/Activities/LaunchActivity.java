@@ -62,13 +62,19 @@ public class LaunchActivity extends Activity {
         super.onCreateOptionsMenu(menu);
 
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowHomeEnabled(false);
+
+        actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
 
         switch(StateController.USER_STATE) {
             case StateController.OWNER:
-                getMenuInflater().inflate(R.menu.menu_owner, menu);
+                View menuOwner = getLayoutInflater().inflate(R.layout.menu_owner, null);
+                mainFragment.setMenuView(menuOwner);
+                actionBar.setCustomView(menuOwner);
+                //getMenuInflater().inflate(R.menu.menu_owner, menu);
                 break;
             case StateController.SPECTATOR:
                 getMenuInflater().inflate(R.menu.menu_spectator, menu);
@@ -77,17 +83,16 @@ public class LaunchActivity extends Activity {
                 getMenuInflater().inflate(R.menu.menu_owner, menu);
                 break;
         }
-//
-//        Toolbar parent =(Toolbar) actionBar.getCustomView().getParent();
-//        parent.setPadding(0,0,0,0);//for tab otherwise give space in tab
-//        parent.setContentInsetsAbsolute(0,0);
+
+        Toolbar parent =(Toolbar) actionBar.getCustomView().getParent();
+        parent.setPadding(0,0,0,0);//for tab otherwise give space in tab
+        parent.setContentInsetsAbsolute(0,0);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mainFragment.onClickMenuItem(item.getItemId());
         return super.onOptionsItemSelected(item);
     }
 }

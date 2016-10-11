@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +25,7 @@ public class SoundPackageDownloader extends AsyncTask<String, String, Boolean> {
     private Context context;
     private PowerManager.WakeLock mWakeLock;
     private String fileLocation;
+    private String soundUrl;
 
     public SoundPackageDownloader(Context context) {
         this.context = context;
@@ -30,6 +33,7 @@ public class SoundPackageDownloader extends AsyncTask<String, String, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... params) {
+
         InputStream in = null;
         OutputStream out = null;
 
@@ -43,10 +47,10 @@ public class SoundPackageDownloader extends AsyncTask<String, String, Boolean> {
             if(connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 return false;
             }
-
-            int fileLen = connection.getContentLength();
             fileLocation = params[2] + ".jpg";
-            Log.e("ART_DOWNLOADER", "file: " + fileLocation + " len: " + fileLen);
+            soundUrl = params[3];
+            Log.e("ART_DOWNLOADER", "file: " + fileLocation);
+
             in = connection.getInputStream();
             out = context.openFileOutput(fileLocation, Context.MODE_PRIVATE);
 
@@ -85,8 +89,7 @@ public class SoundPackageDownloader extends AsyncTask<String, String, Boolean> {
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
         mWakeLock.release();
-        //TODO: send Image Location to SoundQueue
-        //Messenger messenger = new Messenger();
-        //messenger.sendSoundImageLocation(fileLocation);
+        StateControllerMessage message = new StateControllerMessage();
+        message.updateQueueView(fileLocation, soundUrl);
     }
 }

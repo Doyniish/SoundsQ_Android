@@ -1,17 +1,19 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall;
-import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueNamePopup;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueView;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
@@ -57,6 +59,7 @@ public class StateController {
     public static final int OWNER_QUEUE_LOADED = 1;
     public static final int QUEUE_CREATED = 2;
     public static final int QUEUE_DELETED = 3;
+    public static final int UPDATE_VIEW = 5;
     public static final String UPDATE_KEY = "update";
 
 
@@ -93,6 +96,11 @@ public class StateController {
                         break;
                     case QUEUE_DELETED:
                         failedRequest();
+                        break;
+                    case UPDATE_VIEW:
+                        queueView.addArt(msg.getData().getString(StateControllerMessage.A_Key),
+                                msg.getData().getString(StateControllerMessage.S_Key));
+                        queueView.update();
                     default:
                         break;
                 }
@@ -119,6 +127,7 @@ public class StateController {
             case LOAD_OWNER:
                 USER_STATE = OWNER;
                 Log.e(TAG, "LOAD_OWNER");
+                IO.deleteQueueID(activity.getBaseContext().getFilesDir());
                 initializeLocation();
                 //TODO: wait for queue to load from server
                 loadOwnerView();
@@ -261,18 +270,33 @@ public class StateController {
         }
     }
 
-    public void onClickMenuItem(int id) {
-        switch(id) {
-            case R.id.home_item:
-                Log.e(TAG, "Home item selected");
+    public void setMenuView(View menuView) {
+        ImageView home = (ImageView)menuView.findViewById(R.id.home_button);
+        home.setClickable(true);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 queueBall.setState(QueueBall.STATE_QUEUE_BALL);
-                break;
-            case R.id.queue_name:
-                QueueNamePopup queueNamePopup = new QueueNamePopup();
-                queueNamePopup.show(activity.getFragmentManager(), null);
-            case R.id.exit_item:
-                //TODO: leave current queue
-                break;
-        }
+            }
+        });
+
+        final TextView queueNameDisplay = (TextView) menuView.findViewById(R.id.queue_name_display);
+        final EditText queueNameEdit = (EditText)menuView.findViewById(R.id.enter_queue_name);
+
+        queueNameEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // do your stuff here
+                    String entry = queueNameEdit.getText().toString();
+                    SoundQueue.NAME = entry;
+                    Sender.createExecute(Sender.SEND_NAME, SoundQueue.NAME);
+                    queueNameEdit.setClickable(false);
+                    queueNameEdit.setVisibility(View.INVISIBLE);
+                    queueNameDisplay.setText(entry);
+                }
+                return false;
+            }
+        });
     }
 }

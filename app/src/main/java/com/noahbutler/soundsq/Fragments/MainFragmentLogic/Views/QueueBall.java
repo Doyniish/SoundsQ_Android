@@ -2,6 +2,7 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +45,7 @@ public class QueueBall {
 
     /**************/
     /* State Keys */
+    private int CURRENT_STATE = 0;
     public static final int STATE_QUEUE_BALL = 0;
     public static final int STATE_QUEUE_BALL_OPTIONS = 1;
     public static final int STATE_LOADING = 2;
@@ -62,7 +64,7 @@ public class QueueBall {
     private TextView descriptionView;
     private Button queueBallSelectTop, queueBallSelectBottom, queueBallSelectLeft, queueBallSelectRight;
     private Button queueBallLogic;
-    private ImageView queueBallImage;
+    private ImageView queueBallImage, deleteYes, deleteNo;
 
 
     /* Queue Ball Settings */
@@ -84,6 +86,10 @@ public class QueueBall {
         queueBallSelectRight = (Button)masterView.findViewById(R.id.queue_ball_select_right);
         queueBallSelectTop = (Button)masterView.findViewById(R.id.queue_ball_select_top);
 
+        deleteYes = (ImageView)masterView.findViewById(R.id.check_delete_yes);
+        deleteNo = (ImageView)masterView.findViewById(R.id.check_delete_no);
+        hideDeleteCheck();
+
         descriptionView = (TextView)masterView.findViewById(R.id.description);
 
         /* only want to display the image, not the logic buttons */
@@ -96,8 +102,12 @@ public class QueueBall {
         queueBallLogic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Clicked Queue Ball...");
-                setState(STATE_QUEUE_BALL_OPTIONS);
+                if(CURRENT_STATE == STATE_QUEUE_BALL_OPTIONS) {
+                    setState(STATE_QUEUE_BALL);
+                }else{
+                    CURRENT_STATE = STATE_QUEUE_BALL_OPTIONS;
+                    setState(STATE_QUEUE_BALL_OPTIONS);
+                }
             }
         });
 
@@ -105,7 +115,7 @@ public class QueueBall {
             @Override
             public void onClick(View v) {
                 //TODO: Display Help Fragment
-                setState(STATE_QUEUE_BALL);
+                setState(STATE_INVISIBLE);
             }
         });
 
@@ -113,7 +123,7 @@ public class QueueBall {
             @Override
             public void onClick(View v) {
                 //TODO: go to sound cloud
-                setState(STATE_QUEUE_BALL);
+                setState(STATE_INVISIBLE);
             }
         });
 
@@ -131,11 +141,29 @@ public class QueueBall {
                 setState(STATE_INVISIBLE);
             }
         });
+
+        deleteYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SoundQueue.close();
+                IO.deleteQueueID(activity.getBaseContext().getFilesDir());
+                hideDeleteCheck();
+                activity.finish();
+            }
+        });
+
+        deleteNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideDeleteCheck();
+            }
+        });
     }
 
     public void setState(int state) {
         switch (state) {
             case STATE_QUEUE_BALL:
+                CURRENT_STATE = STATE_QUEUE_BALL;
                 displayQueueBall();
                 break;
             case STATE_QUEUE_BALL_OPTIONS:
@@ -145,7 +173,8 @@ public class QueueBall {
                 displayLoadingQueueBall();
                 break;
             case STATE_DELETE:
-                deleteQueue();
+                Log.e(TAG, "STATE_DELETE");
+                displayDeleteCheck();
                 break;
             case STATE_INVISIBLE:
                 closeQueueBall();
@@ -160,6 +189,7 @@ public class QueueBall {
         setBallVisibility(true);
         AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
         setBallClickable(true);
+        setBallVisibility(true);
         setOptionsClickable(false);
     }
 
@@ -170,14 +200,28 @@ public class QueueBall {
     }
 
     private void displayLoadingQueueBall() {
-        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball_info, WIDTH, HEIGHT, queueBallImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball_loading, WIDTH, HEIGHT, queueBallImage);
         setBallClickable(false);
+        setDescriptionVisibility(false);
         setOptionsClickable(false);
     }
 
-    private void deleteQueue() {
-        SoundQueue.close();
-        IO.deleteQueueID(activity.getBaseContext().getFilesDir());
+    private void displayDeleteCheck() {
+        deleteNo.setVisibility(View.VISIBLE);
+        deleteYes.setVisibility(View.VISIBLE);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball_confirm, WIDTH, HEIGHT, queueBallImage);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.yes, 50, 50, deleteYes);
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.no, 50, 50, deleteNo);
+        deleteYes.setClickable(true);
+        deleteNo.setClickable(true);
+    }
+
+    private void hideDeleteCheck() {
+        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
+        deleteYes.setVisibility(View.INVISIBLE);
+        deleteNo.setVisibility(View.INVISIBLE);
+        deleteYes.setClickable(false);
+        deleteNo.setClickable(false);
     }
 
     private void closeQueueBall() {
@@ -233,7 +277,7 @@ public class QueueBall {
     }
 
     public void setDescriptionVisibility(boolean visibility) {
-        if(visibility) {
+        if(visibility && SoundQueue.isPlayingSound()) {
             descriptionView.setVisibility(View.VISIBLE);
         }else{
             descriptionView.setVisibility(View.INVISIBLE);

@@ -18,12 +18,14 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.FCM.FCMInitiate;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +52,6 @@ public class ShareActivity extends Activity {
     /* Play Service Variables */
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-
     /**********************************************/
     /* used to receive updates from other threads */
     public static Handler updateStream;
@@ -63,10 +64,10 @@ public class ShareActivity extends Activity {
     /* Local Variables */
     private String soundLink;
     private ImageView loadingBall;
-    private TextView loadingText;
     private ListView localQueueList;
     private LocalQueueListAdapter localQueueListAdapter;
     private GPSReceiver gpsReceiver;
+    private String saveQueueID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +117,15 @@ public class ShareActivity extends Activity {
         /* remove https and replace with http */
         soundLink = soundLink.substring(5);
         soundLink = "http" + soundLink;
+
+        //check to see if the user came from SoundsQ
+        if(checkIsOwner()) {
+            Sender.createExecute(Sender.SEND_SOUND, saveQueueID, soundLink);
+            //send them back to the app
+            Intent intent1 = new Intent(this, LaunchActivity.class);
+            startActivity(intent1);
+            ShareActivity.this.finish();
+        }
         /* Wait for user to select local queue */
     }
 
@@ -123,10 +133,8 @@ public class ShareActivity extends Activity {
         if(show) {
             loadingBall = (ImageView)findViewById(R.id.share_loading_ball);
             loadingBall.setVisibility(View.VISIBLE);
-            loadingText = (TextView)findViewById(R.id.share_loading_text);
         }else{
             loadingBall.setVisibility(View.INVISIBLE);
-            loadingText.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -168,12 +176,36 @@ public class ShareActivity extends Activity {
                 //Get queue selected by using the list of keys.
                 String queue_id = localQueues.get(localQueueData[position]);
 
-                //TODO: Save queue_id that they are send so that they can view it in the app
-                //IO.writeQueueID(getBaseContext().getFilesDir(), queue_id, false); //false: not owner
+                IO.writeQueueID(getBaseContext().getFilesDir(), queue_id, false); //false: not owner
+
                 Sender.createExecute(Sender.SEND_SOUND, queue_id, soundLink);
                 ShareActivity.this.finish();
             }
         });
+
+    }
+
+    private boolean checkIsOwner() {
+        JSONObject saveFileJSON = IO.readQueueID(getBaseContext().getFilesDir());
+
+        if(saveFileJSON.has(IO.N_Key)) { //no file, fresh start
+            return false;
+        }else if(saveFileJSON.has(IO.Q_Key)) { //Check for saved Queue ID
+            try {
+                saveQueueID = saveFileJSON.getString(IO.Q_Key);
+                //Check to see if we are an Owner
+                if(saveFileJSON.getBoolean(IO.B_Key)) { //true: Owner of Queue
+                    return true;
+                }else{ //false: Spectator of Queue
+                    return false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else{//file is empty, Fresh Start
+            return false;
+        }
 
     }
 

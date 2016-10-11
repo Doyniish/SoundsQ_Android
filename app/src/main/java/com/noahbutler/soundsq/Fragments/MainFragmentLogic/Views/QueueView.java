@@ -1,6 +1,7 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -9,7 +10,9 @@ import android.widget.ListView;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
 import com.noahbutler.soundsq.R;
+import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * Created by gildaroth on 9/28/16.
@@ -23,6 +26,11 @@ import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
  */
 
 public class QueueView {
+
+
+    /*************/
+    /* DEBUG TAG */
+    private static final String TAG = "QueueView";
 
 
     /******************/
@@ -90,5 +98,20 @@ public class QueueView {
 
     private void displayPlayButton() {
         AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.play, WIDTH, HEIGHT, pausePlayButton);
+    }
+
+    public void update() {
+        Log.e(TAG, "UPDATE NOTIFY");
+        Log.e(TAG, "Package size: " + SoundQueue.queue_packages.size());
+        queueListAdapter = new QueueListAdapter((LaunchActivity) activity);
+        queueListView.setAdapter(queueListAdapter);
+    }
+
+    public void addArt(String fileLocation, String sound_url) {
+        for(int i = 0; i < SoundQueue.queue_packages.size(); i++) {
+            if (SoundQueue.queue_packages.get(i).sound_url.contentEquals(sound_url)) {
+                SoundQueue.queue_packages.get(i).sendFileLocation(fileLocation);
+            }
+        }
     }
 }

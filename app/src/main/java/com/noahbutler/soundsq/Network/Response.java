@@ -19,7 +19,6 @@ import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 public class Response {
 
-    private static final int QUEUE_LOCATION_SET = 100;
     private static final int QUEUE_ID_USED = 302;
     private static final int QUEUE_CREATED = 201;
     private static final int QUEUE_LOADED = 200;
@@ -43,14 +42,11 @@ public class Response {
         StateControllerMessage message = new StateControllerMessage();
 
         switch(responseCode) {
-            case QUEUE_LOCATION_SET:
-                break;
             case QUEUE_ID_USED:
                 SoundQueue.createQueue();
                 break;
             case QUEUE_CREATED:
-                //TODO: queue created successfully,
-                message.freshStartCompleted();
+                message.queueCreated();
                 break;
             case QUEUE_LOADED:
                 //StateController.queueFound();

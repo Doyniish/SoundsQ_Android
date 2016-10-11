@@ -130,7 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         /* create our filename from our sound url */
         String filename = decodedPackage.get("sound_url").substring(decodedPackage.get("sound_url").lastIndexOf("/")+1);
         /* download the file */
-        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage.get("album_art"), filename);
+        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage.get("album_art"), filename, decodedPackage.get("sound_url"));
         /* create a new sound package to hold the data */
         SoundPackage soundPackage = SoundPackage.createSoundPackage(decodedPackage);
         /* add the SoundPackage object to the list */

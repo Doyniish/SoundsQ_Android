@@ -71,4 +71,10 @@ public class SoundPlayerController {
         SoundQueue.isPlayingSound(false);
         playNextSound();
     }
+
+    public static void close() {
+        if(soundPlayer != null) {
+            soundPlayer.stopPlaying();
+        }
+    }
 }

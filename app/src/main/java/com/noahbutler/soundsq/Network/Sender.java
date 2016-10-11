@@ -9,6 +9,7 @@ import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -18,7 +19,7 @@ import java.net.URL;
 public class Sender extends AsyncTask<String, Integer, Boolean> {
 
     public static final String SEND_TOKEN = "send_token";
-    public static final String RUN_NEW_QID = "run_new_qid";
+    public static final String NEW_QUEUE = "run_new_qid";
     public static final String SEND_NAME = "send_name";
     public static final String SEND_SOUND = "send_sound";
     public static final String CHECK_QUEUE = "check_queue";
@@ -41,8 +42,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private static String N_Key = "queue_name";
     private static String S_Key = "sound_url";
     private static String T_Key = "user_token";
-    private static String Lat_Key = "lat_coord";
-    private static String Long_Key = "long_coord";
+    private static String Lat_Key = "latitude";
+    private static String Long_Key = "longitude";
 
     public static void createExecute(String...strings) {
         Sender sender = new Sender();
@@ -55,8 +56,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         switch(strings[0]) {
             case SEND_TOKEN:
                 return sendToken(strings);
-            case RUN_NEW_QID:
-                return sendNewQID(strings);
+            case NEW_QUEUE:
+                return newQueue(strings);
             case SEND_NAME:
                 return sendName(strings);
             case SEND_SOUND:
@@ -91,15 +92,20 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         return networkGate.post(keys, values);
     }
 
-    private boolean sendNewQID(String...strings) {
-        String[] keys = new String[2];
+    private boolean newQueue(String...strings) {
+        String[] keys = new String[4];
 
         keys[0] = Q_Key;
         keys[1] = T_Key;
+        keys[2] = Lat_Key;
+        keys[3] = Long_Key;
 
-        String[] values = new String[2];
-        values[0] = strings[1]; //queue id for the new queue
+        String[] values = new String[4];
+        values[0] = SoundQueue.ID;
         values[1] = Constants.token; //the current phones android FCM token
+        values[2] = strings[1]; //latitude
+        values[3] = strings[2]; //longitude
+
 
         NetworkGate networkGate = new NetworkGate(SEND_NEW_QID_URL);
         return networkGate.post(keys, values);
@@ -254,7 +260,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
 
         private void sendData() throws IOException {
             //create the output stream for the post data
-            BufferedOutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+            OutputStream out = urlConnection.getOutputStream();
             out.write(stringBuilder.toString().getBytes());
             out.flush();
             Log.d("DATA SENT", stringBuilder.toString());

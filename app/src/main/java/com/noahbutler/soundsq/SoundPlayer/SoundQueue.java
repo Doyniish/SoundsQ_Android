@@ -16,6 +16,7 @@ public class SoundQueue {
     public static String ID = null;
     public static String NAME = null;
     public static boolean PLAY = false;
+    public static boolean CREATED = false;
 
     private static ArrayList<String> queue;
     public static ArrayList<SoundPackage> queue_packages;
@@ -46,9 +47,6 @@ public class SoundQueue {
 
         /* Create a Random ID */
         genQueueID();
-
-        /* Send to Server */
-        Sender.createExecute(Sender.RUN_NEW_QID, SoundQueue.ID);
     }
 
     private static void sendToSoundPlayerController(String streamUrl) {
@@ -119,6 +117,7 @@ public class SoundQueue {
     }
 
     public static void close() {
+        SoundPlayerController.close();
         Sender.createExecute(Sender.CLOSE_QUEUE, ID);
     }
 }

@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.noahbutler.soundsq.Network.Sender;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * Created by gildaroth on 9/21/16.
@@ -209,7 +210,12 @@ public class GPSReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleA
                     }
                 }else {
                     Log.e(TAG, "Sending queue\'s gps");
-                    Sender.createExecute(Sender.QUEUE_GPS, lat, lon);
+                    if(!SoundQueue.CREATED) {
+                        SoundQueue.CREATED = true;
+                        Sender.createExecute(Sender.NEW_QUEUE, lat, lon);
+                    }else {
+                        Sender.createExecute(Sender.QUEUE_GPS, lat, lon);
+                    }
                 }
 
             }
