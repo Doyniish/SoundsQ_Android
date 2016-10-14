@@ -47,6 +47,11 @@ public class GPSReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleA
     private boolean isSharing; //sending gps to find queues
     private boolean sentOnce; // only need to send once if looking for queues
 
+    public boolean RECEIVED = false;
+
+    public static String latitude = null;
+    public static String longitude = null;
+
     public void initialize(final Activity activity, boolean isSharing) {
         this.activity = activity;
         this.isSharing = isSharing;
@@ -71,7 +76,7 @@ public class GPSReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleA
     private void settingsRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(60 * 1000);
+        locationRequest.setInterval(30 * 1000);
         locationRequest.setFastestInterval(5 * 1000);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
         builder.setAlwaysShow(true); //this is the key ingredient
@@ -199,22 +204,23 @@ public class GPSReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleA
             if (location == null) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
             } else {
-                String lat = String.valueOf(location.getLatitude());
-                String lon = String.valueOf(location.getLongitude());
+                RECEIVED = true;
+                latitude = String.valueOf(location.getLatitude());
+                longitude = String.valueOf(location.getLongitude());
 
                 if(isSharing) {
                     Log.e(TAG, "Looking for local queues...");
                     if(!sentOnce) {
-                        Sender.createExecute(Sender.SENDER_GPS, lat, lon);
+                        Sender.createExecute(Sender.SENDER_GPS, latitude, longitude);
                         sentOnce = true;
                     }
-                }else {
+                }else { // Owner Location
                     Log.e(TAG, "Sending queue\'s gps");
                     if(!SoundQueue.CREATED) {
                         SoundQueue.CREATED = true;
-                        Sender.createExecute(Sender.NEW_QUEUE, lat, lon);
+                        Sender.createExecute(Sender.NEW_QUEUE, latitude, longitude);
                     }else {
-                        Sender.createExecute(Sender.QUEUE_GPS, lat, lon);
+                        Sender.createExecute(Sender.QUEUE_GPS, latitude, longitude);
                     }
                 }
 

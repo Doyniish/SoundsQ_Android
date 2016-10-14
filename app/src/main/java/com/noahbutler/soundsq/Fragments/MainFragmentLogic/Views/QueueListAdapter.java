@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
+import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
@@ -46,7 +48,7 @@ public class QueueListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         Log.e("ListAdapter", "Called");
         ViewHolder viewHolder = new ViewHolder();
 
@@ -58,6 +60,14 @@ public class QueueListAdapter extends BaseAdapter {
             viewHolder.soundImage  = (ImageView) convertView.findViewById(R.id.sound_image);
             viewHolder.soundTitle       = (TextView)convertView.findViewById(R.id.sound_title);
             viewHolder.soundArtistName  = (TextView)convertView.findViewById(R.id.sound_artist_name);
+            viewHolder.likeButton = (ImageView) convertView.findViewById(R.id.like_button);
+            viewHolder.likeButton.setClickable(true);
+            viewHolder.likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    soundLiked(position);
+                }
+            });
 
             /* apply to original view */
             convertView.setTag(viewHolder);
@@ -77,7 +87,18 @@ public class QueueListAdapter extends BaseAdapter {
         TextView soundTitle;
         TextView soundArtistName;
         ImageView soundImage;
+        ImageView likeButton;
 
+    }
+
+    private void soundLiked(int position) {
+        if(UserState.ACTIVATED) {
+            Sender.createExecute(Sender.LIKED_SOUND, "" + position);
+        }else{
+            //TODO: Display sound cloud login.
+            SCLoginDialog loginDialog = new SCLoginDialog();
+            loginDialog.show(activity.getFragmentManager(), null);
+        }
     }
 
     /**

@@ -26,10 +26,6 @@ public class SoundQueue {
      * Boolean that holds the state: the current application is playing a sound or not.
      */
     private static boolean PLAYING_SOUND;
-    /**
-     * Boolean that holds the state: the current application has queued sounds or not.
-     */
-    private static boolean QUEUED_SOUNDS;
 
     public static void addSound(String streamUrl) {
         queue.add(streamUrl);
@@ -62,6 +58,11 @@ public class SoundQueue {
 
     private static boolean soundPlayingCheck() {
         return !isPlayingSound(); //should not play if this is true
+    }
+
+    public static String getSoundUrl(int index) {
+        SoundPackage soundPackage = queue_packages.get(index);
+        return soundPackage.sound_url;
     }
 
     public static int size() {
@@ -104,12 +105,13 @@ public class SoundQueue {
         return PLAYING_SOUND;
     }
 
-    public static void hasQueuedSounds(boolean has) {
-        QUEUED_SOUNDS = has;
-    }
-
     public static boolean hasQueuedSounds() {
-        return QUEUED_SOUNDS;
+        if(queue != null) {
+            if(queue.size() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void genQueueID() {

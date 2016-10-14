@@ -44,13 +44,15 @@
         android:paddingBottom="15dp"/>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/like_button"
         android:clickable="true"
         android:scaleType="centerCrop"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="65dp"
+        android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/yes" />
+        android:background="@drawable/like_button2" />
 
 </RelativeLayout>

@@ -1,7 +1,10 @@
 package com.noahbutler.soundsq.Network;
 
+import android.util.Log;
+
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
+import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
@@ -40,10 +43,12 @@ public class Response {
     private void respond() {
 
         StateControllerMessage message = new StateControllerMessage();
-
+        Log.e("Response", "HERE: " + responseCode + " " + QUEUE_ID_USED);
         switch(responseCode) {
             case QUEUE_ID_USED:
+                SoundQueue.CREATED = false;
                 SoundQueue.createQueue();
+                Sender.createExecute(Sender.NEW_QUEUE, GPSReceiver.latitude, GPSReceiver.longitude);
                 break;
             case QUEUE_CREATED:
                 message.queueCreated();

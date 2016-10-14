@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueView;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
@@ -35,13 +36,6 @@ public class StateController {
     /*************/
     /* DEBUG TAG */
     private static final String TAG = "StateControl";
-
-
-    /*****************/
-    /* State of User */
-    public static int USER_STATE = 0;
-    public static final int SPECTATOR = 1;
-    public static final int OWNER = 2;
 
 
     /*********************************************/
@@ -76,10 +70,11 @@ public class StateController {
     private QueueView queueView;
 
 
-    public StateController(View masterView, Activity activity) {
+    public StateController(View masterView, Activity activity, int rotated) {
         this.masterView = masterView;
         this.activity = activity;
 
+        /* create our thread message receiver */
         updateStream = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
@@ -108,8 +103,29 @@ public class StateController {
             }
         });
 
-        /* start the app */
-        displayLoading();
+        if(rotated == LaunchActivity.ROTATED) {
+            Log.e(TAG, "Rotated: State Controller");
+            displayLoading();
+            checkRotate();
+        } else {
+            /* start the app */
+            displayLoading();
+            initializeLocation();
+            initializeSoundsQ();
+        }
+    }
+
+    public void checkRotate() {
+        //queue ball is checked in displayLoading();
+
+        if(queueView == null) {
+            createQueueView();
+        }
+
+        if(gpsReceiver == null) {
+            initializeLocation();
+        }
+        //load
         initializeSoundsQ();
     }
 
@@ -119,23 +135,20 @@ public class StateController {
 
         switch(checkFile(activity.getBaseContext().getFilesDir())) {
             case FRESH_START:
-                USER_STATE = OWNER;
+                UserState.STATE = UserState.OWNER;
                 Log.e(TAG, "FRESH START");
                 initializeLocation();
                 createOwnerView(); //user needs a new queue
                 break;
             case LOAD_OWNER:
-                USER_STATE = OWNER;
+                UserState.STATE = UserState.OWNER;
                 Log.e(TAG, "LOAD_OWNER");
-                IO.deleteQueueID(activity.getBaseContext().getFilesDir());
-                initializeLocation();
                 //TODO: wait for queue to load from server
                 loadOwnerView();
                 break;
             case LOAD_SPECTATOR:
-                IO.deleteQueueID(activity.getBaseContext().getFilesDir());
                 Log.e(TAG, "LOAD_SPECTATOR");
-                USER_STATE = SPECTATOR;
+                UserState.STATE = UserState.SPECTATOR;
                 //TODO: wait for queue to load from server
                 loadSpectatorView();
         }
@@ -161,13 +174,15 @@ public class StateController {
     }
 
     private void displayLoading() {
-        createQueueBall();
+        if(queueBall == null) {
+            createQueueBall();
+        }
         queueBall.setState(QueueBall.STATE_LOADING);
     }
 
     private void createOwnerView() {
-        SoundQueue.createQueue();
         SoundQueue.PLAY = true; //Play songs
+        SoundQueue.createQueue();
     }
 
     /** Load Saved Queue From Server **/
@@ -178,7 +193,12 @@ public class StateController {
     }
 
     private void loadOwnerView() {
-        Sender.createExecute(Sender.REQUEST_QUEUE, SoundQueue.ID);
+        //check if objects are still around
+        if(SoundQueue.hasQueuedSounds()) { //owner view loaded
+            loadedOwner();
+        }else{// load our view from the server
+            Sender.createExecute(Sender.REQUEST_QUEUE, SoundQueue.ID);
+        }
     }
 
     /** Update Stream Methods **/
@@ -194,6 +214,7 @@ public class StateController {
     }
 
     private void freshStartCompleted() {
+        IO.writeQueueID(activity.getFilesDir(), SoundQueue.ID, true); //true, is owner
         createQueueView();
         queueBall.setState(QueueBall.STATE_INVISIBLE);
         Toast.makeText(activity.getBaseContext(), "Queue started! Now give it a name!", Toast.LENGTH_LONG).show();
@@ -235,68 +256,86 @@ public class StateController {
     /** GPS Methods **/
 
     public void onStart() {
-        if(USER_STATE == OWNER) {
+        if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onStart();
         }
     }
 
     public void onResume() {
-        if(USER_STATE == OWNER) {
+        if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onResume();
         }
     }
 
     public void onPause() {
-        if(USER_STATE == OWNER) {
+        if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onPause();
         }
     }
 
     public void onStop() {
-        if(USER_STATE == OWNER) {
+        if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onStop();
         }
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if(USER_STATE == OWNER) {
+        if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(USER_STATE == OWNER) {
+        if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onActivityResult(requestCode, resultCode, data);
         }
     }
 
     public void setMenuView(View menuView) {
-        ImageView home = (ImageView)menuView.findViewById(R.id.home_button);
-        home.setClickable(true);
-        home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                queueBall.setState(QueueBall.STATE_QUEUE_BALL);
-            }
-        });
 
-        final TextView queueNameDisplay = (TextView) menuView.findViewById(R.id.queue_name_display);
-        final EditText queueNameEdit = (EditText)menuView.findViewById(R.id.enter_queue_name);
+        if (UserState.STATE == UserState.OWNER) {
 
-        queueNameEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    // do your stuff here
-                    String entry = queueNameEdit.getText().toString();
-                    SoundQueue.NAME = entry;
-                    Sender.createExecute(Sender.SEND_NAME, SoundQueue.NAME);
-                    queueNameEdit.setClickable(false);
-                    queueNameEdit.setVisibility(View.INVISIBLE);
-                    queueNameDisplay.setText(entry);
+            ImageView home = (ImageView) menuView.findViewById(R.id.home_button);
+            home.setClickable(true);
+            home.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    queueBall.setState(QueueBall.STATE_QUEUE_BALL);
                 }
-                return false;
-            }
-        });
+            });
+
+            final TextView queueNameDisplay = (TextView) menuView.findViewById(R.id.queue_name_display);
+            final EditText queueNameEdit = (EditText) menuView.findViewById(R.id.enter_queue_name);
+
+            queueNameEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        // do your stuff here
+                        String entry = queueNameEdit.getText().toString();
+                        SoundQueue.NAME = entry;
+                        Sender.createExecute(Sender.SEND_NAME, SoundQueue.NAME);
+                        queueNameEdit.setClickable(false);
+                        queueNameEdit.setVisibility(View.INVISIBLE);
+                        queueNameDisplay.setText(entry);
+                    }
+                    return false;
+                }
+            });
+
+        } else { // Spectator
+            ImageView close = (ImageView) menuView.findViewById(R.id.close_button);
+            close.setClickable(true);
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    IO.deleteQueueID(activity.getFilesDir());
+                    //TODO: show rating view
+                    activity.finish();
+                }
+            });
+
+            TextView queueNameDisplay = (TextView) menuView.findViewById(R.id.queue_name_display_spec);
+        }
     }
 }

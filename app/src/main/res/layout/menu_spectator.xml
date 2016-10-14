@@ -47,36 +47,16 @@
             android:layout_height="50dp"
             android:layout_weight=".24">
 
-            <EditText
-                android:layout_height="50dp"
-                android:inputType="textPersonName"
-                android:ems="8"
-                android:id="@+id/enter_queue_name"
-                android:layout_alignParentRight="true"
-                android:hint="untitled"
-                android:textColor="#FFFFFF"
-                android:elevation="0dp"
-                android:layout_width="70dp"
-                android:textColorLink="#ffffff"
-                android:layout_alignParentLeft="true"
-                android:textColorHint="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textStyle="bold"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="2dp" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:id="@+id/queue_name_display"
+                android:id="@+id/queue_name_display_spec"
                 android:layout_alignParentRight="true"
-                android:textSize="18sp"
+                android:textSize="35sp"
                 android:textColor="#FFFFFF"
                 android:layout_weight="1"
                 android:ems="8"
-                android:layout_alignParentLeft="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="5dp" />
+                android:layout_alignParentLeft="true" />
 
         </RelativeLayout>
 
@@ -85,12 +65,12 @@
             android:layout_weight=".24">
 
             <ImageView
-                android:background="@drawable/home"
-                android:id="@+id/home_button"
+                android:background="@drawable/no"
+                android:id="@+id/close_button"
                 android:layout_alignParentRight="true"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginTop="7dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="3dp"
                 android:layout_marginRight="15dp"
                 android:layout_centerInParent="true"
                 android:layout_centerHorizontal="true"

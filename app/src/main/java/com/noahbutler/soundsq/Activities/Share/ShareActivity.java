@@ -80,7 +80,7 @@ public class ShareActivity extends Activity {
         /* get our FCM token */
         FCMInitiate fcmInitiate = new FCMInitiate(this);
         fcmInitiate.register();
-
+        Log.e(TAG, "YES");
         // Get intent, action and MIME type
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -121,9 +121,9 @@ public class ShareActivity extends Activity {
         //check to see if the user came from SoundsQ
         if(checkIsOwner()) {
             Sender.createExecute(Sender.SEND_SOUND, saveQueueID, soundLink);
-            //send them back to the app
-            Intent intent1 = new Intent(this, LaunchActivity.class);
-            startActivity(intent1);
+            //TODO: send them back to the app
+            //Intent intent1 = new Intent(this, LaunchActivity.class);
+            //startActivity(intent1);
             ShareActivity.this.finish();
         }
         /* Wait for user to select local queue */

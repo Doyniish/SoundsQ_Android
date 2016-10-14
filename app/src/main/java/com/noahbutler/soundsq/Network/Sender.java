@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.noahbutler.soundsq.Constants;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 import java.io.BufferedOutputStream;
@@ -25,6 +26,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     public static final String CHECK_QUEUE = "check_queue";
     public static final String REQUEST_QUEUE = "request_queue";
     public static final String CLOSE_QUEUE = "close_queue";
+    public static final String LIKED_SOUND = "liked_sound";
     public static final String SENDER_GPS = "sender_gps";//looking for queues gps
     public static final String QUEUE_GPS = "queue_gps"; //queue owner gps
     //104.236.237.151
@@ -35,6 +37,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private static final String CHECK_QUEUE_URL = "http://104.236.237.151/queue/exists/";
     private static final String REQUEST_QUEUE_URL = "http://104.236.237.151/request/queue/";
     private static final String CLOSE_QUEUE_URL = "http://104.236.237.151/close/queue/";
+    private static final String LIKED_SOUND_URL = "http://104.236.237.151/liked/sound/";
     private static final String SENDER_GPS_URL = "http://104.236.237.151/gps/sender/";
     private static final String QUEUE_GPS_URL = "http://104.236.237.151/gps/queue/";
 
@@ -44,6 +47,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private static String T_Key = "user_token";
     private static String Lat_Key = "latitude";
     private static String Long_Key = "longitude";
+    private static String User_Key = "username";
+    private static String Pass_Key = "password";
 
     public static void createExecute(String...strings) {
         Sender sender = new Sender();
@@ -68,6 +73,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
                 return requestQueue(strings);
             case CLOSE_QUEUE:
                 return closeQueue(strings);
+            case LIKED_SOUND:
+                return likedSound();
             case SENDER_GPS:
                 return senderGPS(strings);
             case QUEUE_GPS:
@@ -122,6 +129,21 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         values[1] = strings[1];
 
         NetworkGate networkGate = new NetworkGate(SEND_NAME_URL);
+        return networkGate.post(keys, values);
+    }
+
+    private boolean likedSound(String...strings) {
+        String[] keys = new String[3];
+        keys[0] = S_Key;
+        keys[1] = User_Key;
+        keys[2] = Pass_Key;
+
+        String[] values = new String[3];
+        values[0] = SoundQueue.getSoundUrl(Integer.getInteger(strings[1]));
+        values[1] = UserState.user;
+        values[2] = UserState.pass;
+
+        NetworkGate networkGate = new NetworkGate(LIKED_SOUND_URL);
         return networkGate.post(keys, values);
     }
 

@@ -71,7 +71,9 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/queue_ball_image_layout">
+            android:id="@+id/queue_ball_image_layout"
+            android:backgroundTintMode="screen"
+            android:backgroundTint="#000000">
 
             <ImageView
                 app:srcCompat="@drawable/queue_ball"
