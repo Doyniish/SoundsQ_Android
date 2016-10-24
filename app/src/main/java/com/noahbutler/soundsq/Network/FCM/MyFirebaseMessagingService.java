@@ -15,6 +15,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Activities.Share.ShareActivity;
 import com.noahbutler.soundsq.Activities.Share.ShareActivityMessage;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
@@ -38,6 +40,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String A_KEY = "artist";
     private static final String S_KEY = "size";
     private static final String L_KEY = "local_queue";
+    private static final String SC_Reg_Key = "sound_cloud_register";
 
     Map<String, String> data;
 
@@ -54,6 +57,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             receivedQueue(data);
         }else if(data.keySet().contains(L_KEY)) {
             receivedLocalQueues(data);
+        }else if(data.keySet().contains(SC_Reg_Key)) {
+            receivedRegisterURL(data);
         }
     }
 
@@ -104,6 +109,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void receivedRegisterURL(Map<String, String> data) {
+        StateControllerMessage message = new StateControllerMessage();
+        message.soundCloudRegView(data.get(SC_Reg_Key));
     }
 
     private HashMap<String, String> decodePackage(String packageString, String artistPackageString) {

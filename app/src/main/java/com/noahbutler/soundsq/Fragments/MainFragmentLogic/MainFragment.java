@@ -13,6 +13,7 @@ import android.widget.Toolbar;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.R;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * Used to determine if the app needs to load or start a queue.
@@ -37,29 +38,12 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //check the orientation of the phone and display the correct configuration for the UI
         this.setLayout(inflater, container);
-        //check to see if we need to recreate anything
-        this.checkRotate(savedInstanceState);
+        stateController = new StateController(masterView, getActivity());
 
         /* initiate our menu, customized in state controller */
         getActivity().setActionBar((Toolbar) masterView.findViewById(R.id.toolbar));
 
         return masterView;
-    }
-
-    private void checkRotate(Bundle savedInstanceState) {
-        if(savedInstanceState != null) {
-            if (savedInstanceState.getInt(LaunchActivity.R_Key) == LaunchActivity.ROTATED) { //
-                //signaled that we must check the objects created in this fragment.
-                if (stateController == null) {
-                    stateController = new StateController(masterView, getActivity(), LaunchActivity.ROTATED);
-                } else {
-                    stateController.checkRotate();
-                }
-            }
-        } else {
-            /* Takes over and controls all flow */
-            stateController = new StateController(masterView, getActivity(), 0); // 0 for new
-        }
     }
 
     private void setLayout(LayoutInflater inflater, ViewGroup container) {

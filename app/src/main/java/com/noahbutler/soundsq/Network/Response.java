@@ -24,9 +24,7 @@ public class Response {
 
     private static final int QUEUE_ID_USED = 302;
     private static final int QUEUE_CREATED = 201;
-    private static final int QUEUE_LOADED = 200;
     private static final int QUEUE_DELETED_SUCCESS = 205;
-    private static final int SHARE_ACT_QUEUE_REMOVED = 204;
     private static final int LAUNCH_ACT_QUEUE_REMOVED = 404;
 
     private int responseCode;
@@ -53,14 +51,8 @@ public class Response {
             case QUEUE_CREATED:
                 message.queueCreated();
                 break;
-            case QUEUE_LOADED:
-                //StateController.queueFound();
-                break;
             case QUEUE_DELETED_SUCCESS:
                 //StateController.queueDeletedSuccess();
-                break;
-            case SHARE_ACT_QUEUE_REMOVED:
-                //messenger.queueNotExists(Messenger.notExists[0]);
                 break;
             case LAUNCH_ACT_QUEUE_REMOVED:
                 //StateController.queueRemoved();

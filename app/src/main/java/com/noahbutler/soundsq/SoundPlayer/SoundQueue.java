@@ -17,6 +17,7 @@ public class SoundQueue {
     public static String NAME = null;
     public static boolean PLAY = false;
     public static boolean CREATED = false;
+    public static boolean LOADED = false;
 
     private static ArrayList<String> queue;
     public static ArrayList<SoundPackage> queue_packages;
@@ -29,7 +30,7 @@ public class SoundQueue {
 
     public static void addSound(String streamUrl) {
         queue.add(streamUrl);
-        sendToSoundPlayerController(streamUrl);
+        sendToSoundPlayerController();
     }
 
     public static void addSoundPackage(SoundPackage soundPackage) {
@@ -45,7 +46,7 @@ public class SoundQueue {
         genQueueID();
     }
 
-    private static void sendToSoundPlayerController(String streamUrl) {
+    private static void sendToSoundPlayerController() {
         //run our checks to see if we need to play this sound right now
         if ((firstSongCheck() || soundPlayingCheck()) && PLAY) {
             SoundPlayerController.playCurrentSound();

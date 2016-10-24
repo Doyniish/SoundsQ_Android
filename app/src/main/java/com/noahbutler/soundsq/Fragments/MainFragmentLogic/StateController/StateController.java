@@ -54,6 +54,7 @@ public class StateController {
     public static final int QUEUE_CREATED = 2;
     public static final int QUEUE_DELETED = 3;
     public static final int UPDATE_VIEW = 5;
+    public 
     public static final String UPDATE_KEY = "update";
 
 
@@ -70,7 +71,7 @@ public class StateController {
     private QueueView queueView;
 
 
-    public StateController(View masterView, Activity activity, int rotated) {
+    public StateController(View masterView, Activity activity) {
         this.masterView = masterView;
         this.activity = activity;
 
@@ -81,10 +82,10 @@ public class StateController {
 
                 switch(msg.getData().getInt(UPDATE_KEY)) {
                     case SPEC_QUEUE_LOADED:
-                        loadedSpectator();
+                        signal_LoadedSpectator();
                         break;
                     case OWNER_QUEUE_LOADED:
-                        loadedOwner();
+                        signal_LoadedOwner();
                         break;
                     case QUEUE_CREATED:
                         freshStartCompleted();
@@ -103,29 +104,9 @@ public class StateController {
             }
         });
 
-        if(rotated == LaunchActivity.ROTATED) {
-            Log.e(TAG, "Rotated: State Controller");
-            displayLoading();
-            checkRotate();
-        } else {
-            /* start the app */
-            displayLoading();
-            initializeLocation();
-            initializeSoundsQ();
-        }
-    }
-
-    public void checkRotate() {
-        //queue ball is checked in displayLoading();
-
-        if(queueView == null) {
-            createQueueView();
-        }
-
-        if(gpsReceiver == null) {
-            initializeLocation();
-        }
-        //load
+        /* start the app */
+        displayLoading();
+        initializeLocation();
         initializeSoundsQ();
     }
 
@@ -195,7 +176,7 @@ public class StateController {
     private void loadOwnerView() {
         //check if objects are still around
         if(SoundQueue.hasQueuedSounds()) { //owner view loaded
-            loadedOwner();
+            signal_LoadedOwner();
         }else{// load our view from the server
             Sender.createExecute(Sender.REQUEST_QUEUE, SoundQueue.ID);
         }
@@ -203,12 +184,12 @@ public class StateController {
 
     /** Update Stream Methods **/
 
-    private void loadedSpectator() {
+    private void signal_LoadedSpectator() {
         createQueueView();
         queueBall.setState(QueueBall.STATE_INVISIBLE);
     }
 
-    private void loadedOwner() {
+    private void signal_LoadedOwner() {
         createQueueView();
         queueBall.setState(QueueBall.STATE_INVISIBLE);
     }
