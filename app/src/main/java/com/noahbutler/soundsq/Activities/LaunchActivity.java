@@ -55,19 +55,21 @@ public class LaunchActivity extends Activity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.e(TAG, "Saving");
-        savedInstanceState.putInt(SAVED, 1);
+        mainFragment.onSaveInstanceState(savedInstanceState);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
+        mainFragment.onResume();
         super.onResume();
 
     }
 
     @Override
     protected void onPause() {
+        Bundle bundle = new Bundle();
+        onSaveInstanceState(bundle);
         super.onPause();
     }
 

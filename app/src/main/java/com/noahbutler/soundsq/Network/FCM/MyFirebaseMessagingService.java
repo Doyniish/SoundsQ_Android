@@ -38,7 +38,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "DownStreamReceiver";
     private static final String SP_KEY = "sound_package";
     private static final String A_KEY = "artist";
-    private static final String S_KEY = "size";
+    private static final String R_Key = "requested_queue";
     private static final String L_KEY = "local_queue";
     private static final String SC_Reg_Key = "sound_cloud_register";
 
@@ -53,7 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if(data.keySet().contains(SP_KEY)) {
             receivedSound(data);
-        }else if(data.keySet().contains(S_KEY)) {
+        }else if(data.keySet().contains(R_Key)) {
             receivedQueue(data);
         }else if(data.keySet().contains(L_KEY)) {
             receivedLocalQueues(data);
@@ -81,21 +81,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void receivedQueue(Map<String, String> data) {
-        String size_string = data.get(S_KEY);
-        int size = Integer.getInteger(size_string);
-
-        for(int i = 0; i < size; i++) {
-            String currentSoundData = data.get(String.valueOf(i));
-            try {
-                JSONObject jsonObject = new JSONObject(currentSoundData);
-                HashMap<String, String> sound_data = decodePackage(jsonObject.getString(SP_KEY),jsonObject.getString(A_KEY));
-                queueSound(sound_data);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
+        Log.e(TAG, "DATA: " + data.toString());
+//        String size_string = data.get(S_KEY);
+//        int size = Integer.getInteger(size_string);
+//
+//        for(int i = 0; i < size; i++) {
+//            String currentSoundData = data.get(String.valueOf(i));
+//            try {
+//                JSONObject jsonObject = new JSONObject(currentSoundData);
+//                HashMap<String, String> sound_data = decodePackage(jsonObject.getString(SP_KEY),jsonObject.getString(A_KEY));
+//                queueSound(sound_data);
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
 
     }
 

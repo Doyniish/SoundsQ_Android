@@ -92,13 +92,7 @@ public class QueueListAdapter extends BaseAdapter {
     }
 
     private void soundLiked(int position) {
-        if(UserState.ACTIVATED) {
-            Sender.createExecute(Sender.LIKED_SOUND, "" + position);
-        }else{
-            //TODO: Display sound cloud login.
-            SCLoginDialog loginDialog = new SCLoginDialog();
-            loginDialog.show(activity.getFragmentManager(), null);
-        }
+        Sender.createExecute(Sender.LIKED_SOUND, "" + position);
     }
 
     /**

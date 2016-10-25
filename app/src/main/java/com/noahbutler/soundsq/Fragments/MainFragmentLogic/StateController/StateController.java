@@ -2,6 +2,7 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -54,7 +55,7 @@ public class StateController {
     public static final int QUEUE_CREATED = 2;
     public static final int QUEUE_DELETED = 3;
     public static final int UPDATE_VIEW = 5;
-    public 
+    public static final int SC_REGISTER = 6;
     public static final String UPDATE_KEY = "update";
 
 
@@ -94,9 +95,13 @@ public class StateController {
                         failedRequest();
                         break;
                     case UPDATE_VIEW:
-                        queueView.addArt(msg.getData().getString(StateControllerMessage.A_Key),
-                                msg.getData().getString(StateControllerMessage.S_Key));
+                        String albumArt = msg.getData().getString(StateControllerMessage.A_Key);
+                        String soundUrl = msg.getData().getString(StateControllerMessage.S_Key);
+                        queueView.addArt(albumArt, soundUrl);
                         queueView.update();
+                    case SC_REGISTER:
+                        String registerUrl = msg.getData().getString(StateControllerMessage.Reg_Key);
+                        displayRegisterPopUp(registerUrl);
                     default:
                         break;
                 }
@@ -174,12 +179,7 @@ public class StateController {
     }
 
     private void loadOwnerView() {
-        //check if objects are still around
-        if(SoundQueue.hasQueuedSounds()) { //owner view loaded
-            signal_LoadedOwner();
-        }else{// load our view from the server
-            Sender.createExecute(Sender.REQUEST_QUEUE, SoundQueue.ID);
-        }
+        Sender.createExecute(Sender.REQUEST_QUEUE, SoundQueue.ID);
     }
 
     /** Update Stream Methods **/
@@ -270,6 +270,11 @@ public class StateController {
         if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onActivityResult(requestCode, resultCode, data);
         }
+
+        //sound cloud login check
+        //if(data.hasExtra('code')) {
+            Log.e(TAG, "results: " + data.toString());
+        //}
     }
 
     public void setMenuView(View menuView) {
@@ -318,5 +323,11 @@ public class StateController {
 
             TextView queueNameDisplay = (TextView) menuView.findViewById(R.id.queue_name_display_spec);
         }
+    }
+
+    public void displayRegisterPopUp(String register_url) {
+        Uri uri = Uri.parse(register_url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        activity.startActivity(intent);
     }
 }

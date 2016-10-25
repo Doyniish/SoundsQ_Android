@@ -24,18 +24,21 @@ public class StateControllerMessage {
 
     public void spectatorLoaded() {
         bundle.putInt(StateController.UPDATE_KEY, StateController.SPEC_QUEUE_LOADED);
+
         message.setData(bundle);
         StateController.updateStream.sendMessage(message);
     }
 
     public void ownerLoaded() {
         bundle.putInt(StateController.UPDATE_KEY, StateController.OWNER_QUEUE_LOADED);
+
         message.setData(bundle);
         StateController.updateStream.sendMessage(message);
     }
 
     public void queueCreated() {
         bundle.putInt(StateController.UPDATE_KEY, StateController.QUEUE_CREATED);
+
         message.setData(bundle);
         StateController.updateStream.sendMessage(message);
     }
@@ -49,7 +52,6 @@ public class StateControllerMessage {
     }
 
     public void updateQueueView(String fileLocation, String soundUrl) {
-
         bundle.putInt(StateController.UPDATE_KEY, StateController.UPDATE_VIEW);
         bundle.putString(A_Key, fileLocation);
         bundle.putString(S_Key, soundUrl);
