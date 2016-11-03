@@ -60,4 +60,11 @@ public class StateControllerMessage {
         StateController.updateStream.sendMessage(message);
     }
 
+    public void updateQueueView() {
+        bundle.putInt(StateController.UPDATE_KEY, StateController.PLAY_UPDATE);
+
+        message.setData(bundle);
+        StateController.updateStream.sendMessage(message);
+    }
+
 }

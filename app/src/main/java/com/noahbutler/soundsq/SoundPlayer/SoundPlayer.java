@@ -24,9 +24,8 @@ import java.io.IOException;
 
 public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
-    private static String LOG = "SOUND_PLAYER";
+    private static final String TAG = "SOUND_PLAYER";
 
-    //private ProgdressDialog progress;
     /**
      * the object responsible for playing the stream url given to it.
      */
@@ -48,7 +47,13 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         Boolean prepared;
         try {
             mediaPlayer.setDataSource(params[0]);
-            Log.d(LOG, "stream_url: " + params[0]);
+            MediaPlayer.TrackInfo[] info = mediaPlayer.getTrackInfo();
+
+            for(int i = 0; i < info.length; i++) {
+                Log.e(TAG, "Track Info[" + i + "]: " + info[i]);
+            }
+
+            Log.d(TAG, "stream_url: " + params[0]);
 
             createMediaHandlers();
             mediaPlayer.prepare();
@@ -72,7 +77,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
         super.onPostExecute(result);
         mWakeLock.release();
-        Log.d(LOG, "//" + result);
+        Log.d(TAG, "//" + result);
     }
     @Override
     protected void onPreExecute() {
@@ -82,7 +87,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         mWakeLock.acquire();
-        Log.d(LOG, "media player is buffering");
+        Log.d(TAG, "media player is buffering");
 
     }
 
@@ -109,6 +114,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
     private void startPlay() {
         mediaPlayer.start();
+        Log.e(TAG, "Playing index: " + SoundQueue.getCurrentIndex());
         //TODO: update views
         //messenger.updateViews();
     }
@@ -120,6 +126,9 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
     private void requestNextPlay() {
         // signal the UI thread to play the next sound.
+        Log.e(TAG, "Next sound requested");
+        Log.e(TAG, "Current index: " + SoundQueue.getCurrentIndex());
+
         SoundPlayerController.soundPlayerFinished();
     }
 

@@ -6,53 +6,97 @@
     android:id="@+id/sound_list_item_layout"
     android:background="#202020">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Noah Butler"
-        android:id="@+id/sound_artist_name"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="150dp"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="This is the title of the song"
-        android:id="@+id/sound_title"
-        android:textSize="13sp"
-        android:layout_below="@+id/sound_artist_name"
-        android:layout_alignLeft="@+id/sound_artist_name"
-        android:layout_alignStart="@+id/sound_artist_name"
-        android:textColor="@color/vpi__bright_foreground_disabled_holo_dark"
-        android:layout_marginTop="5dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".35"
+            android:elevation="0dp"
+            android:layout_gravity="right">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/sound_image"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"
-        android:paddingBottom="15dp"/>
+            <ImageView
+                android:id="@+id/playing_light"
+                android:background="@drawable/playing_light"
+                android:layout_marginTop="28dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="5dp" />
+        </LinearLayout>
 
-    <ImageView
-        android:id="@+id/like_button"
-        android:clickable="true"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="65dp"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/like_button2" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2">
+
+            <ImageView
+                android:layout_height="100dp"
+                android:id="@+id/sound_image"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="15dp"
+                android:paddingBottom="15dp"
+                android:layout_width="100dp"
+                android:layout_marginRight="10dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Noah Butler"
+                    android:id="@+id/sound_artist_name"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentStart="true"
+                    android:textSize="18sp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This is the title of the song"
+                    android:id="@+id/sound_title"
+                    android:textSize="13sp"
+                    android:layout_below="@+id/sound_artist_name"
+                    android:layout_alignLeft="@+id/sound_artist_name"
+                    android:layout_alignStart="@+id/sound_artist_name"
+                    android:textColor="#909090"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".6">
+
+            <ImageView
+                android:id="@+id/like_button"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentEnd="false"
+                android:background="@drawable/like"
+                android:clickable="true"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentTop="false"
+                android:layout_marginLeft="10dp" />
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

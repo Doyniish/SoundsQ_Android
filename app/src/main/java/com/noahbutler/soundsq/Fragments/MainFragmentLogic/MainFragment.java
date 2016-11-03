@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,6 @@ public class MainFragment extends Fragment {
     private static final String TAG = "QUEUE BALL FRAG";
 
 
-    /* Orientation */
-    public static int CURRENT_LAYOUT = 0;
-
-
     /*******************/
     /* Local Variables */
     View masterView;
@@ -37,28 +34,30 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //check the orientation of the phone and display the correct configuration for the UI
-        this.setLayout(inflater, container);
-        stateController = new StateController(masterView, getActivity());
+        if(savedInstanceState == null) {
+            masterView = inflater.inflate(R.layout.fragment_queueball, container, false);
+            stateController = new StateController(masterView, getActivity());
 
         /* initiate our menu, customized in state controller */
-        getActivity().setActionBar((Toolbar) masterView.findViewById(R.id.toolbar));
-
+            getActivity().setActionBar((Toolbar) masterView.findViewById(R.id.toolbar));
+        }else {
+            Log.e(TAG, "\n\nSaved instance state loading...\n\n");
+            if(stateController == null) {
+                stateController = new StateController(masterView, getActivity());
+            }
+            stateController.onSavedInstanceRestored(savedInstanceState);
+        }
         return masterView;
     }
 
-    private void setLayout(LayoutInflater inflater, ViewGroup container) {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            //TODO: make view for landscape.
-            masterView = inflater.inflate(R.layout.fragment_queueball, container, false);
-            CURRENT_LAYOUT = Configuration.ORIENTATION_LANDSCAPE;
-        }else {
-            masterView = inflater.inflate(R.layout.fragment_queueball, container, false);
-            CURRENT_LAYOUT = Configuration.ORIENTATION_PORTRAIT;
-        }
-    }
 
     public void setMenuView(View menuView) {
         stateController.setMenuView(menuView);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        stateController.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -70,13 +69,15 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        stateController.onResume();
+        if (getActivity() != null) {
+            stateController.onResume(getActivity().getFilesDir());
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        stateController.onPause();
+        stateController.onPause(getActivity().getFilesDir());
     }
 
     @Override
@@ -84,7 +85,6 @@ public class MainFragment extends Fragment {
         super.onStop();
         stateController.onStop();
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

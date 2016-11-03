@@ -9,6 +9,10 @@ public class Constants {
      */
     public static final String CACHE_FILE = "soundQ_file_cache.sq";
     /**
+     * File that contains saved state
+     */
+    public static final String SAVED_STATE_FILE = "saved_state.sq";
+    /**
      * Amount of characters in a QUEUE ID
      */
     public static final int QUEUE_ID_LENGTH = 10;

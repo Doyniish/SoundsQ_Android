@@ -50,6 +50,14 @@ public class IO {
         return delete(directory, Constants.CACHE_FILE);
     }
 
+    public static void writeSaveState(File directory, String json) {
+        write(directory, Constants.SAVED_STATE_FILE, json);
+    }
+
+    public static JSONObject readSavedState(File directory) {
+        return read(directory, Constants.SAVED_STATE_FILE);
+    }
+
     private static boolean delete(File directory, String fileName) {
         File file = new File(directory, fileName);
         return file.delete();

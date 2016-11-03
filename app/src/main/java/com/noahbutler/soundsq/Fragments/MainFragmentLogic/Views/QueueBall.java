@@ -145,10 +145,9 @@ public class QueueBall {
         deleteYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SoundQueue.close();
                 IO.deleteQueueID(activity.getBaseContext().getFilesDir());
+                SoundQueue.close();
                 hideDeleteCheck();
-                activity.finish();
             }
         });
 
@@ -158,6 +157,12 @@ public class QueueBall {
                 hideDeleteCheck();
             }
         });
+
+        queueBallLogic.setClickable(false);
+        queueBallSelectTop.setClickable(false);
+        queueBallSelectBottom.setClickable(false);
+        queueBallSelectLeft.setClickable(false);
+        queueBallSelectRight.setClickable(false);
     }
 
     public void setState(int state) {
@@ -170,6 +175,7 @@ public class QueueBall {
                 displayQueueBallOptions();
                 break;
             case STATE_LOADING:
+                CURRENT_STATE = STATE_LOADING;
                 displayLoadingQueueBall();
                 break;
             case STATE_DELETE:
@@ -177,6 +183,7 @@ public class QueueBall {
                 displayDeleteCheck();
                 break;
             case STATE_INVISIBLE:
+                CURRENT_STATE = STATE_INVISIBLE;
                 closeQueueBall();
         }
     }
@@ -187,10 +194,13 @@ public class QueueBall {
 
     private void displayQueueBall() {
         setBallVisibility(true);
-        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
-        setBallClickable(true);
-        setBallVisibility(true);
-        setOptionsClickable(false);
+        Log.e(TAG, "displaying normal queue ball");
+        if(!(CURRENT_STATE == STATE_LOADING)) {
+            AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
+            setBallClickable(true);
+            setBallVisibility(true);
+            setOptionsClickable(false);
+        }
     }
 
     private void displayQueueBallOptions() {

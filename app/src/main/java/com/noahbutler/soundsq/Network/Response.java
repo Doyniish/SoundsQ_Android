@@ -41,11 +41,11 @@ public class Response {
     private void respond() {
 
         StateControllerMessage message = new StateControllerMessage();
-        Log.e("Response", "HERE: " + responseCode + " " + QUEUE_ID_USED);
+        Log.e("Response", "" + responseCode);
         switch(responseCode) {
             case QUEUE_ID_USED:
                 SoundQueue.CREATED = false;
-                SoundQueue.createQueue();
+                SoundQueue.createQueue(true);
                 Sender.createExecute(Sender.NEW_QUEUE, GPSReceiver.latitude, GPSReceiver.longitude);
                 break;
             case QUEUE_CREATED:

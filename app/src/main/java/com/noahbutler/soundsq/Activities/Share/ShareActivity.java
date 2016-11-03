@@ -119,13 +119,13 @@ public class ShareActivity extends Activity {
         soundLink = "http" + soundLink;
 
         //check to see if the user came from SoundsQ
-        if(checkIsOwner()) {
-            Sender.createExecute(Sender.SEND_SOUND, saveQueueID, soundLink);
-            //TODO: send them back to the app
-            //Intent intent1 = new Intent(this, LaunchActivity.class);
-            //startActivity(intent1);
-            ShareActivity.this.finish();
-        }
+//        if(checkIsOwner()) {
+//            Sender.createExecute(Sender.SEND_SOUND, saveQueueID, soundLink);
+//            //TODO: send them back to the app
+//            //Intent intent1 = new Intent(this, LaunchActivity.class);
+//            //startActivity(intent1);
+//            ShareActivity.this.finish();
+//        }
         /* Wait for user to select local queue */
     }
 

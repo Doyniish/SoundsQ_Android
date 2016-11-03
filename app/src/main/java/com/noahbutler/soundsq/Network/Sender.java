@@ -19,6 +19,8 @@ import java.net.URL;
  */
 public class Sender extends AsyncTask<String, Integer, Boolean> {
 
+    public static final String TAG = "Sender";
+
     public static final String SEND_TOKEN = "send_token";
     public static final String NEW_QUEUE = "run_new_qid";
     public static final String SEND_NAME = "send_name";
@@ -50,9 +52,21 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     private static String User_Key = "username";
     private static String Pass_Key = "password";
 
+    /* used to determine if the user was deleting.
+       must wait until onPostExecute, to close the app.
+     */
+    private static boolean DELETING = false;
+
     public static void createExecute(String...strings) {
         Sender sender = new Sender();
         sender.execute(strings);
+    }
+
+    protected void onPostExecute(Boolean result) {
+        if(DELETING) { //close the app after we have deleted it from the server
+            int pid = android.os.Process.myPid();
+            android.os.Process.killProcess(pid);
+        }
     }
 
     @Override
@@ -74,7 +88,7 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
             case CLOSE_QUEUE:
                 return closeQueue(strings);
             case LIKED_SOUND:
-                return likedSound();
+                return likedSound(strings);
             case SENDER_GPS:
                 return senderGPS(strings);
             case QUEUE_GPS:
@@ -133,15 +147,13 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
     }
 
     private boolean likedSound(String...strings) {
-        String[] keys = new String[3];
+        String[] keys = new String[2];
         keys[0] = S_Key;
-        keys[1] = User_Key;
-        keys[2] = Pass_Key;
+        keys[1] = T_Key;
 
-        String[] values = new String[3];
-        values[0] = SoundQueue.getSoundUrl(Integer.getInteger(strings[1]));
-        values[1] = UserState.user;
-        values[2] = UserState.pass;
+        String[] values = new String[2];
+        values[0] = strings[1];
+        values[1] = Constants.token;
 
         NetworkGate networkGate = new NetworkGate(LIKED_SOUND_URL);
         return networkGate.post(keys, values);
@@ -153,6 +165,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
 
         keys[0] = Q_Key;
         values[0] = SoundQueue.ID;
+
+        DELETING = true;
 
         NetworkGate networkGate = new NetworkGate(CLOSE_QUEUE_URL);
         return networkGate.post(keys, values);
@@ -233,6 +247,8 @@ public class Sender extends AsyncTask<String, Integer, Boolean> {
         NetworkGate networkGate = new NetworkGate(QUEUE_GPS_URL);
         return networkGate.post(keys, values);
     }
+
+
 
     /**
      * Class that is use to house the different network HTTP requests

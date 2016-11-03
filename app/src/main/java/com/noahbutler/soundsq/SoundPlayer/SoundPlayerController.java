@@ -3,12 +3,15 @@ package com.noahbutler.soundsq.SoundPlayer;
 import android.content.Context;
 import android.util.Log;
 
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
 import com.noahbutler.soundsq.Network.Sender;
 
 /**
  * Created by Noah on 7/25/2016.
  */
 public class SoundPlayerController {
+
+    public static final String TAG = "SoundPlayerController";
 
     private static SoundPlayer soundPlayer;
     private static Context context;
@@ -24,8 +27,16 @@ public class SoundPlayerController {
     /*  */
     public static void playNextSound() {
         SoundQueue.nextSong();
+        Log.e(TAG, "Current Index: " + SoundQueue.getCurrentIndex() + ", Current size: " + SoundQueue.size());
+        Log.e(TAG, "Play next: " + (SoundQueue.getCurrentIndex() < SoundQueue.size()));
         if (SoundQueue.getCurrentIndex() < SoundQueue.size()) {
             SoundQueue.isPlayingSound(true);
+
+            //update ui
+            SoundQueue.getCurrentSoundPackage().isPlaying = true;
+            new StateControllerMessage().updateQueueView();
+            Log.e(TAG, "next sound is going to play, index: " + SoundQueue.getCurrentIndex());
+
             soundPlayer = new SoundPlayer(context);
             soundPlayer.execute(SoundQueue.getCurrentSound());
         }
@@ -69,6 +80,8 @@ public class SoundPlayerController {
     /* SoundPlayer Requests */
     public static void soundPlayerFinished() {
         SoundQueue.isPlayingSound(false);
+        SoundQueue.getCurrentSoundPackage().isPlaying = false;
+        Log.e(TAG, "next sound requested, just played index: " + SoundQueue.getCurrentIndex());
         playNextSound();
     }
 

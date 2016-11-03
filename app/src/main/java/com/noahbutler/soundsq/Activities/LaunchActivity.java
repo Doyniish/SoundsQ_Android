@@ -12,7 +12,9 @@ import android.widget.Toolbar;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.MainFragment;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
+import com.noahbutler.soundsq.Fragments.OpenFragment;
 import com.noahbutler.soundsq.Network.FCM.FCMInitiate;
+import com.noahbutler.soundsq.NotificationController;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 
@@ -37,39 +39,49 @@ public class LaunchActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
-        /* FCM Token */
-        FCMInitiate fcmInitiate = new FCMInitiate(this);
-        fcmInitiate.register();
 
-        /* Sound Player Controller Creator */
-        SoundPlayerController.createController(getBaseContext());
+        new NotificationController(this);
 
-        /* hand of to Queue Ball Fragment */
-        //TODO: add logo screens
-        mainFragment = new MainFragment();
-        mainFragment.setRetainInstance(true);
+        if (savedInstanceState == null) {
+            /* FCM Token */
+            FCMInitiate fcmInitiate = new FCMInitiate(this);
+            fcmInitiate.register();
+
+            /* Sound Player Controller Creator */
+            SoundPlayerController.createController(getBaseContext());
+
+            mainFragment = new MainFragment();
+            mainFragment.setRetainInstance(true);
+
+            //show opening fragment for 2 seconds, then show main fragment.
+            getFragmentManager().beginTransaction().replace(R.id.main_content_area, new OpenFragment()).commit();
+
+        }
+    }
+
+    public void showMainFragment() {
         getFragmentManager().beginTransaction().replace(R.id.main_content_area, mainFragment).commit();
     }
 
 
-
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        mainFragment.onSaveInstanceState(savedInstanceState);
         super.onSaveInstanceState(savedInstanceState);
+        if (mainFragment != null) {
+            mainFragment.onSaveInstanceState(savedInstanceState);
+        }
     }
 
     @Override
     protected void onResume() {
-        mainFragment.onResume();
         super.onResume();
-
+        if(mainFragment != null) {
+            mainFragment.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
-        Bundle bundle = new Bundle();
-        onSaveInstanceState(bundle);
         super.onPause();
     }
 

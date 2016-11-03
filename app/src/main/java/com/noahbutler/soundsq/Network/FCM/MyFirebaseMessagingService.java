@@ -17,14 +17,17 @@ import com.noahbutler.soundsq.Activities.Share.ShareActivity;
 import com.noahbutler.soundsq.Activities.Share.ShareActivityMessage;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
 import com.noahbutler.soundsq.Network.SoundPackageDownloader;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -78,25 +81,45 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         HashMap<String, String> decodedPackage = decodePackage(raw_sound_package, raw_artist);
         queueSound(decodedPackage);
+
     }
 
     private void receivedQueue(Map<String, String> data) {
         Log.e(TAG, "DATA: " + data.toString());
-//        String size_string = data.get(S_KEY);
-//        int size = Integer.getInteger(size_string);
-//
-//        for(int i = 0; i < size; i++) {
-//            String currentSoundData = data.get(String.valueOf(i));
-//            try {
-//                JSONObject jsonObject = new JSONObject(currentSoundData);
-//                HashMap<String, String> sound_data = decodePackage(jsonObject.getString(SP_KEY),jsonObject.getString(A_KEY));
-//                queueSound(sound_data);
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
+
+        SoundQueue.createQueue(false);
+
+        SoundQueue.ID = data.get("queue_id");
+        SoundQueue.NAME = data.get("name");
+
+        if(!data.get("size").contentEquals("0")) {
+            try {
+                JSONArray queue = new JSONArray(data.get("requested_queue"));
+                for (int i = 0; i < queue.length(); i++) {
+                    JSONObject jsonObject = queue.getJSONObject(i);
+                    HashMap<String, String> decoded = new HashMap<>();
+                    decoded.put("album_art", jsonObject.getString("album_art"));
+                    decoded.put("stream_url", jsonObject.getString("stream_url"));
+                    decoded.put("sound_url", jsonObject.getString("sound_url"));
+                    decoded.put("artist", jsonObject.getString("artist"));
+                    decoded.put("title", jsonObject.getString("title"));
+                    queueSound(decoded);
+
+
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //update the ui
+        StateControllerMessage message = new StateControllerMessage();
+        if(UserState.STATE == UserState.OWNER) {
+            message.ownerLoaded();
+        }else {
+            message.spectatorLoaded();
+        }
 
     }
 
@@ -126,7 +149,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             decoded.put("album_art", soundPackage.getString("album_art"));
             decoded.put("stream_url", soundPackage.getString("stream_url"));
             decoded.put("sound_url", soundPackage.getString("sound_url"));
-            decoded.put("username", userPackage.getString("username"));
+            decoded.put("artist", userPackage.getString("username"));
             decoded.put("title", soundPackage.getString("title"));
 
         }catch(JSONException e) {
@@ -147,25 +170,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         /* add the SoundPackage object to the list */
         SoundQueue.addSoundPackage(soundPackage);
         SoundQueue.addSound(decodedPackage.get("stream_url"));
-    }
-
-    private void sendNotification(String message) {
-        Intent intent = new Intent(this, LaunchActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark_focused)
-                .setContentTitle("SoundsQ")
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
-                .setLights(Color.CYAN, 1000, 1000)
-                .setColor(Color.CYAN);
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notificationBuilder.build());
     }
 }

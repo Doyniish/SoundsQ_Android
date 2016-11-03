@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
+import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
 import com.noahbutler.soundsq.Constants;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
 import com.noahbutler.soundsq.Network.Sender;
@@ -49,7 +50,6 @@ public class QueueListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        Log.e("ListAdapter", "Called");
         ViewHolder viewHolder = new ViewHolder();
 
         if(convertView == null) {
@@ -60,6 +60,7 @@ public class QueueListAdapter extends BaseAdapter {
             viewHolder.soundImage  = (ImageView) convertView.findViewById(R.id.sound_image);
             viewHolder.soundTitle       = (TextView)convertView.findViewById(R.id.sound_title);
             viewHolder.soundArtistName  = (TextView)convertView.findViewById(R.id.sound_artist_name);
+            viewHolder.playingLight = (ImageView)convertView.findViewById(R.id.playing_light);
             viewHolder.likeButton = (ImageView) convertView.findViewById(R.id.like_button);
             viewHolder.likeButton.setClickable(true);
             viewHolder.likeButton.setOnClickListener(new View.OnClickListener() {
@@ -87,12 +88,14 @@ public class QueueListAdapter extends BaseAdapter {
         TextView soundTitle;
         TextView soundArtistName;
         ImageView soundImage;
+        ImageView playingLight;
         ImageView likeButton;
 
     }
 
     private void soundLiked(int position) {
-        Sender.createExecute(Sender.LIKED_SOUND, "" + position);
+        String sound_url = SoundQueue.getSoundUrl(position);
+        Sender.createExecute(Sender.LIKED_SOUND, sound_url);
     }
 
     /**
@@ -100,7 +103,6 @@ public class QueueListAdapter extends BaseAdapter {
      * to the correct view on the list.
      */
     private void applySoundPackage(ViewHolder viewHolder, int position) {
-        Log.e("ListAdapter", "here");
         /* first we want to make sure the list is not empty */
         if(SoundQueue.queue_packages.size() != 0) {
 
@@ -135,5 +137,11 @@ public class QueueListAdapter extends BaseAdapter {
             viewHolder.soundArtistName.setText(R.string.loading_artist);
         }
 
+        //apply light if sound is playing
+        if(position == SoundQueue.getCurrentIndex()) {
+            viewHolder.playingLight.setVisibility(View.VISIBLE);
+        }else{
+            viewHolder.playingLight.setVisibility(View.INVISIBLE);
+        }
     }
 }

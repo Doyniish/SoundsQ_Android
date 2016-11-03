@@ -12,11 +12,4 @@ public class UserState {
     public static final int SPECTATOR = 1;
     public static final int OWNER = 2;
 
-
-    /*********************/
-    /* Sound Cloud State */
-    public static boolean ACTIVATED = false;
-    public static String user = null;
-    public static String pass = null;
-
 }

@@ -1,6 +1,7 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -13,6 +14,8 @@ import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
+
+import java.io.File;
 
 /**
  * Created by gildaroth on 9/28/16.
@@ -113,5 +116,26 @@ public class QueueView {
                 SoundQueue.queue_packages.get(i).sendFileLocation(fileLocation);
             }
         }
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        SoundQueue.saveInstanceState(savedInstanceState);
+    }
+
+    public void onSavedInstanceRestored(Bundle savedInstanceState) {
+        SoundQueue.onSavedInstanceRestored(savedInstanceState);
+    }
+
+    public void onPause(File directory) {
+        Log.v(TAG, "\n\nQueueView OnPause...\n\n");
+        SoundQueue.saveState(directory);
+    }
+
+    public void onResume(File directory) {
+        //load saved data
+        Log.v(TAG, "\n\nQueueView OnPause...\n\n");
+        SoundQueue.loadState(directory);
+        //update view
+        update();
     }
 }

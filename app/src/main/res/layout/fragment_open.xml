@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#303030">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/grand_taiga"
+        android:id="@+id/imageView"
+        android:cropToPadding="false"
+        android:scaleType="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="false"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="150dp" />
+
+    <TextView
+        android:text="@string/opening_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:textStyle="bold"
+        android:textSize="30sp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="#FFFFFF"
+        android:paddingTop="20dp" />
+</RelativeLayout>
