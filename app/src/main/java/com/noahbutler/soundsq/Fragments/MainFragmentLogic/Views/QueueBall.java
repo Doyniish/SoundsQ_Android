@@ -94,6 +94,8 @@ public class QueueBall {
 
         /* only want to display the image, not the logic buttons */
         setButtonsTransparent();
+        setBallClickable(false);
+        setOptionsClickable(false);
 
         /*
            Create our Listeners
@@ -130,7 +132,6 @@ public class QueueBall {
         queueBallSelectRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //delete queue
                 setState(STATE_DELETE);
             }
         });
@@ -157,12 +158,6 @@ public class QueueBall {
                 hideDeleteCheck();
             }
         });
-
-        queueBallLogic.setClickable(false);
-        queueBallSelectTop.setClickable(false);
-        queueBallSelectBottom.setClickable(false);
-        queueBallSelectLeft.setClickable(false);
-        queueBallSelectRight.setClickable(false);
     }
 
     public void setState(int state) {
@@ -179,7 +174,6 @@ public class QueueBall {
                 displayLoadingQueueBall();
                 break;
             case STATE_DELETE:
-                Log.e(TAG, "STATE_DELETE");
                 displayDeleteCheck();
                 break;
             case STATE_INVISIBLE:
@@ -194,9 +188,10 @@ public class QueueBall {
 
     private void displayQueueBall() {
         setBallVisibility(true);
-        Log.e(TAG, "displaying normal queue ball");
         if(!(CURRENT_STATE == STATE_LOADING)) {
             AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
+            setDescription();
+            setDescriptionVisibility(true);
             setBallClickable(true);
             setBallVisibility(true);
             setOptionsClickable(false);
@@ -281,9 +276,11 @@ public class QueueBall {
      */
 
     public void setDescription() {
-        SoundPackage current = SoundQueue.getCurrentSoundPackage();
-        String description = current.title + " - by " + current.artistName;
-        this.descriptionView.setText(description);
+        if(SoundQueue.getCurrentSoundPackage() != null) {
+            SoundPackage current = SoundQueue.getCurrentSoundPackage();
+            String description = current.title + " - by " + current.artistName;
+            this.descriptionView.setText(description);
+        }
     }
 
     public void setDescriptionVisibility(boolean visibility) {

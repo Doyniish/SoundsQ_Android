@@ -107,7 +107,13 @@ public class SoundQueue {
     }
 
     public static SoundPackage getCurrentSoundPackage() {
-        return queue_packages.get(currentSound);
+        if(queue_packages != null) {
+            if(queue_packages.size() != 0) {
+                return queue_packages.get(currentSound);
+            }
+        }
+
+        return null;
     }
 
     public static void isPlayingSound(boolean is) {

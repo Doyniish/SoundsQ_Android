@@ -1,25 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notificationbg" android:layout_width="fill_parent" android:layout_height="128.0dip"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#303030">
 
-    <TextView
-        android:id="@+id/msglbl"
+    <ImageView
+        android:id="@+id/status_bar_album_art"
+        android:layout_width="@dimen/notification_expanded_height"
+        android:layout_height="@dimen/notification_expanded_height"
+        android:scaleType="centerCrop"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"/>
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test" />
+        android:divider="?android:listDivider"
+        android:layout_toRightOf="@id/status_bar_album_art"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:showDividers="middle"
+        android:dividerPadding="12.0dip">
 
-    <TextView
-        android:id="@+id/message"
+        <ImageButton
+            android:id="@+id/status_bar_play"
+            android:background="?android:selectableItemBackground"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/quantum_ic_play_arrow_white_24"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/status_bar_collapse"
+        android:background="?android:selectableItemBackground"
+        android:padding="8.0dip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/msglbl" />
-
-    <Button
-        android:id="@+id/notification_play_pause"
-        android:layout_width="wrap_content"
+        android:src="@drawable/ic_close_dark"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
+    <LinearLayout
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:id="@+id/textarea"
+        android:paddingLeft="@dimen/notification_padding"
+        android:paddingTop="8.0dip"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="play"
-        android:layout_margin="10dp" />
-
-</LinearLayout>
+        android:layout_toLeftOf="@id/status_bar_collapse"
+        android:layout_toRightOf="@id/status_bar_album_art"
+        android:layout_alignParentTop="true">
+        <TextView
+            android:ellipsize="marquee"
+            android:layout_gravity="left"
+            android:id="@+id/status_bar_track_name"
+            android:focusable="true"
+            android:fadingEdge="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Track Name"
+            android:textColor="#FFFFFF" />
+        <TextView
+            android:ellipsize="marquee"
+            android:layout_gravity="left"
+            android:id="@+id/status_bar_artist_name"
+            android:fadingEdge="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textColor="#FFFFFF"
+            android:text="Artist Name"
+            android:paddingTop="5dp"
+            android:paddingLeft="10dp" />
+    </LinearLayout>
+</RelativeLayout>

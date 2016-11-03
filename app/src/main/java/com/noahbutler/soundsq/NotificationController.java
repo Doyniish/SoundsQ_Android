@@ -64,7 +64,7 @@ public class NotificationController extends Notification {
         Intent radio=new Intent(context, LaunchActivity.class);
         radio.putExtra("DO", "pause");
         PendingIntent pause = PendingIntent.getActivity(context, 0, radio, 0);
-        view.setOnClickPendingIntent(R.id.notification_play_pause, pause);
+        view.setOnClickPendingIntent(R.id.status_bar_play, pause);
 
         //volume listener
         Intent volume=new Intent(context, LaunchActivity.class);
