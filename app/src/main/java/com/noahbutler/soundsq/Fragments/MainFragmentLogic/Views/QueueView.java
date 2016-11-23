@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -47,6 +49,7 @@ public class QueueView {
     private ListView queueListView;
     private QueueListAdapter queueListAdapter;
     private ImageView pausePlayButton;
+    private WebView registerView;
 
     /*********/
     /* State */
@@ -91,6 +94,10 @@ public class QueueView {
         queueListAdapter = new QueueListAdapter((LaunchActivity) activity);
         queueListView.setAdapter(queueListAdapter);
 
+        //web view to display the registration url for SoundCloud connection.
+        registerView = (WebView)masterView.findViewById(R.id.register_popup);
+        registerView.setWebViewClient(new MyWebViewClient());
+
         //initially display pause
         displayPauseButton();
     }
@@ -101,6 +108,11 @@ public class QueueView {
 
     private void displayPlayButton() {
         AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.play, WIDTH, HEIGHT, pausePlayButton);
+    }
+
+    public void displayRegisterPopUp(final String register_url) {
+        Log.e(TAG, "Displaying register popup");
+        registerView.loadUrl(register_url);
     }
 
     public void update() {

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -177,6 +178,7 @@ public class StateController {
         if(queueBall == null) {
             createQueueBall();
         }
+        Log.e(TAG, "displaying loading queue ball from state controller");
         queueBall.setState(QueueBall.STATE_LOADING);
     }
 
@@ -348,7 +350,16 @@ public class StateController {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            // do your stuff here
+
+                            String entry = queueNameEdit.getText().toString();
+                            SoundQueue.NAME = entry;
+                            Sender.createExecute(Sender.SEND_NAME, SoundQueue.NAME);
+                            queueNameEdit.setClickable(false);
+                            queueNameEdit.setVisibility(View.INVISIBLE);
+                            queueNameDisplay.setText(entry);
+
+                        }else if(actionId == EditorInfo.IME_ACTION_NEXT) {
+
                             String entry = queueNameEdit.getText().toString();
                             SoundQueue.NAME = entry;
                             Sender.createExecute(Sender.SEND_NAME, SoundQueue.NAME);
@@ -395,8 +406,6 @@ public class StateController {
     }
 
     public void displayRegisterPopUp(String register_url) {
-        Uri uri = Uri.parse(register_url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        activity.startActivity(intent);
+        queueView.displayRegisterPopUp(register_url);
     }
 }

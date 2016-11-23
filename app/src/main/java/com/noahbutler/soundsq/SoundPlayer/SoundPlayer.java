@@ -24,18 +24,21 @@ import java.io.IOException;
 
 public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
 
+
+    /*************/
+    /* DEBUG TAG */
     private static final String TAG = "SOUND_PLAYER";
 
-    /**
-     * the object responsible for playing the stream url given to it.
-     */
-    private static MediaPlayer mediaPlayer;
-    /**
-     * a messenger object used to signal that we have finished the current song.
-     */
 
+    /*****************************************************/
+    /* The object responsible for playing the stream url */
+    private static MediaPlayer mediaPlayer;
+
+
+    /**************************/
+    /* Local Helper Variables */
+    private PowerManager.WakeLock wakeLock;
     private Context context;
-    private PowerManager.WakeLock mWakeLock;
 
     public SoundPlayer(Context context) {
         this.context = context;
@@ -45,23 +48,19 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... params) {
         Boolean prepared;
+
         try {
             mediaPlayer.setDataSource(params[0]);
-            MediaPlayer.TrackInfo[] info = mediaPlayer.getTrackInfo();
+            Log.d(TAG, "Data Source: " + params[0]);
 
-            for(int i = 0; i < info.length; i++) {
-                Log.e(TAG, "Track Info[" + i + "]: " + info[i]);
-            }
-
-            Log.d(TAG, "stream_url: " + params[0]);
-
-            createMediaHandlers();
+            createMediaPlayerListeners();
             mediaPlayer.prepare();
+
             /* set our state to prepared */
             prepared = true;
 
         } catch (IllegalArgumentException e) {
-            Log.d("IllegarArgument", e.getMessage());
+            Log.d(TAG, "Illegal Argument: " + e.getMessage());
             prepared = false;
             e.printStackTrace();
         } catch (IOException e) {
@@ -73,29 +72,32 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
     }
 
     @Override
-    protected void onPostExecute(Boolean result) {
-
-        super.onPostExecute(result);
-        mWakeLock.release();
-        Log.d(TAG, "//" + result);
-    }
-    @Override
     protected void onPreExecute() {
-
         super.onPreExecute();
-        //make sure we keep playing when the screen is off
+
+        /* Continue play when the screen is off */
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-        mWakeLock.acquire();
-        Log.d(TAG, "media player is buffering");
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+        wakeLock.acquire();
 
     }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+
+        wakeLock.release();
+    }
+
+    /***************************************/
+    /** The following are helper methods. **/
+    /***************************************/
 
     /**
      * This method is used to create our
-     * handlers for the Media Player
+     * listeners for the Media Player
      */
-    private void createMediaHandlers() {
+    private void createMediaPlayerListeners() {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
             @Override
@@ -104,6 +106,7 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
                 requestNextPlay();
             }
         });
+
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -112,6 +115,9 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         });
     }
 
+    /**
+     * Command the Media Player to start playing the stream.
+     */
     private void startPlay() {
         mediaPlayer.start();
         Log.e(TAG, "Playing index: " + SoundQueue.getCurrentIndex());
@@ -119,28 +125,43 @@ public class SoundPlayer extends AsyncTask<String, Void, Boolean> {
         //messenger.updateViews();
     }
 
+    /**
+     * Called when the stream is finished.
+     * Clears out the media player.
+     */
     private void completePlay() {
         mediaPlayer.stop();
         mediaPlayer.reset();
     }
 
+    /**
+     * Since a new Sound Player object is created
+     * for each new stream url, we will request the
+     * Sound Player Controller to play the next stream url.
+     */
     private void requestNextPlay() {
-        // signal the UI thread to play the next sound.
-        Log.e(TAG, "Next sound requested");
-        Log.e(TAG, "Current index: " + SoundQueue.getCurrentIndex());
-
         SoundPlayerController.soundPlayerFinished();
     }
 
+    /**
+     * Used when an outside source, such as the
+     * notification media controller, stops the app.
+     */
     public void stopPlaying() {
         mediaPlayer.stop();
         mediaPlayer.reset();
     }
 
+    /**
+     * Used when an outside source pauses the stream.
+     */
     public void pause() {
         mediaPlayer.pause();
     }
 
+    /**
+     * Used when an outside source continues the stream.
+     */
     public void resume() {
         mediaPlayer.start();
     }

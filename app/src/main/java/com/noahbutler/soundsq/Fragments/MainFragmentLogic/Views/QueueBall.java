@@ -80,7 +80,9 @@ public class QueueBall {
     public void instantiate() {
 
         queueBallImage = (ImageView)masterView.findViewById(R.id.queue_ball_image);
+        Log.e(TAG, "Queue Ball ImageView Created....STATE_QUEUE_BALL: " + STATE_QUEUE_BALL);
         queueBallLogic = (Button)masterView.findViewById(R.id.queue_ball_logic_button);
+
         queueBallSelectBottom = (Button)masterView.findViewById(R.id.queue_ball_select_bottom);
         queueBallSelectLeft = (Button)masterView.findViewById(R.id.queue_ball_select_left);
         queueBallSelectRight = (Button)masterView.findViewById(R.id.queue_ball_select_right);
@@ -91,6 +93,8 @@ public class QueueBall {
         hideDeleteCheck();
 
         descriptionView = (TextView)masterView.findViewById(R.id.description);
+
+        setState(STATE_LOADING);
 
         /* only want to display the image, not the logic buttons */
         setButtonsTransparent();
@@ -188,7 +192,9 @@ public class QueueBall {
 
     private void displayQueueBall() {
         setBallVisibility(true);
+        Log.e(TAG, "Displaying normal queue ball");
         if(!(CURRENT_STATE == STATE_LOADING)) {
+            Log.e(TAG, "Displaying normal queue ball");
             AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball, WIDTH, HEIGHT, queueBallImage);
             setDescription();
             setDescriptionVisibility(true);
@@ -205,6 +211,7 @@ public class QueueBall {
     }
 
     private void displayLoadingQueueBall() {
+        Log.e(TAG, "Displaying loading queue ball");
         AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.queue_ball_loading, WIDTH, HEIGHT, queueBallImage);
         setBallClickable(false);
         setDescriptionVisibility(false);
