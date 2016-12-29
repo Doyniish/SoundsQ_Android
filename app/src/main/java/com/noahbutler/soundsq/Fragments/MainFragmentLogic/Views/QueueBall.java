@@ -204,7 +204,7 @@ public class QueueBall {
             setBallClickable(true);
             setBallVisibility(true);
             setOptionsClickable(false);
-            spectrum.setVisibility(View.INVISIBLE);
+            spectrum.setVisibility(View.VISIBLE);
         }
     }
 
