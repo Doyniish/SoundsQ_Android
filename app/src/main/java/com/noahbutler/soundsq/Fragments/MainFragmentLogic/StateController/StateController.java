@@ -1,6 +1,7 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -358,6 +360,9 @@ public class StateController {
                             queueNameEdit.setVisibility(View.INVISIBLE);
                             queueNameDisplay.setText(entry);
 
+                            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(queueNameEdit.getWindowToken(), 0);
+
                         }else if(actionId == EditorInfo.IME_ACTION_NEXT) {
 
                             String entry = queueNameEdit.getText().toString();
@@ -366,6 +371,9 @@ public class StateController {
                             queueNameEdit.setClickable(false);
                             queueNameEdit.setVisibility(View.INVISIBLE);
                             queueNameDisplay.setText(entry);
+
+                            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(queueNameEdit.getWindowToken(), 0);
                         }
                         return false;
                     }
