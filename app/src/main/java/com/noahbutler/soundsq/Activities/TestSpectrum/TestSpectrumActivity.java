@@ -1,9 +1,8 @@
-package com.noahbutler.soundsq.Activities;
+package com.noahbutler.soundsq.Activities.TestSpectrum;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.noahbutler.soundsq.Fragments.TestSpectrumFragment;
 import com.noahbutler.soundsq.R;
 
 /**

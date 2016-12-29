@@ -56,7 +56,7 @@ public class NotificationController extends Notification {
         notification.contentView = contentView;
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
         CharSequence contentTitle = "From Shortcuts";
-        notificationManager.notify(548853, notification);
+        //notificationManager.notify(548853, notification);
     }
 
     private void setListeners(RemoteViews view) {

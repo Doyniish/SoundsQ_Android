@@ -61,9 +61,13 @@ public class QueueView {
     private static final int WIDTH = 100;
     private static final int HEIGHT = 100;
 
+    /* Custom web view to keep users in the app while registering */
+    MyWebViewClient registerClient;
+
     public QueueView(View masterView, Activity activity) {
         this.masterView = masterView;
         this.activity = activity;
+        this.registerClient = new MyWebViewClient();
     }
 
     public void instantiate() {
@@ -96,7 +100,10 @@ public class QueueView {
 
         //web view to display the registration url for SoundCloud connection.
         registerView = (WebView)masterView.findViewById(R.id.register_popup);
-        registerView.setWebViewClient(new MyWebViewClient());
+        registerView.getSettings().setJavaScriptEnabled(true);
+        registerView.getSettings().setLoadWithOverviewMode(true);
+        registerView.getSettings().setUseWideViewPort(true);
+        registerView.setWebViewClient(registerClient);
 
         //initially display pause
         displayPauseButton();
@@ -112,6 +119,12 @@ public class QueueView {
 
     public void displayRegisterPopUp(final String register_url) {
         Log.e(TAG, "Displaying register popup");
+
+        //let our web client know it should display this url in the app.
+        registerClient.setUrl(register_url);
+        //now that the web view knows to not move away from our app when loading this view. Display
+        //the registration url.
+        //TODO: FIX
         registerView.loadUrl(register_url);
     }
 

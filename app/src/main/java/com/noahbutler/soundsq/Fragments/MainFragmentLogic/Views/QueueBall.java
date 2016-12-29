@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -65,6 +66,7 @@ public class QueueBall {
     private Button queueBallSelectTop, queueBallSelectBottom, queueBallSelectLeft, queueBallSelectRight;
     private Button queueBallLogic;
     private ImageView queueBallImage, deleteYes, deleteNo;
+    private Spectrum spectrum;
 
 
     /* Queue Ball Settings */
@@ -80,8 +82,9 @@ public class QueueBall {
     public void instantiate() {
 
         queueBallImage = (ImageView)masterView.findViewById(R.id.queue_ball_image);
-        Log.e(TAG, "Queue Ball ImageView Created....STATE_QUEUE_BALL: " + STATE_QUEUE_BALL);
         queueBallLogic = (Button)masterView.findViewById(R.id.queue_ball_logic_button);
+
+        spectrum = (Spectrum)masterView.findViewById(R.id.spectrum_view);
 
         queueBallSelectBottom = (Button)masterView.findViewById(R.id.queue_ball_select_bottom);
         queueBallSelectLeft = (Button)masterView.findViewById(R.id.queue_ball_select_left);
@@ -201,6 +204,7 @@ public class QueueBall {
             setBallClickable(true);
             setBallVisibility(true);
             setOptionsClickable(false);
+            spectrum.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -216,6 +220,7 @@ public class QueueBall {
         setBallClickable(false);
         setDescriptionVisibility(false);
         setOptionsClickable(false);
+        spectrum.setVisibility(View.INVISIBLE);
     }
 
     private void displayDeleteCheck() {
@@ -250,8 +255,10 @@ public class QueueBall {
     private void setBallVisibility(boolean visibility) {
         if(visibility) {
             queueBallImage.setVisibility(View.VISIBLE);
+            spectrum.setVisibility(View.VISIBLE);
         }else{
             queueBallImage.setVisibility(View.INVISIBLE);
+            spectrum.setVisibility(View.INVISIBLE);
         }
     }
 

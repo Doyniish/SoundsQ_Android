@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
@@ -66,7 +67,9 @@ public class QueueListAdapter extends BaseAdapter {
             viewHolder.likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    soundLiked(position);
+                    //TODO: FIX
+                    //soundLiked(position);
+                    Toast.makeText(activity.getBaseContext(), "Liking to Sound Cloud currently not supported on your device.", Toast.LENGTH_LONG).show();
                 }
             });
 
