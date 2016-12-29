@@ -73,7 +73,7 @@ public class Spectrum extends View {
         WindowManager w = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
         mX = w.getDefaultDisplay().getWidth()/2;
         mY = convertDpToPixel(150 + 70, this.getContext());
-        radius = 400;
+        radius = 450;
         reset = false;
 
         //init point array
@@ -131,7 +131,7 @@ public class Spectrum extends View {
                     if(SoundQueue.isPlayingSound()) {
                         draw = true;
 
-                        if (current - last > 90) {
+                        if (current - last > 100) {
                             Message message = new Message();
                             Bundle bundle = new Bundle();
 
@@ -171,7 +171,7 @@ public class Spectrum extends View {
             Log.e(TAG, "DRAWING SPECTRUM");
             for (int i = 0; i < 36; i++) {
                 check += "{" + i + ": [" + dots[i].x + ", " + dots[i].y + "]} ";
-                canvas.drawCircle(dots[i].x, dots[i].y, 20, paint);
+                canvas.drawCircle(dots[i].x, dots[i].y, 15, paint);
                 if (i == 35) {
                     canvas.drawLine(dots[i].x, dots[i].y, dots[0].x, dots[0].y, paint);
                 } else {
