@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -127,5 +128,20 @@ public class LaunchActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Used by Registration View: catches back clicks
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(mainFragment.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

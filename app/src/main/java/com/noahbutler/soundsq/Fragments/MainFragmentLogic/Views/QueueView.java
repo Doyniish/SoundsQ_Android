@@ -3,17 +3,17 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.noahbutler.soundsq.Activities.LaunchActivity;
 import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.SoundCloudLogin.RegisterClient;
 import com.noahbutler.soundsq.R;
-import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
@@ -62,12 +62,12 @@ public class QueueView {
     private static final int HEIGHT = 100;
 
     /* Custom web view to keep users in the app while registering */
-    MyWebViewClient registerClient;
+    private RegisterClient registerClient;
 
     public QueueView(View masterView, Activity activity) {
         this.masterView = masterView;
         this.activity = activity;
-        this.registerClient = new MyWebViewClient();
+        this.registerClient = new RegisterClient(activity);
     }
 
     public void instantiate() {
@@ -104,6 +104,7 @@ public class QueueView {
         registerView.getSettings().setLoadWithOverviewMode(true);
         registerView.getSettings().setUseWideViewPort(true);
         registerView.setWebViewClient(registerClient);
+        registerView.setVisibility(View.INVISIBLE);
 
         //initially display pause
         displayPauseButton();
@@ -124,7 +125,7 @@ public class QueueView {
         registerClient.setUrl(register_url);
         //now that the web view knows to not move away from our app when loading this view. Display
         //the registration url.
-        //TODO: FIX
+        registerView.setVisibility(View.VISIBLE);
         registerView.loadUrl(register_url);
     }
 
@@ -163,4 +164,15 @@ public class QueueView {
         //update view
         update();
     }
+
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && this.registerView.canGoBack()) {
+            this.registerView.goBack();
+            return true;
+        }
+
+        return false;
+    }
+
 }

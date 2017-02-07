@@ -131,7 +131,7 @@ public class Spectrum extends View {
                     if(SoundQueue.isPlayingSound()) {
                         draw = true;
 
-                        if (current - last > 100) {
+                        if (current - last > 160) {
                             Message message = new Message();
                             Bundle bundle = new Bundle();
 
@@ -166,9 +166,9 @@ public class Spectrum extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         String check = "";
-        Log.e(TAG, Boolean.toString(draw));
+        //Log.e(TAG, Boolean.toString(draw));
         if(draw) {
-            Log.e(TAG, "DRAWING SPECTRUM");
+            //Log.e(TAG, "DRAWING SPECTRUM");
             for (int i = 0; i < 36; i++) {
                 check += "{" + i + ": [" + dots[i].x + ", " + dots[i].y + "]} ";
                 canvas.drawCircle(dots[i].x, dots[i].y, 15, paint);

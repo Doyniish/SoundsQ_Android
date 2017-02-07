@@ -416,4 +416,14 @@ public class StateController {
     public void displayRegisterPopUp(String register_url) {
         queueView.displayRegisterPopUp(register_url);
     }
+
+    /**
+     * Used by Registration View: catches back key clicks
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return queueView.onKeyDown(keyCode, event);
+    }
 }

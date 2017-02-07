@@ -67,9 +67,9 @@ public class QueueListAdapter extends BaseAdapter {
             viewHolder.likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: FIX
-                    //soundLiked(position);
-                    Toast.makeText(activity.getBaseContext(), "Liking to Sound Cloud currently not supported on your device.", Toast.LENGTH_LONG).show();
+
+                    soundLiked(position);
+                    //Toast.makeText(activity.getBaseContext(), "Liking to Sound Cloud currently not supported on your device.", Toast.LENGTH_LONG).show();
                 }
             });
 

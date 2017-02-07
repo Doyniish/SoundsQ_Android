@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,5 +97,10 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         stateController.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return stateController.onKeyDown(keyCode, event);
     }
 }
