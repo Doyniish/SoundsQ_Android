@@ -1,25 +1,12 @@
 package com.noahbutler.soundsq.Network.FCM;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.noahbutler.soundsq.Activities.LaunchActivity;
-import com.noahbutler.soundsq.Activities.Share.ShareActivity;
 import com.noahbutler.soundsq.Activities.Share.ShareActivityMessage;
-import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
-import com.noahbutler.soundsq.Network.SoundPackageDownloader;
-import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPackage;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
@@ -27,9 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -85,7 +70,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void receivedQueue(Map<String, String> data) {
-        Log.e(TAG, "DATA: " + data.toString());
+        //Log.e(TAG, "DATA: " + data.toString());
 
         SoundQueue.createQueue(false);
 
@@ -160,15 +145,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void queueSound(HashMap<String, String> decodedPackage) {
-        SoundPackageDownloader soundPackageDownloader = new SoundPackageDownloader(getBaseContext());
-        /* create our filename from our sound url */
-        String filename = decodedPackage.get("sound_url").substring(decodedPackage.get("sound_url").lastIndexOf("/")+1);
-        /* download the file */
-        soundPackageDownloader.execute(SoundPackageDownloader.GET_SOUND_IMAGE, decodedPackage.get("album_art"), filename, decodedPackage.get("sound_url"));
+
         /* create a new sound package to hold the data */
         SoundPackage soundPackage = SoundPackage.createSoundPackage(decodedPackage);
+
         /* add the SoundPackage object to the list */
         SoundQueue.addSoundPackage(soundPackage);
         SoundQueue.addSound(decodedPackage.get("stream_url"));
+
+        // notify the view that we have a new sound to display
+        StateControllerMessage message = new StateControllerMessage();
+        message.updateList_NewSong();
     }
 }

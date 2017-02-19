@@ -7,7 +7,7 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController;
 public class UserState {
 
     /*****************/
-    /* State of User */
+    /* SoundQueueState of User */
     public static int STATE = 0;
     public static final int SPECTATOR = 1;
     public static final int OWNER = 2;

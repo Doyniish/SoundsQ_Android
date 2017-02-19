@@ -2,6 +2,7 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.SoundCloudLogin
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -25,13 +26,13 @@ public class RegisterClient extends WebViewClient {
     /* DEBUG TAG */
     private static final String TAG = "Web Client";
 
-    Activity activity;
+    Context context;
 
     /* Url to load inside our web view in our app */
     private String registerUrl;
 
-    public RegisterClient(Activity activity) {
-        this.activity = activity;
+    public RegisterClient(Context context) {
+        this.context = context;
     }
 
     /**
@@ -69,7 +70,7 @@ public class RegisterClient extends WebViewClient {
     @Override
     public void onReceivedSslError(final WebView view, final SslErrorHandler handler, SslError error) {
         Log.d("CHECK", "onReceivedSslError");
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         AlertDialog alertDialog = builder.create();
         String message = "Certificate error.";
         switch (error.getPrimaryError()) {

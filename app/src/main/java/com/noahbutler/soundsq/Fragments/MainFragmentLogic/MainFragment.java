@@ -1,9 +1,7 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,10 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toolbar;
 
-import com.noahbutler.soundsq.Activities.LaunchActivity;
+
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.R;
-import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
 /**
  * Used to determine if the app needs to load or start a queue.
@@ -37,14 +34,14 @@ public class MainFragment extends Fragment {
         //check the orientation of the phone and display the correct configuration for the UI
         if(savedInstanceState == null) {
             masterView = inflater.inflate(R.layout.fragment_queueball, container, false);
-            stateController = new StateController(masterView, getActivity());
+            stateController = new StateController(masterView, getActivity(), getActivity().getBaseContext());
 
         /* initiate our menu, customized in state controller */
             getActivity().setActionBar((Toolbar) masterView.findViewById(R.id.toolbar));
         }else {
             Log.e(TAG, "\n\nSaved instance state loading...\n\n");
             if(stateController == null) {
-                stateController = new StateController(masterView, getActivity());
+                stateController = new StateController(masterView, getActivity(), getActivity().getBaseContext());
             }
             stateController.onSavedInstanceRestored(savedInstanceState);
         }
@@ -58,7 +55,9 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        stateController.onSaveInstanceState(savedInstanceState);
+        if (stateController != null) {
+            stateController.onSaveInstanceState(savedInstanceState);
+        }
     }
 
     @Override

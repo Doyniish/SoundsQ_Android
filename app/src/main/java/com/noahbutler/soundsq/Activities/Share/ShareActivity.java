@@ -177,7 +177,7 @@ public class ShareActivity extends Activity {
                 String queue_id = localQueues.get(localQueueData[position]);
 
                 IO.writeQueueID(getBaseContext().getFilesDir(), queue_id, false); //false: not owner
-                Log.e(TAG, "Sending URL: " + soundLink + " ....to: " + queue_id);
+                //Log.e(TAG, "Sending URL: " + soundLink + " ....to: " + queue_id);
                 Sender.createExecute(Sender.SEND_SOUND, queue_id, soundLink);
                 ShareActivity.this.finish();
             }

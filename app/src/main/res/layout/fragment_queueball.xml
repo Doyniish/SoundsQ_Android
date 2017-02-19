@@ -69,7 +69,8 @@
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:layout_marginBottom="60dp"
-                android:id="@+id/description" />
+                android:id="@+id/description"
+                android:visibility="invisible" />
         </FrameLayout>
 
         <FrameLayout
@@ -100,7 +101,7 @@
             <view
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                class="com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.Spectrum"
+                class="com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall.Spectrum"
                 android:id="@+id/spectrum_view" />
         </FrameLayout>
 

@@ -2,7 +2,6 @@ package com.noahbutler.soundsq.Network;
 
 import android.util.Log;
 
-import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;

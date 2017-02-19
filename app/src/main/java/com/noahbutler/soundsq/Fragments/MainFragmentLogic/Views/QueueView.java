@@ -1,21 +1,21 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.bumptech.glide.Glide;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
-import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.SoundCloudLogin.RegisterClient;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundPlayerController;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueueState;
 
 import java.io.File;
 
@@ -41,7 +41,7 @@ public class QueueView {
     /******************/
     /* Parent Objects */
     private View masterView;
-    private Activity activity;
+    private Context context;
 
 
     /*********/
@@ -52,7 +52,7 @@ public class QueueView {
     private WebView registerView;
 
     /*********/
-    /* State */
+    /* SoundQueueState */
     private int pausePlayButtonState = 1;
     private static final int PAUSED = 0;
     private static final int PLAYING = 1;
@@ -64,10 +64,10 @@ public class QueueView {
     /* Custom web view to keep users in the app while registering */
     private RegisterClient registerClient;
 
-    public QueueView(View masterView, Activity activity) {
+    public QueueView(Context context, View masterView) {
         this.masterView = masterView;
-        this.activity = activity;
-        this.registerClient = new RegisterClient(activity);
+        this.context = context;
+        this.registerClient = new RegisterClient(context);
     }
 
     public void instantiate() {
@@ -95,7 +95,7 @@ public class QueueView {
         /* setup queue view */
         queueListView = (ListView) masterView.findViewById(R.id.queueView);
         /* create our queue adapter */
-        queueListAdapter = new QueueListAdapter((LaunchActivity) activity);
+        queueListAdapter = new QueueListAdapter(context);
         queueListView.setAdapter(queueListAdapter);
 
         //web view to display the registration url for SoundCloud connection.
@@ -111,15 +111,15 @@ public class QueueView {
     }
 
     private void displayPauseButton() {
-        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.pause, WIDTH, HEIGHT, pausePlayButton);
+        Glide.with(this.context).load(R.drawable.pause).into(pausePlayButton);
     }
 
     private void displayPlayButton() {
-        AsyncDrawable.loadBitmap(activity.getResources(), R.drawable.play, WIDTH, HEIGHT, pausePlayButton);
+        Glide.with(this.context).load(R.drawable.play).into(pausePlayButton);
     }
 
     public void displayRegisterPopUp(final String register_url) {
-        Log.e(TAG, "Displaying register popup");
+        //Log.e(TAG, "Displaying register popup");
 
         //let our web client know it should display this url in the app.
         registerClient.setUrl(register_url);
@@ -130,18 +130,10 @@ public class QueueView {
     }
 
     public void update() {
-        Log.e(TAG, "UPDATE NOTIFY");
-        Log.e(TAG, "Package size: " + SoundQueue.queue_packages.size());
-        queueListAdapter = new QueueListAdapter((LaunchActivity) activity);
-        queueListView.setAdapter(queueListAdapter);
-    }
-
-    public void addArt(String fileLocation, String sound_url) {
-        for(int i = 0; i < SoundQueue.queue_packages.size(); i++) {
-            if (SoundQueue.queue_packages.get(i).sound_url.contentEquals(sound_url)) {
-                SoundQueue.queue_packages.get(i).sendFileLocation(fileLocation);
-            }
-        }
+        //Log.e(TAG, "UPDATE NOTIFY");
+        //Log.e(TAG, "Package size: " + SoundQueue.queue_packages.size());
+        queueListAdapter.notifyDataSetChanged();
+        //queueListAdapter.notifyDataSetInvalidated();
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -153,14 +145,14 @@ public class QueueView {
     }
 
     public void onPause(File directory) {
-        Log.v(TAG, "\n\nQueueView OnPause...\n\n");
-        SoundQueue.saveState(directory);
+        //Log.v(TAG, "\n\nQueueView OnPause...\n\n");
+        SoundQueueState.saveState(directory);
     }
 
     public void onResume(File directory) {
         //load saved data
-        Log.v(TAG, "\n\nQueueView OnPause...\n\n");
-        SoundQueue.loadState(directory);
+        //Log.v(TAG, "\n\nQueueView OnPause...\n\n");
+        SoundQueueState.loadState(directory);
         //update view
         update();
     }

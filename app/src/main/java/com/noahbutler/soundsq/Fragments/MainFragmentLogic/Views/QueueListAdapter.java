@@ -1,25 +1,19 @@
 package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
 
-import android.graphics.BitmapFactory;
-import android.util.Log;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.noahbutler.soundsq.Activities.LaunchActivity;
-import com.noahbutler.soundsq.BitmapLoader.AsyncDrawable;
-import com.noahbutler.soundsq.Constants;
-import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.UserState;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 /**
  * Created by NoahButler on 12/27/15.
@@ -27,11 +21,11 @@ import java.io.InputStream;
 public class QueueListAdapter extends BaseAdapter {
 
     private LayoutInflater layoutInflater;
-    private LaunchActivity activity;
+    private Context context;
 
-    public QueueListAdapter(LaunchActivity activity) {
-        this.activity = activity;
-        layoutInflater = activity.getLayoutInflater();
+    public QueueListAdapter(Context context) {
+        this.context = context;
+        layoutInflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -118,14 +112,10 @@ public class QueueListAdapter extends BaseAdapter {
 
             /* apply sound art */
             if(SoundQueue.queue_packages.get(position).soundImage != null) {
-                InputStream in = null;
-                try {
-                    in = activity.openFileInput(SoundQueue.queue_packages.get(position).soundImage);
-                    viewHolder.soundImage.setImageBitmap(BitmapFactory.decodeStream(in));
-                }catch (FileNotFoundException e) {
-                    Log.d("NO IMAGE", e.getMessage());
-                }
-
+                Glide.with(context)
+                        .load(SoundQueue.queue_packages.get(position).soundImage)
+                        .centerCrop()
+                        .into(viewHolder.soundImage);
             }
 
             /* apply artist */

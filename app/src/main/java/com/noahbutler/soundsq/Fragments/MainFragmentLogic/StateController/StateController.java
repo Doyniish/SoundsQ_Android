@@ -3,7 +3,6 @@ package com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,20 +11,20 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.noahbutler.soundsq.Activities.LaunchActivity;
-import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall.BallLogic;
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall.Signals.BallSignal;
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueView;
 import com.noahbutler.soundsq.GPS.GPSReceiver;
 import com.noahbutler.soundsq.IO.IO;
 import com.noahbutler.soundsq.Network.Sender;
 import com.noahbutler.soundsq.R;
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
+import com.noahbutler.soundsq.SoundPlayer.SoundQueueState;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,20 +66,22 @@ public class StateController {
     /******************/
     /* Parent Objects */
     private View masterView;
+    private Context context;
     private Activity activity;
 
 
     /**********************/
     /* Classes controlled */
     private GPSReceiver gpsReceiver;
-    private QueueBall queueBall;
+    private BallSignal ballSignal;
     private QueueView queueView;
     private TextView queueNameDisplay;
     private EditText queueNameEdit;
 
-    public StateController(View masterView, final Activity activity) {
+    public StateController(View masterView, Activity activity, Context context) {
         this.masterView = masterView;
         this.activity = activity;
+        this.context = context;
 
         /* create our thread message receiver */
         updateStream = new Handler(new Handler.Callback() {
@@ -101,10 +102,7 @@ public class StateController {
                         failedRequest();
                         break;
                     case UPDATE_VIEW:
-                        SoundQueue.saveState(activity.getFilesDir());
-                        String albumArt = msg.getData().getString(StateControllerMessage.A_Key);
-                        String soundUrl = msg.getData().getString(StateControllerMessage.S_Key);
-                        queueView.addArt(albumArt, soundUrl);
+                        SoundQueueState.saveState(StateController.this.context.getFilesDir());
                         queueView.update();
                         break;
                     case PLAY_UPDATE:
@@ -132,7 +130,7 @@ public class StateController {
     private void initializeSoundsQ() {
         //IO.deleteQueueID(activity.getFilesDir());
         if(!SaveState.RESUMING) {
-            switch (checkFile(activity.getBaseContext().getFilesDir())) {
+            switch (checkFile(context.getFilesDir())) {
                 case FRESH_START:
                     UserState.STATE = UserState.OWNER;
                     Log.e(TAG, "FRESH START");
@@ -144,7 +142,6 @@ public class StateController {
                     UserState.STATE = UserState.OWNER;
                     SoundQueue.PLAY = true;
                     Log.e(TAG, "LOAD_OWNER");
-                    displayLoading();
                     loadOwnerView();
                     break;
                 case LOAD_SPECTATOR:
@@ -166,22 +163,22 @@ public class StateController {
 
     /** Create SoundsQ Views **/
 
-    private void createQueueBall() {
-        queueBall = new QueueBall(masterView, activity);
-        queueBall.instantiate();
+    private void createBallSignal() {
+        ballSignal = new BallSignal(masterView, context);
+        ballSignal.signal(BallSignal.SIGNAL_CREATE);
     }
 
     private void createQueueView() {
-        queueView = new QueueView(masterView, activity);
+        queueView = new QueueView(context, masterView);
         queueView.instantiate();
     }
 
     private void displayLoading() {
-        if(queueBall == null) {
-            createQueueBall();
+        if(ballSignal == null) {
+            createBallSignal();
         }
         Log.e(TAG, "displaying loading queue ball from state controller");
-        queueBall.setState(QueueBall.STATE_LOADING);
+        ballSignal.signal(BallSignal.SIGNAL_STATE, BallLogic.STATE_LOADING);
     }
 
     private void createOwnerView() {
@@ -206,28 +203,28 @@ public class StateController {
 
     private void signal_LoadedSpectator() {
         createQueueView();
-        queueBall.setState(QueueBall.STATE_INVISIBLE);
+        ballSignal.signal(BallSignal.SIGNAL_STATE, BallLogic.STATE_INVISIBLE);
         setQueueNameDisplayText();
     }
 
     private void signal_LoadedOwner() {
         createQueueView();
         Log.e(TAG, "Loaded Owner...");
-        queueBall.setState(QueueBall.STATE_INVISIBLE);
+        ballSignal.signal(BallSignal.SIGNAL_STATE, BallLogic.STATE_INVISIBLE);
         setQueueNameDisplayText();
-        Toast.makeText(activity.getBaseContext(), "Your queue has been loaded...", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Your queue has been loaded...", Toast.LENGTH_LONG).show();
     }
 
     private void freshStartCompleted() {
         Log.e(TAG, "writing out queue id...");
-        IO.writeQueueID(activity.getFilesDir(), SoundQueue.ID, true); //true, is owner
+        IO.writeQueueID(context.getFilesDir(), SoundQueue.ID, true); //true, is owner
         createQueueView();
-        queueBall.setState(QueueBall.STATE_INVISIBLE);
-        Toast.makeText(activity.getBaseContext(), "Queue started! Now give it a name!", Toast.LENGTH_LONG).show();
+        ballSignal.signal(BallSignal.SIGNAL_STATE, BallLogic.STATE_INVISIBLE);
+        Toast.makeText(context, "Queue started! Now give it a name!", Toast.LENGTH_LONG).show();
     }
 
     private void failedRequest() {
-        Toast.makeText(activity.getBaseContext(), "Joined queue no longer exists, Starting a fresh one...", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Joined queue no longer exists, Starting a fresh one...", Toast.LENGTH_LONG).show();
         createOwnerView();
     }
 
@@ -270,20 +267,19 @@ public class StateController {
     }
 
     public void onResume(File directory) {
-        displayLoading();
         if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onResume();
         }
         Log.v(TAG, "\n\nState Controller OnResume...\n\n");
-        createQueueBall();
+        createBallSignal();
         if(queueView != null) {
             queueView.onResume(directory);
         }
     }
 
     public void onPause(File directory) {
-        displayLoading();
         Log.v(TAG, "\n\nState Controller onPause...\n\n");
+        ballSignal.signal(BallSignal.SIGNAL_STATE, BallLogic.STATE_INVISIBLE);
         if(UserState.STATE == UserState.OWNER) {
             gpsReceiver.onPause();
         }
@@ -341,7 +337,7 @@ public class StateController {
                 home.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        queueBall.setState(QueueBall.STATE_QUEUE_BALL);
+                        ballSignal.signal(BallSignal.SIGNAL_STATE, BallLogic.STATE_QUEUE_BALL);
                     }
                 });
 
@@ -360,7 +356,7 @@ public class StateController {
                             queueNameEdit.setVisibility(View.INVISIBLE);
                             queueNameDisplay.setText(entry);
 
-                            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(queueNameEdit.getWindowToken(), 0);
 
                         }else if(actionId == EditorInfo.IME_ACTION_NEXT) {
@@ -372,7 +368,7 @@ public class StateController {
                             queueNameEdit.setVisibility(View.INVISIBLE);
                             queueNameDisplay.setText(entry);
 
-                            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(queueNameEdit.getWindowToken(), 0);
                         }
                         return false;
@@ -388,7 +384,7 @@ public class StateController {
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    IO.deleteQueueID(activity.getFilesDir());
+                    IO.deleteQueueID(context.getFilesDir());
                     //TODO: show rating view
                     int pid = android.os.Process.myPid();
                     android.os.Process.killProcess(pid);
@@ -399,6 +395,7 @@ public class StateController {
             setQueueNameDisplayText();
         }
     }
+
 
     public void setQueueNameDisplayText() {
         if(SoundQueue.NAME != null && !SoundQueue.NAME.contentEquals("null")) {

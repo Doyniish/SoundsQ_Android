@@ -52,7 +52,7 @@ public class GPSReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleA
     public static String latitude = null;
     public static String longitude = null;
 
-    public void initialize(final Activity activity, boolean isSharing) {
+    public void initialize(Activity activity, boolean isSharing) {
         this.activity = activity;
         this.isSharing = isSharing;
         this.sentOnce = false;

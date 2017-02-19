@@ -1,4 +1,4 @@
-package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views;
+package com.noahbutler.soundsq.Fragments.MainFragmentLogic.Views.QueueBall;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -12,10 +12,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.noahbutler.soundsq.SoundPlayer.SoundQueue;
 

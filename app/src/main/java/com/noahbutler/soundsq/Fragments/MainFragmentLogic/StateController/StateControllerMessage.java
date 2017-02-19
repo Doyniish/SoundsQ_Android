@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
+import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateController;
+
 /**
  * Created by gildaroth on 9/28/16.
  */
@@ -51,16 +53,14 @@ public class StateControllerMessage {
         StateController.updateStream.sendMessage(message);
     }
 
-    public void updateQueueView(String fileLocation, String soundUrl) {
+    public void updateList_NewSong() {
         bundle.putInt(StateController.UPDATE_KEY, StateController.UPDATE_VIEW);
-        bundle.putString(A_Key, fileLocation);
-        bundle.putString(S_Key, soundUrl);
 
         message.setData(bundle);
         StateController.updateStream.sendMessage(message);
     }
 
-    public void updateQueueView() {
+    public void updateList_SongPlaying() {
         bundle.putInt(StateController.UPDATE_KEY, StateController.PLAY_UPDATE);
 
         message.setData(bundle);

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.noahbutler.soundsq.Fragments.MainFragmentLogic.StateController.StateControllerMessage;
-import com.noahbutler.soundsq.Network.Sender;
 
 /**
  * Created by Noah on 7/25/2016.
@@ -34,7 +33,7 @@ public class SoundPlayerController {
 
             //update ui
             SoundQueue.getCurrentSoundPackage().isPlaying = true;
-            new StateControllerMessage().updateQueueView();
+            new StateControllerMessage().updateList_SongPlaying();
             Log.e(TAG, "next sound is going to play, index: " + SoundQueue.getCurrentIndex());
 
             soundPlayer = new SoundPlayer(context);

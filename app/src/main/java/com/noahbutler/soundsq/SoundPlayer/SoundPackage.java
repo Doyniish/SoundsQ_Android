@@ -15,11 +15,7 @@ import java.util.HashMap;
 public class SoundPackage {
 
     /**
-     * file location of the sound's image.
-     * This is set to null until the SoundPackageDownloader
-     * receives the address of the image from our servers,
-     * and then downloads the image. It is then set with
-     * the sendFileLocation().
+     * Stores the url for glide. Glide will then handle showing the image.
      */
     public String soundImage;
     /**
@@ -53,28 +49,12 @@ public class SoundPackage {
         isPlaying = false;
     }
 
-    /**
-     * Method that is called when the correct
-     * image for this sound has been downloaded.
-     *
-     * The SoundPackageDownloader sends a signal via the Messenger
-     * and the MessageHandler. The messageHandler finds the correct SoundPackage
-     * object and then calls this method with the image file location.
-     *
-     * Look to MessageHandler for more information.
-     * @param fileLocation
-     */
-    public void sendFileLocation(String fileLocation) {
-        soundImage = fileLocation;
-    }
-
     public static SoundPackage createSoundPackage(HashMap<String, String> data) {
         SoundPackage soundPackage = new SoundPackage();
         soundPackage.sound_url = data.get("sound_url");
         soundPackage.artistName = data.get("artist");
         soundPackage.title = data.get("title");
-        soundPackage.soundImage = (data.get("sound_url").substring(data.get("sound_url").lastIndexOf("/")+1) + ".jpg");
-        Log.e("SoundPackage Create", "Sound Image: " + soundPackage.soundImage);
+        soundPackage.soundImage = (data.get("album_art"));
 
         return soundPackage;
     }
